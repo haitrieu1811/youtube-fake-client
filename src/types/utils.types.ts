@@ -5,7 +5,7 @@ export type SuccessResponse<Data> = {
 
 export type ErrorResponse<Data> = {
   message: string
-  data?: Data
+  errors?: Data
 }
 
 export type OnlyMessageResponse = {

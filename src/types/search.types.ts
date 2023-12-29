@@ -24,6 +24,7 @@ export type SearchResultItem = {
   updatedAt: string
 }
 
+// Response: Tìm kiếm
 export type SearchResponse = SuccessResponse<{
   videos: SearchResultItem[]
   pagination: PaginationType

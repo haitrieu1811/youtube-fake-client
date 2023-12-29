@@ -14,7 +14,7 @@ import { Button } from './ui/button'
 const MAX_SEARCH_RESULTS = 10
 
 const MainHeaderSearch = () => {
-  const [query, setQuery] = useState<string>('2')
+  const [query, setQuery] = useState<string>('')
   const [isShowSearchResult, setIsShowSearchResult] = useState<boolean>(false)
   const debounceQuery = useDebounce(query, 1500)
   const searchBoxRef = useRef<HTMLInputElement>(null)

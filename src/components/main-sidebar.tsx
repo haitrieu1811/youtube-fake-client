@@ -1,5 +1,5 @@
 const MainSidebar = () => {
-  return <div>MainSidebar</div>;
-};
+  return <div className='w-56'>MainSidebar</div>
+}
 
-export default MainSidebar;
+export default MainSidebar

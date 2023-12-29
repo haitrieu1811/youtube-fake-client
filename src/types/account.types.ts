@@ -10,3 +10,9 @@ export type AccountType = {
   createdAt: string
   updatedAt: string
 }
+
+// Request: Đăng nhập
+export type LoginReqBody = {
+  email: string
+  password: string
+}
