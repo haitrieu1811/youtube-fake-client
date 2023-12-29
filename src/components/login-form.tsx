@@ -4,10 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import isEmpty from 'lodash/isEmpty'
 import { Loader2 } from 'lucide-react'
+import { useContext } from 'react'
 import { useForm } from 'react-hook-form'
 
 import accountApis from '@/apis/account.apis'
 import { isEntityErrror } from '@/lib/utils'
+import { AppContext } from '@/providers/app-provider'
 import { LoginSchema, loginSchema } from '@/rules/account.rules'
 import { ErrorResponse } from '@/types/utils.types'
 import { Button } from './ui/button'
@@ -15,6 +17,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from './ui/input'
 
 const LoginForm = () => {
+  // Form
   const form = useForm<LoginSchema>({
     defaultValues: {
       email: '',
@@ -23,10 +26,17 @@ const LoginForm = () => {
     resolver: zodResolver(loginSchema)
   })
 
+  const { setIsAuthenticated, setAccount } = useContext(AppContext)
+
   // Mutation: Đăng nhập
   const loginMutation = useMutation({
     mutationKey: ['login'],
     mutationFn: accountApis.login,
+    onSuccess: (data) => {
+      const { account } = data.data.data
+      setAccount(account)
+      setIsAuthenticated(true)
+    },
     onError: (err) => {
       if (isEntityErrror<ErrorResponse<LoginSchema>>(err)) {
         const formErrors = err.response?.data.errors
