@@ -16,3 +16,10 @@ export type LoginReqBody = {
   email: string
   password: string
 }
+
+// Request: Đăng ký
+export type RegisterReqBody = {
+  email: string
+  password: string
+  confirmPassword: string
+}

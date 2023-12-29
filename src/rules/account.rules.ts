@@ -15,4 +15,18 @@ export const loginSchema = accountSchema.pick({
   password: true
 })
 
+export const registerSchema = accountSchema
+  .pick({
+    email: true,
+    password: true
+  })
+  .extend({
+    confirmPassword: z.string().min(1, ACCOUNT_MESSAGES.CONFIRM_PASSWORD_IS_REQUIRED)
+  })
+  .refine((value) => value.password === value.confirmPassword, {
+    message: ACCOUNT_MESSAGES.CONFIRM_PASSWORD_NOT_MATCH,
+    path: ['confirmPassword']
+  })
+
 export type LoginSchema = z.infer<typeof loginSchema>
+export type RegisterSchema = z.infer<typeof registerSchema>

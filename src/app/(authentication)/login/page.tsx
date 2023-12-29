@@ -13,7 +13,7 @@ const Login = () => {
     <div className='mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]'>
       <div className='flex flex-col space-y-2 text-center'>
         <h1 className='text-2xl font-semibold tracking-tight'>Đăng nhập</h1>
-        <p className='text-sm text-muted-foreground'>Nhập tài khoản và mật khẩu để đăng nhập</p>
+        <p className='text-sm text-muted-foreground'>Nhập email và mật khẩu để đăng nhập</p>
       </div>
       <LoginForm />
       <p className='text-right text-sm text-muted-foreground'>

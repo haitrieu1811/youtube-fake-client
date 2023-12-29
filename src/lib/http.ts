@@ -1,7 +1,7 @@
 import axios, { AxiosInstance } from 'axios'
 import Cookies from 'js-cookie'
 
-import { URL_LOGIN, URL_LOGOUT } from '@/apis/account.apis'
+import { URL_LOGIN, URL_LOGOUT, URL_REGISTER } from '@/apis/account.apis'
 import { AccountType } from '@/types/account.types'
 import { AuthResponse } from '@/types/auth.types'
 import {
@@ -42,7 +42,7 @@ class Http {
     this.instance.interceptors.response.use(
       (response) => {
         const { url } = response.config
-        if (url && url === URL_LOGIN) {
+        if (url && [URL_LOGIN, URL_REGISTER].includes(url)) {
           const { accessToken, refreshToken, account } = (response.data as AuthResponse).data
           this.accessToken = accessToken
           this.refreshToken = refreshToken
