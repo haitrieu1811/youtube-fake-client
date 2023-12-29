@@ -54,7 +54,7 @@ const MainHeaderSearch = () => {
         placement='bottom-end'
         offset={[0, 5]}
         render={() => (
-          <div className='w-[550px] py-4 bg-white rounded-lg border border-border'>
+          <div className='w-[550px] py-4 bg-white dark:bg-accent rounded-lg border border-border'>
             {searchResults.slice(0, MAX_SEARCH_RESULTS).map((searchResult) => (
               <SearchItem key={searchResult._id} title={searchResult.title} />
             ))}

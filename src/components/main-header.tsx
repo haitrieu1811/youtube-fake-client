@@ -20,6 +20,7 @@ import useIsClient from '@/hooks/useIsClient'
 import { AppContext } from '@/providers/app-provider'
 import MainHeaderSearch from './main-header-search'
 import { Button } from './ui/button'
+import ModeToggle from './mode-toggle'
 
 const ACCOUNT_LINKS = [
   {
@@ -62,8 +63,9 @@ const MainHeader = () => {
       {/* Search */}
       <MainHeaderSearch />
 
-      {/* Account */}
-      <div>
+      <div className='flex items-center space-x-6'>
+        <ModeToggle />
+
         {!isAuthenticated && isClient && (
           <Button variant='outline' className='rounded-full hover:bg-blue-300/10 space-x-2' asChild>
             <Link href={PATH.LOGIN}>

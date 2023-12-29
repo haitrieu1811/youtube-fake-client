@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils'
 import AppProvider from '@/providers/app-provider'
 import TanstackProvider from '@/providers/tanstack-provider'
 import './globals.css'
+import ThemeProvider from '@/providers/theme-provider'
 
 export const fontSans = FontSans({
   subsets: ['latin'],
@@ -21,7 +22,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang='en' suppressHydrationWarning>
       <body className={cn('min-h-screen bg-background font-sans antialiased', fontSans.variable)}>
         <TanstackProvider>
-          <AppProvider>{children}</AppProvider>
+          <AppProvider>
+            <ThemeProvider attribute='class' defaultTheme='system'>
+              {children}
+            </ThemeProvider>
+          </AppProvider>
         </TanstackProvider>
       </body>
     </html>
