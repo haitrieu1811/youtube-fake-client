@@ -1,16 +1,18 @@
 import axios, { AxiosInstance } from 'axios'
+import Cookies from 'js-cookie'
 
-import { URL_LOGIN } from '@/apis/account.apis'
+import { URL_LOGIN, URL_LOGOUT } from '@/apis/account.apis'
 import { AccountType } from '@/types/account.types'
 import { AuthResponse } from '@/types/auth.types'
 import {
   getAccessTokenFromLS,
   getAccountFromLS,
   getRefreshTokenFromLS,
+  resetAuthLS,
   setAccessTokenToLS,
   setAccountToLS,
   setRefreshTokenToLS
-} from './localStorage'
+} from './auth'
 
 class Http {
   instance: AxiosInstance
@@ -48,6 +50,14 @@ class Http {
           setAccessTokenToLS(accessToken)
           setRefreshTokenToLS(refreshToken)
           setAccountToLS(account)
+          Cookies.set('accessToken', accessToken)
+        }
+        if (url && url === URL_LOGOUT) {
+          this.accessToken = null
+          this.refreshToken = null
+          this.account = null
+          resetAuthLS()
+          Cookies.remove('accessToken')
         }
         return response
       },

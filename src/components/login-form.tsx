@@ -4,10 +4,12 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import isEmpty from 'lodash/isEmpty'
 import { Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { useContext } from 'react'
 import { useForm } from 'react-hook-form'
 
 import accountApis from '@/apis/account.apis'
+import PATH from '@/constants/path'
 import { isEntityErrror } from '@/lib/utils'
 import { AppContext } from '@/providers/app-provider'
 import { LoginSchema, loginSchema } from '@/rules/account.rules'
@@ -26,6 +28,7 @@ const LoginForm = () => {
     resolver: zodResolver(loginSchema)
   })
 
+  const router = useRouter()
   const { setIsAuthenticated, setAccount } = useContext(AppContext)
 
   // Mutation: Đăng nhập
@@ -36,6 +39,8 @@ const LoginForm = () => {
       const { account } = data.data.data
       setAccount(account)
       setIsAuthenticated(true)
+      router.push(PATH.HOME)
+      router.refresh()
     },
     onError: (err) => {
       if (isEntityErrror<ErrorResponse<LoginSchema>>(err)) {

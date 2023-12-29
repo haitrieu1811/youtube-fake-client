@@ -1,30 +1,27 @@
 'use client'
 
+import { useMutation } from '@tanstack/react-query'
 import { LogOut, Settings, UserCircle, Youtube } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useContext } from 'react'
 
-import PATH from '@/constants/path'
-import MainHeaderSearch from './main-header-search'
-import { Button } from './ui/button'
-import { AppContext } from '@/providers/app-provider'
-import useIsClient from '@/hooks/useIsClient'
+import accountApis from '@/apis/account.apis'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
+import PATH from '@/constants/path'
+import useIsClient from '@/hooks/useIsClient'
+import { AppContext } from '@/providers/app-provider'
+import MainHeaderSearch from './main-header-search'
+import { Button } from './ui/button'
 
 const ACCOUNT_LINKS = [
-  {
-    icon: LogOut,
-    text: 'Đăng xuất',
-    href: '/'
-  },
   {
     icon: Settings,
     text: 'Cài đặt',
@@ -33,15 +30,33 @@ const ACCOUNT_LINKS = [
 ]
 
 const MainHeader = () => {
-  const { isAuthenticated, account } = useContext(AppContext)
+  const { isAuthenticated, account, setIsAuthenticated, setAccount } = useContext(AppContext)
   const { isClient } = useIsClient()
+  const router = useRouter()
+
+  // Mutation: Đăng xuất
+  const logoutMutation = useMutation({
+    mutationKey: ['logout'],
+    mutationFn: accountApis.logout,
+    onSuccess: () => {
+      setIsAuthenticated(false)
+      setAccount(null)
+      router.push(PATH.LOGIN)
+      router.refresh()
+    }
+  })
+
+  // Đăng xuất
+  const handleLogout = () => {
+    logoutMutation.mutate()
+  }
 
   return (
     <header className='bg-background border-b border-b-border h-14 flex items-center justify-between px-10'>
       {/* Logo */}
       <Link href={PATH.HOME} className='flex items-center space-x-2'>
-        <Youtube size={50} strokeWidth={1} />
-        <span className='font-bold text-xl'>YouTube</span>
+        <Youtube size={30} strokeWidth={1} />
+        <span className='font-bold text-lg'>YouTube</span>
       </Link>
 
       {/* Search */}
@@ -60,7 +75,7 @@ const MainHeader = () => {
 
         {isAuthenticated && account && isClient && (
           <DropdownMenu>
-            <DropdownMenuTrigger className='rounded-full'>
+            <DropdownMenuTrigger className='outline-none'>
               <Avatar className='w-8 h-8'>
                 <AvatarImage src={account.avatar} />
                 <AvatarFallback className='text-sm font-semibold'>{account.username[0].toUpperCase()} </AvatarFallback>
@@ -75,9 +90,9 @@ const MainHeader = () => {
                   </AvatarFallback>
                 </Avatar>
                 <div className='flex-1'>
-                  <h2>{account.channelName}</h2>
-                  <div>@{account.username}</div>
-                  <Link href={'/'} className='text-sm text-blue-600 mt-2 inline-block'>
+                  <h2 className='font-medium text-accent-foreground'>{account.channelName}</h2>
+                  <div className='text-muted-foreground text-sm'>@{account.username}</div>
+                  <Link href={PATH.CHANNEL} className='text-sm text-blue-600 mt-2 inline-block'>
                     Xem kênh của bạn
                   </Link>
                 </div>
@@ -91,6 +106,10 @@ const MainHeader = () => {
                   </Link>
                 </DropdownMenuItem>
               ))}
+              <DropdownMenuItem className='space-x-4 px-4 py-2.5 hover:cursor-pointer' onClick={handleLogout}>
+                <LogOut size={18} strokeWidth={1.5} />
+                <span>Đăng xuất</span>
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )}

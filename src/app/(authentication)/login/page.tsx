@@ -1,5 +1,5 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
-import { Metadata } from 'next'
 
 import LoginForm from '@/components/login-form'
 

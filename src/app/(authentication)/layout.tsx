@@ -15,7 +15,7 @@ const AuthenticationLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div className='container relative hidden h-screen flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0'>
       <Link
-        href='/examples/authentication'
+        href={pathname === PATH.LOGIN ? PATH.REGISTER : PATH.LOGIN}
         className={cn(buttonVariants({ variant: 'ghost' }), 'absolute right-4 top-4 md:right-8 md:top-8')}
       >
         {pathname === PATH.LOGIN ? 'Đăng ký' : 'Đăng nhập'}

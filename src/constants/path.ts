@@ -1,7 +1,8 @@
 const PATH = {
   HOME: '/',
   LOGIN: '/login',
-  REGISTER: '/register'
+  REGISTER: '/register',
+  CHANNEL: '/channel'
 } as const
 
 export default PATH

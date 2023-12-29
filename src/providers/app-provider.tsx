@@ -2,7 +2,7 @@
 
 import { Dispatch, ReactNode, SetStateAction, createContext, useState } from 'react'
 
-import { getAccessTokenFromLS, getAccountFromLS } from '@/lib/localStorage'
+import { getAccessTokenFromLS, getAccountFromLS } from '@/lib/auth'
 import { AccountType } from '@/types/account.types'
 
 type AppContextType = {
