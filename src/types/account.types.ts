@@ -7,8 +7,10 @@ export type AccountType = {
   channelName: string
   bio: string
   avatar: string
-  cover: null
+  cover: string
   tick: boolean
+  videoCount: number
+  subscriptionCount: number
   createdAt: string
   updatedAt: string
 }

@@ -1,5 +1,144 @@
+'use client'
+
+import { useQuery } from '@tanstack/react-query'
+import classNames from 'classnames'
+import { CalendarPlus, ChevronDown, Clock, History, Home, ThumbsUp, User, UsersRound } from 'lucide-react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useMemo } from 'react'
+
+import subscriptionApis from '@/apis/subscription.apis'
+import PATH from '@/constants/path'
+import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
+import { Button } from './ui/button'
+import { Separator } from './ui/separator'
+
+const MAIN_LINKS = [
+  {
+    icon: Home,
+    text: 'Trang chủ',
+    href: PATH.HOME
+  },
+  {
+    icon: UsersRound,
+    text: 'Cộng đồng',
+    href: PATH.COMMUNITY
+  },
+  {
+    icon: CalendarPlus,
+    text: 'Kênh đăng ký',
+    href: PATH.SUBSCRIPTIONS
+  }
+]
+
+const ME_LINKS = [
+  {
+    icon: User,
+    text: 'Kênh của bạn',
+    href: PATH.CHANNEL
+  },
+  {
+    icon: History,
+    text: 'Video đã xem',
+    href: PATH.COMMUNITY
+  },
+  {
+    icon: ThumbsUp,
+    text: 'Video đã thích',
+    href: PATH.SUBSCRIPTIONS
+  },
+  {
+    icon: Clock,
+    text: 'Xem sau',
+    href: PATH.SUBSCRIPTIONS
+  }
+]
+
 const MainSidebar = () => {
-  return <div className='w-56'>MainSidebar</div>
+  const pathname = usePathname()
+
+  // Query: Lấy danh sách kênh đã đăng ký
+  const getSubscribedChannelsQuery = useQuery({
+    queryKey: ['getSubscribedChannels'],
+    queryFn: () => subscriptionApis.getSubcribedChannels()
+  })
+
+  // Danh sách kênh đã đăng ký
+  const subscribedChannels = useMemo(
+    () => getSubscribedChannelsQuery.data?.data.data.channels || [],
+    [getSubscribedChannelsQuery.data?.data.data.channels]
+  )
+
+  return (
+    <div className='w-56'>
+      <div className='p-4 space-y-4'>
+        <div className='space-y-1'>
+          {MAIN_LINKS.map((item) => {
+            const isActive = item.href === pathname
+            return (
+              <Button
+                key={item.text}
+                variant='ghost'
+                disabled={isActive}
+                className={classNames({
+                  'w-full flex justify-start space-x-5': true,
+                  'bg-accent': isActive
+                })}
+                asChild
+              >
+                <Link href={item.href}>
+                  <item.icon size={16} strokeWidth={1.5} />
+                  <span>{item.text}</span>
+                </Link>
+              </Button>
+            )
+          })}
+        </div>
+        <Separator />
+        <div className='space-y-1'>
+          <h2 className='font-bold px-4 mb-4'>Bạn</h2>
+          {ME_LINKS.map((item) => (
+            <Button
+              key={item.text}
+              variant='ghost'
+              disabled={item.href === pathname}
+              className={classNames({
+                'w-full flex justify-start space-x-5': true,
+                'bg-accent': item.href === pathname
+              })}
+              asChild
+            >
+              <Link href={item.href}>
+                <item.icon size={16} strokeWidth={1.5} />
+                <span>{item.text}</span>
+              </Link>
+            </Button>
+          ))}
+        </div>
+        <Separator />
+        <div className='space-y-1'>
+          <h2 className='font-bold px-4 mb-4'>Kênh đăng ký</h2>
+          {subscribedChannels.map((channel) => (
+            <Button key={channel._id} variant='ghost' className='w-full flex justify-start space-x-5' asChild>
+              <Link href={'/'}>
+                <Avatar className='w-6 h-6'>
+                  <AvatarImage src={channel.avatar} className='object-cover' />
+                  <AvatarFallback className='text-xs font-semibold'>
+                    {channel.channelName[0].toUpperCase()}{' '}
+                  </AvatarFallback>
+                </Avatar>
+                <span>{channel.channelName}</span>
+              </Link>
+            </Button>
+          ))}
+          <Button variant='ghost' className='w-full flex justify-start space-x-5'>
+            <ChevronDown strokeWidth={1.5} />
+            <span className='line-clamp-1'>Hiển thị thêm</span>
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 export default MainSidebar

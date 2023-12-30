@@ -1,7 +1,7 @@
 'use client'
 
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { Camera, Loader2 } from 'lucide-react'
+import { Camera, CheckCircle2, Loader2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import accountApis from '@/apis/account.apis'
@@ -121,8 +121,8 @@ const ChannelPage = () => {
             <Tooltip>
               <TooltipTrigger className='absolute top-2 right-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'>
                 <InputFile onChange={(files) => handleChangeCoverFile(files)}>
-                  <Button variant='ghost' className='rounded-full w-[50px] h-[50px]'>
-                    <Camera strokeWidth={1.5} className='flex-shrink-0' />
+                  <Button variant='ghost' className='rounded-full w-[50px] h-[50px] bg-black/50 hover:bg-black/50'>
+                    <Camera strokeWidth={1.5} className='flex-shrink-0 stroke-white' />
                   </Button>
                 </InputFile>
               </TooltipTrigger>
@@ -151,7 +151,7 @@ const ChannelPage = () => {
                 <TooltipTrigger className='absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto'>
                   <InputFile onChange={(files) => handleChangeAvatarFile(files)}>
                     <Button className='w-[50px] h-[50px] rounded-full bg-black/50 hover:bg-black/50'>
-                      <Camera strokeWidth={1.5} className='flex-shrink-0' />
+                      <Camera strokeWidth={1.5} className='flex-shrink-0 stroke-white' />
                     </Button>
                   </InputFile>
                 </TooltipTrigger>
@@ -180,7 +180,15 @@ const ChannelPage = () => {
               )}
             </div>
             <div className='flex-1 space-y-4'>
-              <h2 className='font-bold text-4xl'>{me.channelName}</h2>
+              <div className='flex items-center space-x-4'>
+                <h2 className='font-bold text-4xl'>{me.channelName}</h2>
+                <Tooltip>
+                  <TooltipTrigger>
+                    <CheckCircle2 className='fill-blue-500 stroke-white dark:stroke-black' />
+                  </TooltipTrigger>
+                  <TooltipContent>Đã xác minh</TooltipContent>
+                </Tooltip>
+              </div>
               <div className='flex items-center space-x-3'>
                 <div className='text-sm text-muted-foreground'>@{me.username}</div>
                 <span className='w-1 h-1 rounded-full bg-muted-foreground' />
