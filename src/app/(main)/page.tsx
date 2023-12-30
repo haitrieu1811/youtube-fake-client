@@ -1,5 +1,6 @@
-import { Button } from '@/components/ui/button'
 import { Metadata } from 'next'
+
+import HomePage from '@/components/home-page'
 
 export const metadata: Metadata = {
   title: 'Youtube',
@@ -7,7 +8,7 @@ export const metadata: Metadata = {
 }
 
 const Home = () => {
-  return <Button>HomePage</Button>
+  return <HomePage />
 }
 
 export default Home

@@ -19,8 +19,8 @@ import PATH from '@/constants/path'
 import useIsClient from '@/hooks/useIsClient'
 import { AppContext } from '@/providers/app-provider'
 import MainHeaderSearch from './main-header-search'
-import { Button } from './ui/button'
 import ModeToggle from './mode-toggle'
+import { Button } from './ui/button'
 
 const ACCOUNT_LINKS = [
   {
@@ -53,7 +53,7 @@ const MainHeader = () => {
   }
 
   return (
-    <header className='bg-background border-b border-b-border h-14 flex items-center justify-between px-10'>
+    <header className='bg-background border-b border-b-border h-14 flex items-center justify-between px-10 sticky top-0 left-0 right-0 z-[999]'>
       {/* Logo */}
       <Link href={PATH.HOME} className='flex items-center space-x-2'>
         <Youtube size={30} strokeWidth={1} />

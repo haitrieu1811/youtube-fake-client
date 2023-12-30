@@ -70,7 +70,7 @@ const MainSidebar = () => {
   )
 
   return (
-    <div className='w-56'>
+    <aside className='w-56 max-h-[calc(100vh-56px)] overflow-y-auto sticky top-14 left-0 bottom-0'>
       <div className='p-4 space-y-4'>
         <div className='space-y-1'>
           {MAIN_LINKS.map((item) => {
@@ -137,7 +137,7 @@ const MainSidebar = () => {
           </Button>
         </div>
       </div>
-    </div>
+    </aside>
   )
 }
 

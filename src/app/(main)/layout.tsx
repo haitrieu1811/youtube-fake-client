@@ -7,7 +7,7 @@ const MainLayout = ({ children }: { children: ReactNode }) => {
   return (
     <div>
       <MainHeader />
-      <main className='flex'>
+      <main className='flex items-start'>
         <MainSidebar />
         <div className='flex-1'>{children}</div>
       </main>
