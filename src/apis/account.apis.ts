@@ -7,6 +7,7 @@ import { OnlyMessageResponse } from '@/types/utils.types'
 export const URL_LOGIN = '/accounts/login'
 export const URL_LOGOUT = '/accounts/logout'
 export const URL_REGISTER = '/accounts/register'
+export const URL_REFRESH_TOKEN = '/accounts/refresh-token'
 
 const accountApis = {
   // Đăng nhập
