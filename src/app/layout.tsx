@@ -1,16 +1,15 @@
 import type { Metadata } from 'next'
-import { Inter as FontSans } from 'next/font/google'
+import { Roboto } from 'next/font/google'
 
 import { Toaster } from '@/components/ui/toaster'
-import { cn } from '@/lib/utils'
 import AppProvider from '@/providers/app-provider'
 import TanstackProvider from '@/providers/tanstack-provider'
 import ThemeProvider from '@/providers/theme-provider'
 import './globals.css'
 
-export const fontSans = FontSans({
+export const roboto = Roboto({
   subsets: ['latin'],
-  variable: '--font-sans'
+  weight: ['100', '300', '400', '500', '700', '900']
 })
 
 export const metadata: Metadata = {
@@ -21,7 +20,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang='en' suppressHydrationWarning>
-      <body className={cn('min-h-screen bg-background font-sans antialiased', fontSans.variable)}>
+      <body className={roboto.className}>
         <TanstackProvider>
           <AppProvider>
             <ThemeProvider attribute='class' defaultTheme='system'>

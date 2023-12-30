@@ -73,7 +73,7 @@ const MainHeaderSearch = () => {
           type='text'
           placeholder='Tìm kiếm'
           value={query}
-          className='flex-1 border border-border rounded-l-full outline-none w-[550px] px-5 focus:border-blue-500'
+          className='flex-1 border border-border rounded-l-full outline-none w-[550px] bg-background px-5 focus:border-blue-500'
           onChange={handleChangeSearchQuery}
           onFocus={handleShowSearchResult}
           onBlur={handleHideSearchResult}
