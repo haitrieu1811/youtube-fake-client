@@ -58,7 +58,9 @@ export const ACCOUNT_MESSAGES = {
   STATUS_IS_INVALID: 'Status không hợp lệ',
   ACCOUNT_IDS_IS_REQUIRED: 'Account ids là bắt buộc',
   ACCOUNT_IDS_MUST_BE_AN_ARRAY: 'Account ids phải là một mảng',
-  ACCOUNT_IDS_CAN_NOT_BE_EMPTY: 'Account ids không được rỗng'
+  ACCOUNT_IDS_CAN_NOT_BE_EMPTY: 'Account ids không được rỗng',
+  UPDATE_COVER_SUCCEED: 'Cập nhật ảnh bìa thành công',
+  UPDATE_AVATAR_SUCCEED: 'Cập nhật ảnh đại diện thành công'
 } as const
 
 export const MEDIA_MESSAGES = {

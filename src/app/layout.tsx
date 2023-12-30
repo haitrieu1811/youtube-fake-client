@@ -1,11 +1,12 @@
 import type { Metadata } from 'next'
 import { Inter as FontSans } from 'next/font/google'
 
+import { Toaster } from '@/components/ui/toaster'
 import { cn } from '@/lib/utils'
 import AppProvider from '@/providers/app-provider'
 import TanstackProvider from '@/providers/tanstack-provider'
-import './globals.css'
 import ThemeProvider from '@/providers/theme-provider'
+import './globals.css'
 
 export const fontSans = FontSans({
   subsets: ['latin'],
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <AppProvider>
             <ThemeProvider attribute='class' defaultTheme='system'>
               {children}
+              <Toaster />
             </ThemeProvider>
           </AppProvider>
         </TanstackProvider>

@@ -41,9 +41,25 @@ export type RegisterReqBody = {
   confirmPassword: string
 }
 
-// Response: Get me
+// Request: Cập nhật kênh của tôi
+export type UpdateMeReqBody = {
+  username?: string
+  channelName?: string
+  bio?: string
+  avatar?: string
+  cover?: string
+}
+
+// Response: Thông tin kênh của tôi
 export type GetMeResponse = SuccessResponse<{
   accessToken: string
   refreshToken: string
   me: MeType
+}>
+
+// Response: Cập nhật kênh của tôi
+export type UpdateMeResponse = SuccessResponse<{
+  accessToken: string
+  refreshToken: string
+  account: AccountType
 }>
