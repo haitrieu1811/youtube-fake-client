@@ -32,6 +32,9 @@ class Http {
 
     this.instance.interceptors.request.use(
       (config) => {
+        if (this.accessToken) {
+          config.headers.Authorization = `Bearer ${this.accessToken}`
+        }
         return config
       },
       (error) => {

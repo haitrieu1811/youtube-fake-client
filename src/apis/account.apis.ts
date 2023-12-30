@@ -1,6 +1,6 @@
 import { getRefreshTokenFromLS } from '@/lib/auth'
 import http from '@/lib/http'
-import { LoginReqBody, RegisterReqBody } from '@/types/account.types'
+import { GetMeResponse, LoginReqBody, RegisterReqBody } from '@/types/account.types'
 import { AuthResponse } from '@/types/auth.types'
 import { OnlyMessageResponse } from '@/types/utils.types'
 
@@ -23,6 +23,11 @@ const accountApis = {
   logout() {
     const refreshToken = getRefreshTokenFromLS()
     return http.post<OnlyMessageResponse>(URL_LOGOUT, { refreshToken })
+  },
+
+  // Tài khoản của tôi
+  getMe() {
+    return http.get<GetMeResponse>('/accounts/me')
   }
 }
 

@@ -1,3 +1,5 @@
+import { SuccessResponse } from './utils.types'
+
 export type AccountType = {
   _id: string
   email: string
@@ -7,6 +9,21 @@ export type AccountType = {
   avatar: string
   cover: null
   tick: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+type MeType = {
+  _id: string
+  email: string
+  username: string
+  channelName: string
+  bio: string
+  avatar: string
+  cover: string
+  tick: boolean
+  videoCount: boolean
+  subscriptionCount: boolean
   createdAt: string
   updatedAt: string
 }
@@ -23,3 +40,10 @@ export type RegisterReqBody = {
   password: string
   confirmPassword: string
 }
+
+// Response: Get me
+export type GetMeResponse = SuccessResponse<{
+  accessToken: string
+  refreshToken: string
+  me: MeType
+}>
