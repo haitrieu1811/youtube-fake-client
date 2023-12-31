@@ -37,7 +37,7 @@ const InputFile = ({ children, onChange, multiple = false, maxFileSize = 300 * 1
         hidden
         ref={inputFileRef}
         type='file'
-        accept='.jpg,.jpeg,.png,.webp'
+        accept='.jpg,.jpeg,.png,.webp,.mp4'
         onChange={handleFileChange}
         onClick={(e) => ((e.target as any).value = null)}
         multiple={multiple}

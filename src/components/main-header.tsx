@@ -34,9 +34,11 @@ const MainHeader = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end' className='px-0 py-2 dark:bg-zinc-900'>
-            <DropdownMenuItem className='space-x-3 pr-10 pl-5 py-2 cursor-pointer'>
-              <PlaySquare size={20} strokeWidth={1.5} />
-              <span>Tải video lên</span>
+            <DropdownMenuItem className='space-x-3 pr-10 pl-5 py-2 cursor-pointer' asChild>
+              <Link href='/upload-video'>
+                <PlaySquare size={20} strokeWidth={1.5} />
+                <span>Tải video lên</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className='space-x-3 pr-10 pl-5 py-2 cursor-pointer'>
               <PenSquare size={20} strokeWidth={1.5} />
