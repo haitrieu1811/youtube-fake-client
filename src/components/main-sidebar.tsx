@@ -2,16 +2,18 @@
 
 import { useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
-import { CalendarPlus, ChevronDown, Clock, History, Home, ThumbsUp, User, UsersRound } from 'lucide-react'
+import { CalendarPlus, ChevronDown, Clock, History, Home, ThumbsUp, User, UserCircle, UsersRound } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useMemo } from 'react'
+import { Fragment, useContext, useMemo } from 'react'
 
 import subscriptionApis from '@/apis/subscription.apis'
 import PATH from '@/constants/path'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
 import { Separator } from './ui/separator'
+import { AppContext } from '@/providers/app-provider'
+import useIsClient from '@/hooks/useIsClient'
 
 const MAIN_LINKS = [
   {
@@ -56,11 +58,14 @@ const ME_LINKS = [
 
 const MainSidebar = () => {
   const pathname = usePathname()
+  const { isAuthenticated } = useContext(AppContext)
+  const { isClient } = useIsClient()
 
   // Query: Lấy danh sách kênh đã đăng ký
   const getSubscribedChannelsQuery = useQuery({
     queryKey: ['getSubscribedChannels'],
-    queryFn: () => subscriptionApis.getSubcribedChannels()
+    queryFn: () => subscriptionApis.getSubcribedChannels(),
+    enabled: isAuthenticated
   })
 
   // Danh sách kênh đã đăng ký
@@ -81,8 +86,8 @@ const MainSidebar = () => {
                 variant='ghost'
                 disabled={isActive}
                 className={classNames({
-                  'w-full flex justify-start space-x-5': true,
-                  'bg-accent': isActive
+                  'w-full flex justify-start space-x-5 font-normal': true,
+                  'bg-accent font-medium': isActive
                 })}
                 asChild
               >
@@ -95,47 +100,67 @@ const MainSidebar = () => {
           })}
         </div>
         <Separator />
-        <div className='space-y-1'>
-          <h2 className='font-bold px-4 mb-4'>Bạn</h2>
-          {ME_LINKS.map((item) => (
-            <Button
-              key={item.text}
-              variant='ghost'
-              disabled={item.href === pathname}
-              className={classNames({
-                'w-full flex justify-start space-x-5': true,
-                'bg-accent': item.href === pathname
-              })}
-              asChild
-            >
-              <Link href={item.href}>
-                <item.icon size={16} strokeWidth={1.5} />
-                <span>{item.text}</span>
+        {isAuthenticated && isClient && (
+          <Fragment>
+            <div className='space-y-1'>
+              <h2 className='font-bold px-4 mb-4'>Bạn</h2>
+              {ME_LINKS.map((item) => (
+                <Button
+                  key={item.text}
+                  variant='ghost'
+                  disabled={item.href === pathname}
+                  className={classNames({
+                    'w-full flex justify-start space-x-5 font-normal': true,
+                    'bg-accent font-medium': item.href === pathname
+                  })}
+                  asChild
+                >
+                  <Link href={item.href}>
+                    <item.icon size={16} strokeWidth={1.5} />
+                    <span>{item.text}</span>
+                  </Link>
+                </Button>
+              ))}
+            </div>
+            <Separator />
+            <div className='space-y-1'>
+              <h2 className='font-bold px-4 mb-4'>Kênh đăng ký</h2>
+              {subscribedChannels.map((channel) => (
+                <Button
+                  key={channel._id}
+                  variant='ghost'
+                  className='w-full flex justify-start space-x-5 font-normal'
+                  asChild
+                >
+                  <Link href={`/@${channel.username}`}>
+                    <Avatar className='w-6 h-6'>
+                      <AvatarImage src={channel.avatar} className='object-cover' />
+                      <AvatarFallback className='text-xs font-semibold'>
+                        {channel.channelName[0].toUpperCase()}{' '}
+                      </AvatarFallback>
+                    </Avatar>
+                    <span>{channel.channelName}</span>
+                  </Link>
+                </Button>
+              ))}
+              <Button variant='ghost' className='w-full flex justify-start space-x-5 font-normal'>
+                <ChevronDown strokeWidth={1.5} size={18} />
+                <span className='line-clamp-1'>Hiển thị thêm</span>
+              </Button>
+            </div>
+          </Fragment>
+        )}
+        {!isAuthenticated && isClient && (
+          <div className='px-4 space-y-4'>
+            <div className='text-sm'>Hãy đăng nhập để thích video, bình luận và đăng ký kênh.</div>
+            <Button variant='outline' className='rounded-full hover:bg-blue-300/10 space-x-2' asChild>
+              <Link href={PATH.LOGIN}>
+                <UserCircle size={18} className='stroke-blue-500' />
+                <span className='text-blue-500 font-medium'>Đăng nhập</span>
               </Link>
             </Button>
-          ))}
-        </div>
-        <Separator />
-        <div className='space-y-1'>
-          <h2 className='font-bold px-4 mb-4'>Kênh đăng ký</h2>
-          {subscribedChannels.map((channel) => (
-            <Button key={channel._id} variant='ghost' className='w-full flex justify-start space-x-5' asChild>
-              <Link href={'/'}>
-                <Avatar className='w-6 h-6'>
-                  <AvatarImage src={channel.avatar} className='object-cover' />
-                  <AvatarFallback className='text-xs font-semibold'>
-                    {channel.channelName[0].toUpperCase()}{' '}
-                  </AvatarFallback>
-                </Avatar>
-                <span>{channel.channelName}</span>
-              </Link>
-            </Button>
-          ))}
-          <Button variant='ghost' className='w-full flex justify-start space-x-5'>
-            <ChevronDown strokeWidth={1.5} />
-            <span className='line-clamp-1'>Hiển thị thêm</span>
-          </Button>
-        </div>
+          </div>
+        )}
       </div>
     </aside>
   )
