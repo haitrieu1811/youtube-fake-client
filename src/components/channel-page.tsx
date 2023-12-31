@@ -119,9 +119,12 @@ const ChannelPage = () => {
             }}
           >
             <Tooltip>
-              <TooltipTrigger className='absolute top-2 right-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto'>
+              <TooltipTrigger asChild>
                 <InputFile onChange={(files) => handleChangeCoverFile(files)}>
-                  <Button variant='ghost' className='rounded-full w-[50px] h-[50px] bg-black/50 hover:bg-black/50'>
+                  <Button
+                    variant='ghost'
+                    className='absolute top-2 right-2 opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto rounded-full w-[50px] h-[50px] bg-black/50 hover:bg-black/50'
+                  >
                     <Camera strokeWidth={1.5} className='flex-shrink-0 stroke-white' />
                   </Button>
                 </InputFile>
@@ -148,9 +151,9 @@ const ChannelPage = () => {
                 <AvatarFallback className='text-5xl font-semibold'>{me.username[0].toUpperCase()} </AvatarFallback>
               </Avatar>
               <Tooltip>
-                <TooltipTrigger className='absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto'>
+                <TooltipTrigger asChild>
                   <InputFile onChange={(files) => handleChangeAvatarFile(files)}>
-                    <Button className='w-[50px] h-[50px] rounded-full bg-black/50 hover:bg-black/50'>
+                    <Button className='absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto w-[50px] h-[50px] rounded-full bg-black/50 hover:bg-black/50'>
                       <Camera strokeWidth={1.5} className='flex-shrink-0 stroke-white' />
                     </Button>
                   </InputFile>
