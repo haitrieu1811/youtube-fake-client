@@ -27,8 +27,8 @@ const HomePage = () => {
     <div className='px-10 py-4'>
       {videos.length > 0 && !getPublicVideosQuery.isLoading && (
         <div className='grid grid-cols-12 gap-4'>
-          {[...videos, ...videos, ...videos].map((video) => (
-            <div key={video._id} className='col-span-3'>
+          {videos.map((video) => (
+            <div key={video._id} className='col-span-12 md:col-span-4 lg:col-span-3'>
               <VerticalVideo videoData={video} />
             </div>
           ))}
@@ -39,7 +39,7 @@ const HomePage = () => {
           {Array(12)
             .fill(0)
             .map((_, index) => (
-              <div key={index} className='col-span-3'>
+              <div key={index} className='col-span-12 md:col-span-4 lg:col-span-3'>
                 <VerticalVideoSkeleton />
               </div>
             ))}

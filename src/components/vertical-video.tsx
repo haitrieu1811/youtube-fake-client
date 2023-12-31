@@ -48,7 +48,7 @@ const VerticalVideo = ({ videoData }: VerticalVideoProps) => {
               </div>
             </div>
             <DropdownMenu>
-              <DropdownMenuTrigger className='opacity-0 group-hover:opacity-100'>
+              <DropdownMenuTrigger className='opacity-0 group-hover:opacity-100' asChild>
                 <Button size='icon' variant='ghost' className='w-9 h-9 rounded-full'>
                   <MoreVertical size={18} />
                 </Button>
