@@ -9,11 +9,11 @@ import { Fragment, useContext, useMemo } from 'react'
 
 import subscriptionApis from '@/apis/subscription.apis'
 import PATH from '@/constants/path'
+import useIsClient from '@/hooks/useIsClient'
+import { AppContext } from '@/providers/app-provider'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
 import { Separator } from './ui/separator'
-import { AppContext } from '@/providers/app-provider'
-import useIsClient from '@/hooks/useIsClient'
 
 const MAIN_LINKS = [
   {
@@ -60,6 +60,7 @@ const MainSidebar = () => {
   const pathname = usePathname()
   const { isAuthenticated } = useContext(AppContext)
   const { isClient } = useIsClient()
+  const isClientWithAuthenticated = isAuthenticated && isClient
 
   // Query: Lấy danh sách kênh đã đăng ký
   const getSubscribedChannelsQuery = useQuery({
@@ -100,7 +101,7 @@ const MainSidebar = () => {
           })}
         </div>
         <Separator />
-        {isAuthenticated && isClient && (
+        {isClientWithAuthenticated && (
           <Fragment>
             <div className='space-y-1'>
               <h2 className='font-bold px-4 mb-4'>Bạn</h2>

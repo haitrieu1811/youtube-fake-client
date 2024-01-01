@@ -6,6 +6,7 @@ export type SubscribedChannelType = {
   channelName: string
   avatar: string
   tick: boolean
+  subscribeCount: number
   createdAt: string
   updatedAt: string
 }

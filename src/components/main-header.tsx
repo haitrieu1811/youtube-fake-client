@@ -33,7 +33,7 @@ const MainHeader = () => {
               <PlusSquare size={20} />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align='end' className='px-0 py-2 dark:bg-zinc-900'>
+          <DropdownMenuContent align='end' className='px-0 py-2'>
             <DropdownMenuItem className='space-x-3 pr-10 pl-5 py-2 cursor-pointer' asChild>
               <Link href={PATH.UPLOAD_VIDEO}>
                 <PlaySquare size={20} strokeWidth={1.5} />

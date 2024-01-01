@@ -108,7 +108,7 @@ const AccountDropdown = ({ accountData }: AccountDropdownProps) => {
       offset={[0, 10]}
       onHidden={backtoParentMenu}
       render={() => (
-        <div className='w-[300px] bg-white dark:bg-zinc-900 rounded-lg shadow-lg border border-border'>
+        <div className='w-[300px] bg-background rounded-lg shadow-lg border border-border'>
           {/* Menu cha */}
           {isParentMenu && (
             <Fragment>
