@@ -111,11 +111,10 @@ const UploadVideo = () => {
       const res = await uploadVideoHLS.mutateAsync(form)
       const { videoIdName } = res.data.data
       createVideoMutation.mutate({
-        category: videoCategories[0]._id,
         idName: videoIdName,
-        thumbnail: videoCategories[0]._id,
         title: 'New my video',
-        audience: VideoAudience.Onlyme
+        audience: VideoAudience.Onlyme,
+        isDraft: true
       })
     } catch (error) {
       console.log(error)

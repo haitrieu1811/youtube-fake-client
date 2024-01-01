@@ -5,7 +5,8 @@ const PATH = {
   CHANNEL: '/channel',
   COMMUNITY: '/community',
   SUBSCRIPTIONS: '/subscriptions',
-  STUDIO: '/studio'
+  STUDIO: '/studio',
+  UPLOAD_VIDEO: '/upload-video'
 } as const
 
 export default PATH

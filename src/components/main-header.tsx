@@ -35,7 +35,7 @@ const MainHeader = () => {
           </DropdownMenuTrigger>
           <DropdownMenuContent align='end' className='px-0 py-2 dark:bg-zinc-900'>
             <DropdownMenuItem className='space-x-3 pr-10 pl-5 py-2 cursor-pointer' asChild>
-              <Link href='/upload-video'>
+              <Link href={PATH.UPLOAD_VIDEO}>
                 <PlaySquare size={20} strokeWidth={1.5} />
                 <span>Tải video lên</span>
               </Link>

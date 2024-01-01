@@ -5,6 +5,11 @@ const searchApis = {
   // Tìm kiếm
   search(params: SearchReqQuery) {
     return http.get<SearchResponse>('/search', { params })
+  },
+
+  // Tìm kiếm trong channel của mình
+  searchInMyChannel(params: SearchReqQuery) {
+    return http.get<SearchResponse>('/search/me', { params })
   }
 }
 

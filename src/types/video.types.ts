@@ -46,11 +46,12 @@ export type VideoCategoryItemType = {
 // Resquest: Tạo video
 export type CreateVideoReqBody = {
   idName: string
-  thumbnail: string
+  thumbnail?: string
   title: string
-  category: string
+  category?: string
   description?: string
   audience?: VideoAudience
+  isDraft: boolean
 }
 
 // Requests: Lấy danh sách video công khai

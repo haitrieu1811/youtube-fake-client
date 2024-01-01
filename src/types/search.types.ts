@@ -9,6 +9,7 @@ export type SearchResultItem = {
   idName: string
   thumbnail: string
   title: string
+  description?: string
   author: {
     _id: string
     email: string
@@ -20,6 +21,7 @@ export type SearchResultItem = {
     updatedAt: string
   }
   viewCount: number
+  isDraft: boolean
   createdAt: string
   updatedAt: string
 }
