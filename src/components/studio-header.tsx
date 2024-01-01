@@ -20,7 +20,7 @@ const StudioHeader = () => {
   const isClientWithAccount = !!(account && isClient)
 
   return (
-    <header className='bg-background border-b border-b-border h-14 flex items-center justify-between px-10 sticky top-0 left-0 right-0 z-10'>
+    <header className='bg-background border-b border-b-border h-14 flex items-center justify-between px-10 sticky top-0 left-0 right-0 z-10 transition-all'>
       {/* Logo */}
       <Link href={PATH.STUDIO} className='flex items-center space-x-2'>
         <Youtube size={30} strokeWidth={1} />

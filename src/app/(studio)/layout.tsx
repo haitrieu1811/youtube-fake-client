@@ -9,7 +9,7 @@ const StudioLayout = ({ children }: { children: ReactNode }) => {
       <StudioHeader />
       <div className='flex'>
         <StudioSidebar />
-        <main className='flex-1 bg-muted'>{children}</main>
+        <main className='flex-1'>{children}</main>
       </div>
     </Fragment>
   )

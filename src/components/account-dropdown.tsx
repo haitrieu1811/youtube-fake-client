@@ -133,7 +133,7 @@ const AccountDropdown = ({ accountData }: AccountDropdownProps) => {
                   <Button
                     key={item.text}
                     variant='ghost'
-                    className='flex justify-between items-center rounded-none w-full px-4 py-2.5 font-normal'
+                    className='flex justify-between items-center rounded-none w-full px-4 py-5 font-normal'
                     onClick={item.onClick}
                   >
                     <div className='space-x-4 flex items-center'>
@@ -163,7 +163,7 @@ const AccountDropdown = ({ accountData }: AccountDropdownProps) => {
                   <Button
                     key={mode.value}
                     variant='ghost'
-                    className='flex justify-start items-center rounded-none w-full pl-0 pr-4 py-4 font-normal'
+                    className='flex justify-start items-center rounded-none w-full pl-0 pr-4 py-5 font-normal'
                     onClick={() => setTheme(mode.value)}
                   >
                     <span className='w-[50px] flex justify-center items-center'>

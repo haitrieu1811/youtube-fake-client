@@ -1,7 +1,7 @@
 'use client'
 
 import classNames from 'classnames'
-import { ArrowUpRightSquare, GanttChartSquare, MessageSquareText, Video, Wand } from 'lucide-react'
+import { ArrowUpRightSquare, GanttChartSquare, MessageSquareText, Users, Video, Wand } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useContext } from 'react'
@@ -31,6 +31,11 @@ const LINKS = [
     href: PATH.STUDIO_COMMENT
   },
   {
+    icon: Users,
+    text: 'Người đăng ký',
+    href: PATH.STUDIO_SUBSCRIPTIONS
+  },
+  {
     icon: Wand,
     text: 'Tùy chỉnh',
     href: PATH.STUDIO_CUSTOM
@@ -44,8 +49,8 @@ const StudioSidebar = () => {
   const isClientWithAccount = !!(account && isClient)
 
   return (
-    <aside className='w-[256px] sticky top-14 left-0 bottom-0 bg-background max-h-[calc(100vh-56px)] overflow-y-auto'>
-      <div className='flex justify-center items-center flex-col p-6 space-y-6 border-b'>
+    <aside className='w-[256px] sticky top-14 left-0 bottom-0 bg-background max-h-[calc(100vh-56px)] overflow-y-auto transition-all border-r border-r-border'>
+      <div className='flex justify-center items-center flex-col p-6 space-y-6'>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
@@ -83,8 +88,10 @@ const StudioSidebar = () => {
               variant='ghost'
               disabled={isActive}
               className={classNames({
-                'w-full rounded-none justify-start space-x-6 p-6': true,
-                'bg-muted': isActive
+                'w-full rounded-none justify-start space-x-6 p-6 text-muted-foreground relative before:absolute before:top-0 before:bottom-0 before:left-0 before:w-1 before:bg-red-600':
+                  true,
+                'bg-muted hover:before:opacity-100': isActive,
+                'before:opacity-0': !isActive
               })}
               asChild
             >
@@ -97,7 +104,7 @@ const StudioSidebar = () => {
                 />
                 <span
                   className={classNames({
-                    'text-[15px]': true,
+                    'text-sm': true,
                     'text-red-600': isActive
                   })}
                 >
