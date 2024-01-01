@@ -4,7 +4,8 @@ const PATH = {
   REGISTER: '/register',
   CHANNEL: '/channel',
   COMMUNITY: '/community',
-  SUBSCRIPTIONS: '/subscriptions'
+  SUBSCRIPTIONS: '/subscriptions',
+  STUDIO: '/studio'
 } as const
 
 export default PATH

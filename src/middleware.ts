@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server'
 
 import PATH from './constants/path'
 
-const protectedRoutes: string[] = [PATH.CHANNEL]
+const protectedRoutes: string[] = [PATH.CHANNEL, PATH.STUDIO]
 const rejectedRoutes: string[] = [PATH.REGISTER]
 
 const middleware = (req: NextRequest) => {

@@ -2,7 +2,7 @@
 
 import { useMutation } from '@tanstack/react-query'
 import Tippy from '@tippyjs/react/headless'
-import { ArrowLeft, Check, ChevronRight, LogOut, Moon, Settings } from 'lucide-react'
+import { ArrowLeft, Check, ChevronRight, LogOut, MonitorPlay, Moon, Settings } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -81,6 +81,11 @@ const AccountDropdown = ({ accountData }: AccountDropdownProps) => {
         text: `Giao diện: ${modeToVietnamese[theme as 'system' | 'dark' | 'light']}`,
         isHasChildrenMenu: true,
         onClick: nextToChildrenMenu
+      },
+      {
+        icon: MonitorPlay,
+        text: 'YouTube Studio',
+        onClick: () => router.push(PATH.STUDIO)
       },
       {
         icon: Settings,
