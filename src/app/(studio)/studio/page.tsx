@@ -6,7 +6,7 @@ export const metadata: Metadata = {
 }
 
 const Studio = () => {
-  return <div>Studio Page</div>
+  return <div className='min-h-screen'>Studio page</div>
 }
 
 export default Studio
