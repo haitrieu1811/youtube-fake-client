@@ -30,9 +30,9 @@ const SubscriptionsClient = () => {
     <div className='p-6'>
       <h1 className='font-medium text-[25px] tracking-tight'>Người đăng ký kênh</h1>
       <div className='text-[13px] text-muted-foreground mb-10'>
-        Chỉ bao gồm những người dùng đã công khai thông tin đăng ký kênh.{' '}
+        Chỉ bao gồm những người dùng đã công khai thông tin đăng ký kênh.
       </div>
-      <DataTable columns={columns} data={channelsSubscribedForMe} />
+      <DataTable columns={columns} data={channelsSubscribedForMe} searchField='channelName' />
     </div>
   )
 }

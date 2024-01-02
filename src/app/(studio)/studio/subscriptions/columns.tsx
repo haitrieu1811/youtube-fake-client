@@ -1,34 +1,53 @@
 'use client'
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import PATH from '@/constants/path'
-import { SubscribedChannelType } from '@/types/subscription.types'
 import { ColumnDef } from '@tanstack/react-table'
 import moment from 'moment'
-
 import Link from 'next/link'
+
+import DataTableColumnHeader from '@/components/data-table-column-header'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { Checkbox } from '@/components/ui/checkbox'
+import { SubscribedChannelType } from '@/types/subscription.types'
 
 export const columns: ColumnDef<SubscribedChannelType>[] = [
   {
+    id: 'select',
+    header: ({ table }) => (
+      <Checkbox
+        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label='Select all'
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label='Select row'
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false
+  },
+  {
     accessorKey: 'channelName',
-    header: 'Kênh',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Kênh' />,
     cell: ({ row }) => {
-      const avatar = row.getValue('avatar') as string
-      const channelName = row.getValue('channelName') as string
+      const channel = row.original
       return (
-        <Link href={PATH.HOME} className='flex items-center space-x-4'>
+        <Link href={`/@${channel.username}`} target='b' className='flex items-center space-x-4 group'>
           <Avatar className='w-9 h-9'>
-            <AvatarImage src={avatar} />
-            <AvatarFallback>{channelName[0].toUpperCase()}</AvatarFallback>
+            <AvatarImage src={channel.avatar} />
+            <AvatarFallback>{channel.channelName[0].toUpperCase()}</AvatarFallback>
           </Avatar>
-          <span className='text-[13px] font-medium'>{channelName}</span>
+          <span className='text-[13px] font-medium group-hover:text-blue-700'>{channel.channelName}</span>
         </Link>
       )
     }
   },
   {
     accessorKey: 'createdAt',
-    header: 'Ngày đăng ký',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Ngày đăng ký' />,
     cell: ({ row }) => {
       const createdAt = row.getValue('createdAt') as Date
       return (
@@ -40,14 +59,17 @@ export const columns: ColumnDef<SubscribedChannelType>[] = [
   },
   {
     accessorKey: 'subscribeCount',
-    header: 'Số người đăng ký',
+    header: ({ column }) => <DataTableColumnHeader column={column} title='Số người đăng ký' />,
     cell: ({ row }) => {
-      const subscribeCount = row.getValue('subscribeCount') as number
-      return <div className='text-[13px] text-muted-foreground'>{subscribeCount} người đăng ký</div>
+      const channel = row.original
+      return <div className='text-[13px] text-muted-foreground'>{channel.subscribeCount} người đăng ký</div>
     }
   },
   {
     accessorKey: 'actions',
-    header: 'Hành động'
+    header: 'Hành động',
+    cell: () => {
+      return <button className='p-0 uppercase text-blue-600 bg-transparent font-medium'>Đăng ký</button>
+    }
   }
 ]
