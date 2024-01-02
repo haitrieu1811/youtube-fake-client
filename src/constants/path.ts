@@ -10,7 +10,8 @@ const PATH = {
   STUDIO_CONTENT: '/studio/content',
   STUDIO_COMMENT: '/studio/comment',
   STUDIO_CUSTOM: '/studio/custom',
-  STUDIO_SUBSCRIPTIONS: '/studio/subscriptions'
+  STUDIO_SUBSCRIPTIONS: '/studio/subscription',
+  STUDIO_CONTENT_VIDEO: '/studio/content/video'
 } as const
 
 export default PATH

@@ -1,6 +1,14 @@
 import { VideoAudience } from '@/constants/enum'
 import { PaginationReqQuery, PaginationType, SuccessResponse } from './utils.types'
 
+export type VideoCategoryType = {
+  _id: string
+  name: string
+  description: string
+  createdAt: string
+  updatedAt: string
+}
+
 export type VideoItemType = {
   _id: string
   idName: string
@@ -16,7 +24,13 @@ export type VideoItemType = {
     createdAt: string
     updatedAt: string
   }
+  category: VideoCategoryType | null
+  audience: number
+  isDraft: boolean
   viewCount: number
+  commentCount: number
+  likeCount: number
+  dislikeCount: number
   createdAt: string
   updatedAt: string
 }
@@ -59,6 +73,16 @@ export type GetPublicVideosReqQuery = PaginationReqQuery & {
   category?: string
 }
 
+// Request: Cập nhật video
+export type UpdateVideoReqBody = {
+  thumbnail?: string | null
+  title?: string
+  category?: string
+  description?: string
+  audience?: VideoAudience
+  isDraft?: boolean
+}
+
 // Response: Lấy danh sách video công khai
 export type GetPublicVideosResponse = SuccessResponse<{
   videos: VideoItemType[]
@@ -74,4 +98,58 @@ export type CreateVideoResponse = SuccessResponse<{
 export type GetVideoCategoriesResponse = SuccessResponse<{
   categories: VideoCategoryItemType[]
   pagination: PaginationType
+}>
+
+// Response: Lấy danh sách video của tôi
+export type GetVideosOfMeResponse = SuccessResponse<{
+  videos: VideoItemType[]
+  pagination: PaginationType
+}>
+
+// Response: Cập nhật video
+export type UpdateVideoResponse = SuccessResponse<{
+  video: {
+    _id: string
+    idName: string
+    accountId: string
+    thumbnail: null
+    title: string
+    category: null
+    description: string
+    views: number
+    audience: number
+    isDraft: boolean
+    createdAt: string
+    updatedAt: string
+  }
+}>
+
+const a = {
+  _id: '_id',
+  idName: 'RvwnogKHWrs4IHiXcKMkJ',
+  thumbnail: 'http://localhost:4000/static/images/8f150360e0fb01ee0533e9704.jpg',
+  title: 'RvwnogKHWrs4IHiXcKMkJ',
+  description: '',
+  viewCount: 0,
+  audience: 1,
+  isDraft: true,
+  createdAt: '2024-01-03T03:04:13.739Z',
+  updatedAt: '2024-01-03T03:04:23.795Z'
+}
+
+// Response: Lấy thông tin video để cập nhật
+export type GetVideoDetailToUpdateResponse = SuccessResponse<{
+  video: {
+    _id: string
+    idName: string
+    thumbnail: string
+    title: string
+    description: string
+    viewCount: number
+    audience: number
+    isDraft: boolean
+    category: VideoCategoryType | null
+    createdAt: string
+    updatedAt: string
+  }
 }>

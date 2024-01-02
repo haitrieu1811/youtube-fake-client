@@ -104,7 +104,7 @@ const StudioSidebar = () => {
                 />
                 <span
                   className={classNames({
-                    'text-sm': true,
+                    'text-[13px]': true,
                     'text-red-600': isActive
                   })}
                 >

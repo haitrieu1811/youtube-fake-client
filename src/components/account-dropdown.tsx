@@ -120,7 +120,7 @@ const AccountDropdown = ({ accountData }: AccountDropdownProps) => {
                   </AvatarFallback>
                 </Avatar>
                 <div className='flex-1'>
-                  <h2 className='font-medium text-accent-foreground'>{accountData.channelName}</h2>
+                  <h2 className='font-medium text-accent-foreground text-[15px]'>{accountData.channelName}</h2>
                   <div className='text-muted-foreground text-sm'>@{accountData.username}</div>
                   <Link href={PATH.CHANNEL} className='text-sm text-blue-600 mt-2 inline-block'>
                     Xem kênh của bạn
@@ -163,7 +163,7 @@ const AccountDropdown = ({ accountData }: AccountDropdownProps) => {
                   <Button
                     key={mode.value}
                     variant='ghost'
-                    className='flex justify-start items-center rounded-none w-full pl-0 pr-4 py-5 font-normal'
+                    className='flex justify-start items-center rounded-none w-full pl-0 pr-4 py-5 font-normal]'
                     onClick={() => setTheme(mode.value)}
                   >
                     <span className='w-[50px] flex justify-center items-center'>

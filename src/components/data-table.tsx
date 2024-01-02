@@ -70,7 +70,7 @@ export default function DataTable<TData, TValue>({
         searchFieldPlaceholder={searchFieldPlaceholder}
         facetedFilter={facetedFilter}
       />
-      <div className='rounded-md border'>
+      <div>
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
