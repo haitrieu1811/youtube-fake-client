@@ -105,7 +105,7 @@ const StudioSidebar = () => {
                 <span
                   className={classNames({
                     'text-[13px]': true,
-                    'text-red-600': isActive
+                    'text-red-600 font-semibold': isActive
                   })}
                 >
                   {link.text}

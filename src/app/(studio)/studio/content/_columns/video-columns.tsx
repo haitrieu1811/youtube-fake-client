@@ -65,7 +65,7 @@ export const columns: ColumnDef<VideoItemType>[] = [
               )}
             </div>
             <div className='flex-1 ml-4 flex flex-col'>
-              <div className='text-[13px]'>{video.title}</div>
+              <div className='text-[13px] line-clamp-1'>{video.title}</div>
               <div className='flex-1 relative'>
                 <div className='text-xs text-muted-foreground opacity-100 group-hover:opacity-0 pointer-events-auto group-hover:pointer-events-none'>
                   Thêm nội dung mô tả

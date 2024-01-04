@@ -40,8 +40,7 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
       title: '',
       description: '',
       category: '',
-      audience: '',
-      thumbnail: ''
+      audience: ''
     },
     resolver: zodResolver(createVideoSchema)
   })
@@ -65,7 +64,6 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
     form.setValue('description', videoInfo.description)
     form.setValue('category', videoInfo.category?._id || null)
     form.setValue('audience', videoInfo.audience.toString())
-    form.setValue('thumbnail', videoInfo.thumbnail)
   }, [videoInfo])
 
   // Query: Danh sách danh mục video
@@ -106,7 +104,6 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
   const handleChangeThumbnailFile = (files?: File[]) => {
     if (!files) return
     setThumbnailFile(files[0])
-    form.setValue('thumbnail', 'ok')
   }
 
   // Mutation: Upload ảnh
@@ -125,43 +122,55 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
     }
   })
 
-  // Hủy bỏ hình thu nhỏ đã chọn
+  // Mutation: Xóa thumbnail video
+  const deleteThumbnailImageMutation = useMutation({
+    mutationKey: ['deleteThumbnailImage'],
+    mutationFn: videoApis.deleteThumbnailImage,
+    onSuccess: () => {
+      getVideoDetailQuery.refetch()
+    }
+  })
+
+  // Hủy bỏ hình thu nhỏ đã chọn - Nếu đã tải lên hình thu nhỏ thì xóa
   const handleResetThumbnailFile = () => {
-    if (!videoInfo?.thumbnail) {
+    if (!videoInfo) return
+    if (!videoInfo.thumbnail) {
       setThumbnailFile(null)
-      form.setValue('thumbnail', '')
     } else {
-      updateVideoMutation.mutate({
-        body: {
-          thumbnail: null
-        },
-        videoId: videoInfo._id
-      })
+      deleteThumbnailImageMutation.mutate(videoInfo._id)
     }
   }
 
+  // Lưu ảnh thu nhỏ
+  const handleSaveThumbnailImage = async () => {
+    if (!thumbnailFile || !videoInfo) return
+    const form = new FormData()
+    form.append('image', thumbnailFile)
+    const res = await uploadImagesMutation.mutateAsync(form)
+    const { imageIds } = res.data.data
+    updateVideoMutation.mutate({
+      body: {
+        thumbnail: imageIds[0]
+      },
+      videoId: videoInfo._id
+    })
+  }
+
+  // Is updating
   const isUpdating = uploadImagesMutation.isPending || updateVideoMutation.isPending
 
   // Submit form
   const onSubmit = form.handleSubmit(async (data) => {
-    if (!thumbnailFile || !videoInfo) return
-    const form = new FormData()
-    form.append('image', thumbnailFile)
-    try {
-      const res = await uploadImagesMutation.mutateAsync(form)
-      const { imageIds } = res.data.data
-      updateVideoMutation.mutate({
-        body: {
-          ...data,
-          thumbnail: imageIds[0],
-          audience: Number(data.audience),
-          category: data.category ? data.category : undefined
-        },
-        videoId: videoInfo._id
-      })
-    } catch (error) {
-      console.log(error)
-    }
+    if (!videoInfo) return
+    updateVideoMutation.mutate({
+      body: {
+        ...data,
+        audience: Number(data.audience),
+        category: data.category ? data.category : undefined,
+        isDraft: false
+      },
+      videoId: videoInfo._id
+    })
   })
 
   return (
@@ -170,7 +179,7 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
         <h3 className='font-medium text-sm leading-none'>Hình thu nhỏ</h3>
         {/* Hình thu nhỏ */}
         <div className='relative'>
-          {!!thumbnailPreview && (
+          {thumbnailPreview && (
             <Image
               width={200}
               height={200}
@@ -188,26 +197,28 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
               className='w-[300px] h-[170px] rounded-lg object-cover'
             />
           )}
-          {(!!thumbnailPreview || videoInfo?.thumbnail) && (
-            <div className='absolute bottom-0 left-0 right-0 px-4 py-2 bg-black/30 flex justify-end'>
-              <Button variant='destructive' size='sm' className='rounded-full' onClick={handleResetThumbnailFile}>
+          {(thumbnailPreview || videoInfo?.thumbnail) && (
+            <div className='absolute bottom-0 left-0 right-0 px-4 py-2 bg-black/30 flex justify-end space-x-3'>
+              <Button size='sm' variant='destructive' className='rounded-full' onClick={handleResetThumbnailFile}>
                 Hủy bỏ
               </Button>
+              {thumbnailFile && (
+                <Button size='sm' disabled={isUpdating} className='rounded-full' onClick={handleSaveThumbnailImage}>
+                  {isUpdating && <Loader2 className='w-3 h-3 mr-2 animate-spin' />}
+                  Lưu lại
+                </Button>
+              )}
             </div>
           )}
         </div>
         {/* Input file */}
-        {!videoInfo?.thumbnail && (
+        {!videoInfo?.thumbnail && !thumbnailPreview && (
           <InputFile onChange={(files) => handleChangeThumbnailFile(files)}>
             <div className='w-[300px] h-[170px] border border-dashed flex justify-center items-center flex-col space-y-4 rounded-lg'>
               <ImagePlus strokeWidth={1.5} />
               <span className='text-sm text-muted-foreground'>Tải hình thu nhỏ lên</span>
             </div>
           </InputFile>
-        )}
-        {/* Lỗi chưa chọn hình thu nhỏ */}
-        {!!form.formState.errors.thumbnail?.message && (
-          <p className='text-[0.8rem] font-medium text-destructive'>{form.formState.errors.thumbnail.message}</p>
         )}
         {/* Báo video đang được tải lên */}
         {!isUploadSucceed && (
@@ -329,13 +340,13 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={String(VideoAudience.Everyone)} className='pr-10 cursor-pointer'>
+                      <SelectItem value={VideoAudience.Everyone.toString()} className='pr-10 cursor-pointer'>
                         <div className='flex items-center space-x-2'>
                           <Globe2 strokeWidth={1.5} size={18} />
                           <span>Tất cả mọi người</span>
                         </div>
                       </SelectItem>
-                      <SelectItem value={String(VideoAudience.Onlyme)} className='pr-10 cursor-pointer'>
+                      <SelectItem value={VideoAudience.Onlyme.toString()} className='pr-10 cursor-pointer'>
                         <div className='flex items-center space-x-2'>
                           <Lock strokeWidth={1.5} size={18} />
                           <span>Chỉ mình tôi</span>

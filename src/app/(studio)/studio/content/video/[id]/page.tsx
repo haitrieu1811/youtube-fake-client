@@ -14,6 +14,7 @@ type VideoDetailProps = {
 
 const VideoDetail = ({ params }: VideoDetailProps) => {
   const { id } = params
+
   return (
     <div className='p-6'>
       <h1 className='text-[25px] tracking-tight font-medium mb-4'>Chi tiết video</h1>

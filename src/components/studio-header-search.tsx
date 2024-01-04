@@ -6,7 +6,8 @@ import { ImagePlus, Loader2, Pencil, Search, X, Youtube } from 'lucide-react'
 import moment from 'moment'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ChangeEvent, useMemo, useRef, useState } from 'react'
+import { ChangeEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { usePathname } from 'next/navigation'
 
 import searchApis from '@/apis/search.apis'
 import PATH from '@/constants/path'
@@ -18,11 +19,17 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/t
 const MAX_LIMIT_SEARCH_RESULTS = 5
 
 const StudioHeaderSearch = () => {
+  const pathname = usePathname()
   const [isShowSearchResult, setIsShowSearchResult] = useState<boolean>(false)
   const [query, setQuery] = useState<string>('')
   const debounceQuery = useDebounce(query, 1500)
 
   const inputRef = useRef<HTMLInputElement>(null)
+
+  // Đóng search result khi pathname thay đổi
+  useEffect(() => {
+    setIsShowSearchResult(false)
+  }, [pathname])
 
   // Query: Tìm kiếm
   const searchQuery = useQuery({
@@ -68,6 +75,7 @@ const StudioHeaderSearch = () => {
         visible={isShowSearchResult && searchResults.length > 0}
         placement='bottom-end'
         offset={[0, 2]}
+        onClickOutside={handleHideSearchResult}
         render={() => (
           <div className='bg-background w-[615px] rounded-sm shadow-lg border border-border transition-all'>
             <div className='px-6 py-3 border-b border-b-border'>
@@ -119,8 +127,10 @@ const StudioHeaderSearch = () => {
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
-                                <Button size='icon' variant='ghost' className='w-8 h-8 rounded-full'>
-                                  <Pencil size={18} strokeWidth={1.5} />
+                                <Button size='icon' variant='ghost' className='w-8 h-8 rounded-full' asChild>
+                                  <Link href={`${PATH.STUDIO_CONTENT_VIDEO}/${searchResult._id}`}>
+                                    <Pencil size={18} strokeWidth={1.5} />
+                                  </Link>
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>Chi tiết</TooltipContent>
@@ -161,7 +171,6 @@ const StudioHeaderSearch = () => {
           className='rounded-sm h-full pl-[50px]'
           onChange={handleChangeQuery}
           onFocus={handleShowSearchResult}
-          onBlur={handleHideSearchResult}
         />
       </Tippy>
       {query && !searchQuery.isLoading && (

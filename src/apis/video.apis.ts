@@ -1,5 +1,5 @@
 import http from '@/lib/http'
-import { PaginationReqQuery } from '@/types/utils.types'
+import { OnlyMessageResponse, PaginationReqQuery } from '@/types/utils.types'
 import {
   CreateVideoReqBody,
   CreateVideoResponse,
@@ -41,6 +41,11 @@ const videoApis = {
   // Lấy thông tin video để cập nhật
   getVideoDetailToUpdate(videoId: string) {
     return http.get<GetVideoDetailToUpdateResponse>(`/videos/${videoId}/to-update`)
+  },
+
+  // Xóa hình thu nhỏ video
+  deleteThumbnailImage(videoId: string) {
+    return http.delete<OnlyMessageResponse>(`/videos/${videoId}/thumbnail`)
   }
 }
 

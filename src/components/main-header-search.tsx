@@ -53,6 +53,7 @@ const MainHeaderSearch = () => {
         interactive
         placement='bottom-end'
         offset={[0, 5]}
+        onClickOutside={handleHideSearchResult}
         render={() => (
           <div className='w-[550px] py-4 bg-white dark:bg-zinc-900 rounded-lg border border-border'>
             {searchResults.slice(0, MAX_SEARCH_RESULTS).map((searchResult) => (
@@ -76,7 +77,6 @@ const MainHeaderSearch = () => {
           className='flex-1 border border-border rounded-l-full outline-none w-[550px] bg-background px-5 focus:border-blue-500'
           onChange={handleChangeSearchQuery}
           onFocus={handleShowSearchResult}
-          onBlur={handleHideSearchResult}
         />
       </Tippy>
       {query && !searchQuery.isLoading && (
