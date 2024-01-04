@@ -16,7 +16,7 @@ type VerticalVideoProps = {
 const VerticalVideo = ({ videoData }: VerticalVideoProps) => {
   return (
     <div className='space-y-2'>
-      <Link href={`watch/${videoData.idName}`}>
+      <Link href={`/watch/${videoData.idName}`}>
         <Image
           width={500}
           height={500}
@@ -53,7 +53,7 @@ const VerticalVideo = ({ videoData }: VerticalVideoProps) => {
                   <MoreVertical size={18} />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align='end' className='bg-white dark:bg-zinc-900 py-2'>
+              <DropdownMenuContent align='end' className='bg-background py-2'>
                 <DropdownMenuItem className='space-x-4 px-4 py-2.5 hover:cursor-pointer'>
                   <History size={18} strokeWidth={1.5} />
                   <span>Thêm vào danh sách xem sau</span>

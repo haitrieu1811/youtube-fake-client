@@ -55,7 +55,7 @@ const MainHeaderSearch = () => {
         offset={[0, 5]}
         onClickOutside={handleHideSearchResult}
         render={() => (
-          <div className='w-[550px] py-4 bg-white dark:bg-zinc-900 rounded-lg border border-border'>
+          <div className='w-[550px] py-4 bg-background rounded-lg border border-border'>
             {searchResults.slice(0, MAX_SEARCH_RESULTS).map((searchResult) => (
               <SearchItem key={searchResult._id} title={searchResult.title} />
             ))}

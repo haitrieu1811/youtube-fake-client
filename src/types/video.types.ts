@@ -153,3 +153,27 @@ export type GetVideoDetailToUpdateResponse = SuccessResponse<{
     updatedAt: string
   }
 }>
+
+// Response: Xem video
+export type WatchVideoResponse = SuccessResponse<{
+  video: {
+    _id: string
+    idName: string
+    title: string
+    thumbnail: string
+    description: string
+    viewCount: number
+    isLiked: boolean
+    isDisliked: boolean
+    channel: {
+      _id: string
+      username: string
+      channelName: string
+      avatar: string
+      tick: boolean
+      isSubscribed: boolean
+    }
+    createdAt: string
+    updatedAt: string
+  }
+}>

@@ -163,7 +163,7 @@ const AccountDropdown = ({ accountData }: AccountDropdownProps) => {
                   <Button
                     key={mode.value}
                     variant='ghost'
-                    className='flex justify-start items-center rounded-none w-full pl-0 pr-4 py-5 font-normal]'
+                    className='flex justify-start items-center rounded-none w-full pl-0 pr-4 py-5 font-normal'
                     onClick={() => setTheme(mode.value)}
                   >
                     <span className='w-[50px] flex justify-center items-center'>

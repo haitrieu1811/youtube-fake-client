@@ -9,7 +9,8 @@ import {
   GetVideoDetailToUpdateResponse,
   GetVideosOfMeResponse,
   UpdateVideoReqBody,
-  UpdateVideoResponse
+  UpdateVideoResponse,
+  WatchVideoResponse
 } from '@/types/video.types'
 
 const videoApis = {
@@ -51,6 +52,11 @@ const videoApis = {
   // Xóa video (một hoặc nhiều)
   deleteVideos(videoIds: string[]) {
     return http.delete<OnlyMessageResponse>('/videos', { data: { videoIds } })
+  },
+
+  // Xem video
+  watchVideo(idName: string) {
+    return http.get<WatchVideoResponse>(`/videos/watch/idName/${idName}`)
   }
 }
 
