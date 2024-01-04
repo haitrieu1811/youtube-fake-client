@@ -1,17 +1,30 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ColumnDef } from '@tanstack/react-table'
-import { File, Globe2, Lock, Pencil, Trash, Youtube } from 'lucide-react'
+import { File, Globe2, Loader2, Lock, Pencil, Trash, Youtube } from 'lucide-react'
 import moment from 'moment'
 import Image from 'next/image'
+import Link from 'next/link'
 import { Fragment } from 'react'
 
+import videoApis from '@/apis/video.apis'
 import DataTableColumnHeader from '@/components/data-table-column-header'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { VideoAudience } from '@/constants/enum'
-import { VideoItemType } from '@/types/video.types'
-import Link from 'next/link'
 import PATH from '@/constants/path'
+import { VideoItemType } from '@/types/video.types'
 
 export const columns: ColumnDef<VideoItemType>[] = [
   {
@@ -42,6 +55,22 @@ export const columns: ColumnDef<VideoItemType>[] = [
     ),
     cell: ({ row }) => {
       const video = row.original
+      const queryClient = useQueryClient()
+
+      // Mutation: Xóa video
+      const deleteVideosMutation = useMutation({
+        mutationKey: ['deleteVideos'],
+        mutationFn: videoApis.deleteVideos,
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['getVideosOfMe'] })
+        }
+      })
+
+      // Xóa video
+      const handleDeleteVideos = (videoIds: string[]) => {
+        deleteVideosMutation.mutate(videoIds)
+      }
+
       return (
         <TooltipProvider>
           <div className='flex ml-4 group'>
@@ -91,9 +120,32 @@ export const columns: ColumnDef<VideoItemType>[] = [
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size='icon' variant='ghost' className='rounded-full'>
-                        <Trash size={16} strokeWidth={1.5} />
-                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button size='icon' variant='ghost' className='rounded-full'>
+                            <Trash size={16} strokeWidth={1.5} />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Bạn có chắc muốn xóa video này?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Mọi thứ liên quan đến video như: bình luận, lượt thích sẽ bị xóa vĩnh viễn và không thể
+                              khôi phục.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
+                            <AlertDialogAction
+                              disabled={deleteVideosMutation.isPending}
+                              onClick={() => handleDeleteVideos([video._id])}
+                            >
+                              {deleteVideosMutation.isPending && <Loader2 className='w-3 h-3 mr-2 animate-spin' />}
+                              Chắc chắn
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </TooltipTrigger>
                     <TooltipContent>Xóa vĩnh viễn</TooltipContent>
                   </Tooltip>

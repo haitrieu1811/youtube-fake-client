@@ -46,6 +46,11 @@ const videoApis = {
   // Xóa hình thu nhỏ video
   deleteThumbnailImage(videoId: string) {
     return http.delete<OnlyMessageResponse>(`/videos/${videoId}/thumbnail`)
+  },
+
+  // Xóa video (một hoặc nhiều)
+  deleteVideos(videoIds: string[]) {
+    return http.delete<OnlyMessageResponse>('/videos', { data: { videoIds } })
   }
 }
 
