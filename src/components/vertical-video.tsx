@@ -18,8 +18,8 @@ const VerticalVideo = ({ videoData }: VerticalVideoProps) => {
     <div className='space-y-2'>
       <Link href={`/watch/${videoData.idName}`}>
         <Image
-          width={500}
-          height={500}
+          width={800}
+          height={800}
           src={videoData.thumbnail}
           alt={videoData.title}
           className='w-full h-[180px] object-cover rounded-lg'

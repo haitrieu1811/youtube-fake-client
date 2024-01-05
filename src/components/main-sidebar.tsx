@@ -76,8 +76,8 @@ const MainSidebar = () => {
   )
 
   return (
-    <aside className='w-56 max-h-[calc(100vh-56px)] overflow-y-auto sticky top-14 left-0 bottom-0 transition-all'>
-      <div className='p-4 space-y-4'>
+    <aside className='w-full max-h-[calc(100vh-56px)] overflow-y-auto sticky top-14 left-0 bottom-0 transition-all'>
+      <div className='px-4 space-y-4'>
         <div className='space-y-1'>
           {MAIN_LINKS.map((item) => {
             const isActive = item.href === pathname

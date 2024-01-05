@@ -1,20 +1,19 @@
 import { Fragment, ReactNode } from 'react'
 
 import MainHeader from '@/components/main-header'
-import MainSidebar from '@/components/main-sidebar'
+import MainOverlaySidebar from '@/components/main-overlay-sidebar'
 
-const MainLayout = ({ children }: { children: ReactNode }) => {
+const NoSidebarLayout = ({ children }: { children: ReactNode }) => {
   return (
     <Fragment>
       <MainHeader />
+      <MainOverlaySidebar />
       <main className='flex items-start'>
-        <div className='w-56 py-4'>
-          <MainSidebar />
-        </div>
+        {/* <MainSidebar /> */}
         <div className='flex-1'>{children}</div>
       </main>
     </Fragment>
   )
 }
 
-export default MainLayout
+export default NoSidebarLayout

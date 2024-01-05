@@ -20,7 +20,7 @@ const Watch = ({ params }: WatchProps) => {
   const { idName } = params
 
   return (
-    <div className='p-10'>
+    <div className='px-28 py-6'>
       <WatchClient idName={idName} />
     </div>
   )

@@ -10,13 +10,17 @@ type AppContextType = {
   setIsAuthenticated: Dispatch<SetStateAction<boolean>>
   account: AccountType | null
   setAccount: Dispatch<SetStateAction<AccountType | null>>
+  isShowSidebar: boolean
+  setIsShowSidebar: Dispatch<SetStateAction<boolean>>
 }
 
 const initialAppContext: AppContextType = {
   isAuthenticated: !!getAccessTokenFromLS(),
   setIsAuthenticated: () => null,
   account: getAccountFromLS(),
-  setAccount: () => null
+  setAccount: () => null,
+  isShowSidebar: false,
+  setIsShowSidebar: () => null
 }
 
 export const AppContext = createContext<AppContextType>(initialAppContext)
@@ -24,6 +28,7 @@ export const AppContext = createContext<AppContextType>(initialAppContext)
 const AppProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(initialAppContext.isAuthenticated)
   const [account, setAccount] = useState<AccountType | null>(initialAppContext.account)
+  const [isShowSidebar, setIsShowSidebar] = useState<boolean>(initialAppContext.isShowSidebar)
 
   return (
     <AppContext.Provider
@@ -31,7 +36,9 @@ const AppProvider = ({ children }: { children: ReactNode }) => {
         isAuthenticated,
         setIsAuthenticated,
         account,
-        setAccount
+        setAccount,
+        isShowSidebar,
+        setIsShowSidebar
       }}
     >
       {children}

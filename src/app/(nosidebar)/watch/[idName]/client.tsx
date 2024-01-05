@@ -39,7 +39,6 @@ const WatchClient = ({ idName }: WatchClientProps) => {
             </MediaPlayer>
           )}
         </div>
-
         <div></div>
       </div>
     </div>
