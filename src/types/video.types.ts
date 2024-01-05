@@ -164,6 +164,8 @@ export type WatchVideoResponse = SuccessResponse<{
     description: string
     viewCount: number
     isLiked: boolean
+    likeCount: number
+    dislikeCount: number
     isDisliked: boolean
     channel: {
       _id: string
@@ -172,6 +174,7 @@ export type WatchVideoResponse = SuccessResponse<{
       avatar: string
       tick: boolean
       isSubscribed: boolean
+      subscribeCount: number
     }
     createdAt: string
     updatedAt: string

@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 
-import WatchClient from './client'
+import WatchClient from './watch-client'
 
 type WatchProps = {
   params: { idName: string }
@@ -20,7 +20,7 @@ const Watch = ({ params }: WatchProps) => {
   const { idName } = params
 
   return (
-    <div className='px-28 py-6'>
+    <div className='max-w-7xl mx-auto py-6'>
       <WatchClient idName={idName} />
     </div>
   )

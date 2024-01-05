@@ -57,7 +57,7 @@ const MainHeaderSearch = () => {
         render={() => (
           <div className='w-[550px] py-4 bg-background rounded-lg border border-border'>
             {searchResults.slice(0, MAX_SEARCH_RESULTS).map((searchResult) => (
-              <SearchItem key={searchResult._id} title={searchResult.title} />
+              <SearchItem key={searchResult._id} title={searchResult.title} idName={searchResult.idName} />
             ))}
             {searchResults.length > MAX_SEARCH_RESULTS && (
               <div className='flex justify-end mt-1 mr-4'>
