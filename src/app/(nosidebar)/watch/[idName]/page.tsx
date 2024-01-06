@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 
-import WatchClient from './watch-client'
+import WatchClient from './_components/watch-client'
 
 type WatchProps = {
   params: { idName: string }
@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: WatchProps): Promise<Metadata
   const data = await res.json()
   return {
     title: data.data.video.title,
-    description: data.data.video.description
+    description: data.data.video.description.split(' ').slice(0, 50).join(' ')
   }
 }
 

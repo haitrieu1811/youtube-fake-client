@@ -26,8 +26,7 @@ const CommentInput = ({ accountData, isRootComment = false }: CommentInputProps)
           type='text'
           placeholder={isRootComment ? 'Viết bình luận...' : 'Phản hồi...'}
           className={classNames({
-            'outline-none w-full placeholder:text-muted-foreground border-b border-b-muted-foreground bg-transparent':
-              true,
+            'outline-none w-full placeholder:text-muted-foreground border-b border-b-border bg-transparent': true,
             'py-1 text-[13px]': !isRootComment,
             'py-2 text-sm': isRootComment
           })}

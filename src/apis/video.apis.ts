@@ -57,6 +57,21 @@ const videoApis = {
   // Xem video
   watchVideo(idName: string) {
     return http.get<WatchVideoResponse>(`/videos/watch/idName/${idName}`)
+  },
+
+  // Đăng ký kênh
+  subscribe(accountId: string) {
+    return http.post<OnlyMessageResponse>(`/subscriptions/subscribe/account/${accountId}`)
+  },
+
+  // Hủy đăng ký kênh
+  unsubscribe(accountId: string) {
+    return http.delete<OnlyMessageResponse>(`/subscriptions/unsubscribe/account/${accountId}`)
+  },
+
+  // Like video
+  likeVideo() {
+    return http.post<OnlyMessageResponse>('/reactions')
   }
 }
 

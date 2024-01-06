@@ -1,26 +1,14 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { MediaPlayer, MediaProvider } from '@vidstack/react'
 import { DefaultVideoLayout, defaultLayoutIcons } from '@vidstack/react/player/layouts/default'
 import '@vidstack/react/player/styles/default/layouts/video.css'
 import '@vidstack/react/player/styles/default/theme.css'
-import classNames from 'classnames'
-import {
-  BarChart,
-  Bell,
-  CheckCircle2,
-  Download,
-  Flag,
-  ListPlus,
-  MoreHorizontal,
-  Share2,
-  ThumbsDown,
-  ThumbsUp
-} from 'lucide-react'
+import { BarChart, Bell, CheckCircle2, Download, Flag, ListPlus, Loader2, MoreHorizontal, Share2 } from 'lucide-react'
 import moment from 'moment'
 import Link from 'next/link'
-import { Fragment, useContext, useMemo, useState } from 'react'
+import { Fragment, useContext, useEffect, useMemo, useState } from 'react'
 
 import videoApis from '@/apis/video.apis'
 import CommentInput from '@/components/comment-input'
@@ -41,16 +29,19 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator'
 import { convertMomentToVietnamese } from '@/lib/utils'
 import { AppContext } from '@/providers/app-provider'
+import Reaction from './reaction'
 
 type WatchClientProps = {
   idName: string
 }
 
-const MAX_LENGTH_OF_DESCRIPTION = 260
+const MAX_LENGTH_OF_DESCRIPTION = 50
 
 const WatchClient = ({ idName }: WatchClientProps) => {
   const { account } = useContext(AppContext)
   const [isShowMoreDescription, setIsShowMoreDescription] = useState<boolean>(false)
+  const [isSubscribed, setIsSubscribed] = useState<boolean>(false)
+  const [subscribeCount, setSubscribeCount] = useState<number>(0)
 
   // Query: Lấy thông tin chi tiết video
   const watchVideoQuery = useQuery({
@@ -61,9 +52,48 @@ const WatchClient = ({ idName }: WatchClientProps) => {
   // Thông tin video
   const videoInfo = useMemo(() => watchVideoQuery.data?.data.data.video, [watchVideoQuery.data?.data.data.video])
 
+  // Cập nhật thông tin video
+  useEffect(() => {
+    if (!videoInfo) return
+    setIsSubscribed(videoInfo.channel.isSubscribed)
+    setSubscribeCount(videoInfo.channel.subscribeCount)
+  }, [videoInfo])
+
   // Xem thêm mô tả
   const handleShowMoreDescription = () => {
     setIsShowMoreDescription((prevState) => !prevState)
+  }
+
+  // Mutation: Đăng ký kênh
+  const subscribeMutation = useMutation({
+    mutationKey: ['subscribe'],
+    mutationFn: videoApis.subscribe,
+    onSuccess: () => {
+      setIsSubscribed(true)
+      setSubscribeCount((prev) => (prev += 1))
+    }
+  })
+
+  // Mutation: Hủy đăng ký kênh
+  const unsubscribeMutation = useMutation({
+    mutationKey: ['unsubscribe'],
+    mutationFn: videoApis.unsubscribe,
+    onSuccess: () => {
+      setIsSubscribed(false)
+      setSubscribeCount((prev) => (prev -= 1))
+    }
+  })
+
+  // Đăng ký kênh
+  const handleSubscribe = () => {
+    if (!videoInfo || isSubscribed) return
+    subscribeMutation.mutate(videoInfo.channel._id)
+  }
+
+  // Hủy đăng ký kênh
+  const handleUnsubscribe = () => {
+    if (!videoInfo || !isSubscribed) return
+    unsubscribeMutation.mutate(videoInfo.channel._id)
   }
 
   return (
@@ -83,6 +113,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
               <div className='mt-4'>
                 <h1 className='font-bold text-xl tracking-tight'>{videoInfo.title}</h1>
                 <div className='flex justify-between items-center mt-4'>
+                  {/* Thông tin kênh người đăng */}
                   <div className='flex items-center space-x-6'>
                     <div className='flex'>
                       <Link href='/'>
@@ -100,13 +131,16 @@ const WatchClient = ({ idName }: WatchClientProps) => {
                             <CheckCircle2 className='fill-zinc-800 dark:fill-zinc-500 stroke-background w-[15px] h-[15px] ml-2' />
                           )}
                         </div>
-                        <div className='text-xs text-muted-foreground'>
-                          {videoInfo.channel.subscribeCount} người đăng ký
-                        </div>
+                        <div className='text-xs text-muted-foreground'>{subscribeCount} người đăng ký</div>
                       </div>
                     </div>
-                    {!videoInfo.channel.isSubscribed && <Button className='rounded-full'>Đăng ký</Button>}
-                    {videoInfo.channel.isSubscribed && (
+                    {!isSubscribed && (
+                      <Button disabled={subscribeMutation.isPending} className='rounded-full' onClick={handleSubscribe}>
+                        {subscribeMutation.isPending && <Loader2 className='w-4 h-4 mr-3 animate-spin' />}
+                        Đăng ký
+                      </Button>
+                    )}
+                    {isSubscribed && (
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
                           <Button variant='secondary' className='rounded-full space-x-3'>
@@ -122,42 +156,22 @@ const WatchClient = ({ idName }: WatchClientProps) => {
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel className='rounded-full'>Hủy</AlertDialogCancel>
-                            <AlertDialogAction className='rounded-full'>Hủy đăng ký</AlertDialogAction>
+                            <AlertDialogAction
+                              disabled={unsubscribeMutation.isPending}
+                              className='rounded-full'
+                              onClick={handleUnsubscribe}
+                            >
+                              {unsubscribeMutation.isPending && <Loader2 className='w-3 h-3 mr-2 animate-spin' />}
+                              Hủy đăng ký
+                            </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
                     )}
                   </div>
+                  {/* Like, dislike, chia sẻ */}
                   <div className='flex items-center space-x-4'>
-                    <div className='flex'>
-                      <Button
-                        variant='secondary'
-                        className='rounded-l-full space-x-3 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-                      >
-                        <ThumbsUp
-                          size={18}
-                          strokeWidth={1.5}
-                          className={classNames({
-                            'fill-black dark:fill-white': videoInfo.isLiked
-                          })}
-                        />
-                        <span>{videoInfo.likeCount}</span>
-                      </Button>
-                      <div className='w-[1px] bg-zinc-300 dark:bg-zinc-700' />
-                      <Button
-                        variant='secondary'
-                        className='rounded-r-full space-x-3 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-                      >
-                        <ThumbsDown
-                          size={18}
-                          strokeWidth={1.5}
-                          className={classNames({
-                            'fill-black dark:fill-white': videoInfo.isDisliked
-                          })}
-                        />
-                        <span>{videoInfo.dislikeCount}</span>
-                      </Button>
-                    </div>
+                    <Reaction videoInfo={videoInfo} />
                     <Button
                       variant='secondary'
                       className='rounded-full space-x-3 hover:bg-zinc-200 dark:hover:bg-zinc-700'
@@ -204,6 +218,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
               </div>
               <Separator className='my-3' />
               <div className='rounded-lg bg-muted p-3 space-y-1 cursor-pointer hover:bg-zinc-200/50 dark:hover:bg-zinc-700'>
+                {/* Lượt xem, ngày đăng */}
                 <div className='flex items-center space-x-2 font-medium text-sm'>
                   <span>{videoInfo.viewCount} lượt xem</span>
                   <span>
@@ -214,12 +229,13 @@ const WatchClient = ({ idName }: WatchClientProps) => {
                         ).year()}`}
                   </span>
                 </div>
+                {/* Mô tả */}
                 <div className='text-sm text-muted-foreground'>
-                  {videoInfo.description.length <= MAX_LENGTH_OF_DESCRIPTION
+                  {videoInfo.description.split(' ').length <= MAX_LENGTH_OF_DESCRIPTION
                     ? videoInfo.description
                     : isShowMoreDescription
                     ? videoInfo.description
-                    : `${videoInfo.description.substring(0, MAX_LENGTH_OF_DESCRIPTION)}...`}
+                    : `${videoInfo.description.split(' ').slice(0, MAX_LENGTH_OF_DESCRIPTION).join(' ')}...`}
                 </div>
                 {videoInfo.description.length > MAX_LENGTH_OF_DESCRIPTION && (
                   <div className='text-sm font-medium' onClick={handleShowMoreDescription}>
@@ -227,7 +243,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
                   </div>
                 )}
               </div>
-              {/* Phần bình luận */}
+              {/* Bình luận */}
               <div>
                 <div className='flex items-center space-x-6 my-6'>
                   <h3 className='text-xl font-semibold'>42 bình luận</h3>

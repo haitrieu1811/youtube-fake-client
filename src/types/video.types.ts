@@ -57,6 +57,30 @@ export type VideoCategoryItemType = {
   updatedAt: string
 }
 
+export type WatchedVideoType = {
+  _id: string
+  idName: string
+  title: string
+  thumbnail: string
+  description: string
+  viewCount: number
+  isLiked: boolean
+  likeCount: number
+  dislikeCount: number
+  isDisliked: boolean
+  channel: {
+    _id: string
+    username: string
+    channelName: string
+    avatar: string
+    tick: boolean
+    isSubscribed: boolean
+    subscribeCount: number
+  }
+  createdAt: string
+  updatedAt: string
+}
+
 // Resquest: Tạo video
 export type CreateVideoReqBody = {
   idName: string
@@ -156,27 +180,5 @@ export type GetVideoDetailToUpdateResponse = SuccessResponse<{
 
 // Response: Xem video
 export type WatchVideoResponse = SuccessResponse<{
-  video: {
-    _id: string
-    idName: string
-    title: string
-    thumbnail: string
-    description: string
-    viewCount: number
-    isLiked: boolean
-    likeCount: number
-    dislikeCount: number
-    isDisliked: boolean
-    channel: {
-      _id: string
-      username: string
-      channelName: string
-      avatar: string
-      tick: boolean
-      isSubscribed: boolean
-      subscribeCount: number
-    }
-    createdAt: string
-    updatedAt: string
-  }
+  video: WatchedVideoType
 }>
