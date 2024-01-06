@@ -5,14 +5,12 @@ import { MediaPlayer, MediaProvider } from '@vidstack/react'
 import { DefaultVideoLayout, defaultLayoutIcons } from '@vidstack/react/player/layouts/default'
 import '@vidstack/react/player/styles/default/layouts/video.css'
 import '@vidstack/react/player/styles/default/theme.css'
-import { BarChart, Bell, CheckCircle2, Download, Flag, ListPlus, Loader2, MoreHorizontal, Share2 } from 'lucide-react'
+import { Bell, CheckCircle2, Download, Flag, ListPlus, Loader2, MoreHorizontal, Share2 } from 'lucide-react'
 import moment from 'moment'
 import Link from 'next/link'
 import { Fragment, useContext, useEffect, useMemo, useState } from 'react'
 
 import videoApis from '@/apis/video.apis'
-import CommentInput from '@/components/comment-input'
-import CommentItem from '@/components/comment-item'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,6 +27,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Separator } from '@/components/ui/separator'
 import { convertMomentToVietnamese } from '@/lib/utils'
 import { AppContext } from '@/providers/app-provider'
+import Comment from './comment'
 import Reaction from './reaction'
 
 type WatchClientProps = {
@@ -99,9 +98,10 @@ const WatchClient = ({ idName }: WatchClientProps) => {
   return (
     <div>
       <div className='flex justify-between'>
-        <div className='w-2/3'>
+        <div className='w-3/4'>
           {videoInfo && (
             <Fragment>
+              {/* Trình phát video */}
               <MediaPlayer
                 autoplay
                 src={`http://localhost:4000/static/video-hls/${videoInfo.idName}/master.m3u8`}
@@ -244,37 +244,8 @@ const WatchClient = ({ idName }: WatchClientProps) => {
                 )}
               </div>
               {/* Bình luận */}
-              <div>
-                <div className='flex items-center space-x-6 my-6'>
-                  <h3 className='text-xl font-semibold'>42 bình luận</h3>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant='ghost' className='space-x-3 h-11 rounded-full'>
-                        <BarChart strokeWidth={1.5} />
-                        <span>Sắp xếp theo</span>
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent align='start' className='px-0 py-2 rounded-lg w-auto flex-col flex'>
-                      <Button variant='ghost' className='h-12 rounded-none font-normal'>
-                        Bình luận hàng đầu
-                      </Button>
-                      <Button variant='ghost' className='h-12 rounded-none font-normal'>
-                        Mới nhất xếp trước
-                      </Button>
-                    </PopoverContent>
-                  </Popover>
-                </div>
-                {account && <CommentInput accountData={account} isRootComment />}
-                <div className='mt-6'>
-                  <div>
-                    <CommentItem />
-                    <div className='pl-11 py-4'>
-                      <CommentItem isRootComment={false} />
-                      <CommentItem isRootComment={false} />
-                      <CommentItem isRootComment={false} />
-                    </div>
-                  </div>
-                </div>
+              <div className='my-6'>
+                <Comment accountData={account} videoId={videoInfo._id} />
               </div>
             </Fragment>
           )}
