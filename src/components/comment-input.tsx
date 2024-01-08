@@ -2,39 +2,36 @@
 
 import { useMutation } from '@tanstack/react-query'
 import classNames from 'classnames'
-import { ChangeEvent, FormEvent, Fragment, useState } from 'react'
 import { Loader2 } from 'lucide-react'
+import { ChangeEvent, FormEvent, Fragment, useContext, useState } from 'react'
 
 import commentApis from '@/apis/comment.apis'
 import { CommentType } from '@/constants/enum'
-import { AccountType } from '@/types/account.types'
+import { AppContext } from '@/providers/app-provider'
+import { CommentItemType } from '@/types/comment.types'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
-import { CommentItemType } from '@/types/comment.types'
+import { CommentItemContext } from './comment-item'
 
 type CommentInputProps = {
-  accountData: AccountType
   isRootComment?: boolean
-  contentId: string
-  onSuccess?: (newComment: CommentItemType) => void
   isShow?: boolean
-  onCancel?: () => void
-  parentCommentId?: string
   authorId?: string
-  onReplySuccess?: (newComment: CommentItemType) => void
+  contentId: string
+  onCancel?: () => void
+  onSuccess?: (newComment: CommentItemType) => void
 }
 
 const CommentInput = ({
-  accountData,
   isRootComment = false,
-  contentId,
-  onSuccess,
   isShow = true,
-  onCancel,
-  parentCommentId,
   authorId,
-  onReplySuccess
+  contentId,
+  onCancel,
+  onSuccess
 }: CommentInputProps) => {
+  const { account } = useContext(AppContext)
+  const { rootCommentData, setReplies, setReplyCount } = useContext(CommentItemContext)
   const [content, setContent] = useState<string>('')
   const [isStart, setIsStart] = useState<boolean>(false)
 
@@ -71,7 +68,8 @@ const CommentInput = ({
       const { comment } = data.data.data
       onSuccess && onSuccess(comment)
       stopComment()
-      onReplySuccess && onReplySuccess(comment)
+      setReplies((prevState) => [comment, ...prevState])
+      setReplyCount((prevState) => (prevState += 1))
     }
   })
 
@@ -86,9 +84,9 @@ const CommentInput = ({
         type: CommentType.Video
       })
     } else {
-      if (!parentCommentId) return
+      if (!rootCommentData) return
       replyCommentMutation.mutate({
-        commentId: parentCommentId,
+        commentId: rootCommentData._id,
         body: {
           content,
           replyAccountId: authorId
@@ -101,15 +99,17 @@ const CommentInput = ({
     <Fragment>
       {isShow && (
         <div className='flex items-start space-x-5'>
-          <Avatar
-            className={classNames({
-              'flex-shrink-0': true,
-              'w-6 h-6': !isRootComment
-            })}
-          >
-            <AvatarImage src={accountData.avatar} alt={accountData.channelName} />
-            <AvatarFallback>{accountData.channelName[0].toUpperCase()}</AvatarFallback>
-          </Avatar>
+          {account && (
+            <Avatar
+              className={classNames({
+                'flex-shrink-0': true,
+                'w-6 h-6': !isRootComment
+              })}
+            >
+              <AvatarImage src={account.avatar} alt={account.channelName} />
+              <AvatarFallback>{account.channelName[0].toUpperCase()}</AvatarFallback>
+            </Avatar>
+          )}
           <div className='flex-1'>
             <form onSubmit={handleCreateComment}>
               <input

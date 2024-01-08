@@ -217,7 +217,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
                 </div>
               </div>
               <Separator className='my-3' />
-              <div className='rounded-lg bg-muted p-3 space-y-1 cursor-pointer hover:bg-zinc-200/50 dark:hover:bg-zinc-700'>
+              <div className='rounded-lg bg-muted/50 hover:bg-muted p-3 space-y-1 cursor-pointer'>
                 {/* Lượt xem, ngày đăng */}
                 <div className='flex items-center space-x-2 font-medium text-sm'>
                   <span>{videoInfo.viewCount} lượt xem</span>
