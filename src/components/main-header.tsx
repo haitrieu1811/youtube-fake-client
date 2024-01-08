@@ -1,6 +1,6 @@
 'use client'
 
-import { ListPlus, Menu, PenSquare, PlaySquare, PlusSquare, UserCircle, Youtube } from 'lucide-react'
+import { Bell, ListPlus, Menu, PenSquare, PlaySquare, PlusSquare, UserCircle, Youtube } from 'lucide-react'
 import Link from 'next/link'
 import { useContext } from 'react'
 
@@ -11,6 +11,7 @@ import AccountDropdown from './account-dropdown'
 import MainHeaderSearch from './main-header-search'
 import { Button } from './ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
+import { Badge } from './ui/badge'
 
 const MainHeader = () => {
   const { isAuthenticated, account, setIsShowSidebar } = useContext(AppContext)
@@ -35,7 +36,7 @@ const MainHeader = () => {
         {/* Nút tạo */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant='ghost' size='icon' className='rounded-full mr-5 w-10 h-10'>
+            <Button variant='ghost' size='icon' className='rounded-full mr-4 w-10 h-10'>
               <PlusSquare size={20} />
             </Button>
           </DropdownMenuTrigger>
@@ -56,6 +57,15 @@ const MainHeader = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        {/* Thông báo */}
+        <div className='mr-4 relative'>
+          <Button variant='ghost' size='icon' className='rounded-full w-10 h-10'>
+            <Bell size={20} />
+          </Button>
+          <Badge className='px-0.5 rounded-full absolute top-0 right-0 bg-red-500 hover:bg-red-500 text-white'>
+            28
+          </Badge>
+        </div>
         {/*  Hiển thị nút đăng nhập khi chưa đăng nhập */}
         {!isAuthenticated && isClient && (
           <Button variant='outline' className='rounded-full hover:bg-blue-300/10 space-x-2' asChild>

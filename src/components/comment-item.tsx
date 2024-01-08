@@ -1,143 +1,95 @@
 'use client'
 
-import classNames from 'classnames'
-import { CheckCircle2, ChevronDown, Flag, MoreVertical, ThumbsDown, ThumbsUp } from 'lucide-react'
-import moment from 'moment'
-import Link from 'next/link'
-import { useContext, useState } from 'react'
+import { useQuery } from '@tanstack/react-query'
+import { Loader2 } from 'lucide-react'
+import { Dispatch, SetStateAction, createContext, useEffect, useState } from 'react'
 
-import { convertMomentToVietnamese } from '@/lib/utils'
-import { AppContext } from '@/providers/app-provider'
+import commentApis from '@/apis/comment.apis'
 import { CommentItemType } from '@/types/comment.types'
-import CommentInput from './comment-input'
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
-import { Button } from './ui/button'
-import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
+import CommentRow from './comment-row'
 
-type CommentItemProps = {
-  isRootComment?: boolean
-  commentData: CommentItemType
-  contentId: string
-  replyCount?: number
-  onShowReplies?: () => void
-  isShowReplies?: boolean
-  onReplySuccess?: (newComment: CommentItemType) => void
+type CommentRowContextType = {
+  rootCommentData: CommentItemType | null
+  toggleReplies: () => void
+  replies: CommentItemType[]
+  setReplies: Dispatch<SetStateAction<CommentItemType[]>>
+  replyCount: number
+  setReplyCount: Dispatch<SetStateAction<number>>
 }
 
-const CommentItem = ({
-  isRootComment = true,
-  commentData,
-  contentId,
-  replyCount,
-  onShowReplies,
-  isShowReplies = false,
-  onReplySuccess
-}: CommentItemProps) => {
-  const { account } = useContext(AppContext)
-  const [isShowReplyInput, setIsShowReplyInput] = useState<boolean>(false)
+const initialContext: CommentRowContextType = {
+  rootCommentData: null,
+  toggleReplies: () => null,
+  replies: [],
+  setReplies: () => null,
+  replyCount: 0,
+  setReplyCount: () => null
+}
 
-  const handleStartReply = () => {
-    setIsShowReplyInput(true)
-  }
+export const CommentItemContext = createContext<CommentRowContextType>(initialContext)
 
-  const handleStopReply = () => {
-    setIsShowReplyInput(false)
-  }
+type CommentItemProps = {
+  commentData: CommentItemType
+  contentId: string
+}
 
-  const handleShowReplies = () => {
-    onShowReplies && onShowReplies()
+const CommentItem = ({ commentData, contentId }: CommentItemProps) => {
+  const [isShowReplies, setIsShowReplies] = useState<boolean>(false)
+  const [replies, setReplies] = useState<CommentItemType[]>(initialContext.replies)
+  const [replyCount, setReplyCount] = useState<number>(initialContext.replyCount)
+
+  // Query: Lấy danh sách trả lời bình luận
+  const getRepliesCommentQuery = useQuery({
+    queryKey: ['getRepliesComment', commentData._id],
+    queryFn: () => commentApis.getRepliesComment({ commentId: commentData._id }),
+    enabled: isShowReplies
+  })
+
+  // Đặt giá trị cho mảng replies
+  useEffect(() => {
+    if (!getRepliesCommentQuery.data) return
+    setReplies(getRepliesCommentQuery.data.data.data.comments)
+  }, [getRepliesCommentQuery.data])
+
+  // Đặt giá trị cho reply count
+  useEffect(() => {
+    setReplyCount(commentData.replyCount)
+  }, [commentData])
+
+  // Ẩn hiện phần phản hồi bình luận
+  const toggleReplies = () => {
+    setIsShowReplies((prev) => !prev)
   }
 
   return (
-    <div className='flex items-start space-x-4 group'>
-      <Link href={'/'} className='flex-shrink-0'>
-        <Avatar
-          className={classNames({
-            'w-6 h-6': !isRootComment
-          })}
-        >
-          <AvatarImage src={commentData.author.avatar} alt={commentData.author.channelName} />
-          <AvatarFallback
-            className={classNames({
-              'text-xs': !isRootComment
-            })}
-          >
-            {commentData.author.channelName[0].toUpperCase()}
-          </AvatarFallback>
-        </Avatar>
-      </Link>
-      <div className='flex-1 space-y-1'>
-        <div className='flex items-center space-x-3'>
-          <div className='flex items-center space-x-1'>
-            <h4 className='text-[13px] font-medium'>@{commentData.author.username}</h4>
-            <CheckCircle2 size={12} className='fill-blue-600 dark:fill-blue-500 stroke-background' />
+    <CommentItemContext.Provider
+      value={{
+        rootCommentData: commentData,
+        toggleReplies,
+        replies,
+        setReplies,
+        replyCount,
+        setReplyCount
+      }}
+    >
+      <div>
+        {/* Comment gốc */}
+        <CommentRow contentId={contentId} commentData={commentData} isShowReplies={isShowReplies} />
+        {getRepliesCommentQuery.isLoading && (
+          <div className='flex justify-center'>
+            <Loader2 className='animate-spin w-10 h-10 stroke-muted-foreground' />
           </div>
-          <div className='text-muted-foreground text-xs'>
-            {convertMomentToVietnamese(moment(commentData.createdAt).fromNow())}
-          </div>
-        </div>
-        <div className='text-sm'>{commentData.content}</div>
-        <div className='flex items-center space-x-3 -ml-2'>
-          <div className='space-x-1 flex items-center'>
-            <Button variant='ghost' size='icon' className='rounded-full'>
-              <ThumbsUp strokeWidth={1.5} size={16} />
-            </Button>
-            <span className='text-xs text-muted-foreground'>{commentData.likeCount}</span>
-          </div>
-          <div className='space-x-1 flex items-center'>
-            <Button variant='ghost' size='icon' className='rounded-full'>
-              <ThumbsDown strokeWidth={1.5} size={16} />
-            </Button>
-            <span className='text-xs text-muted-foreground'>{commentData.likeCount}</span>
-          </div>
-          <Button variant='ghost' className='text-xs rounded-full' onClick={handleStartReply}>
-            Phản hồi
-          </Button>
-        </div>
-        {/* Nhập phản hồi */}
-        {account && (
-          <CommentInput
-            isRootComment={false}
-            accountData={account}
-            contentId={contentId}
-            isShow={isShowReplyInput}
-            parentCommentId={commentData._id}
-            authorId={commentData.author._id}
-            onCancel={handleStopReply}
-            onReplySuccess={onReplySuccess}
-          />
         )}
-        {isRootComment && !!replyCount && replyCount > 0 && (
-          <Button
-            variant='ghost'
-            className='rounded-full space-x-2 text-blue-600 hover:text-blue-600 hover:bg-blue-500/10 -ml-3.5'
-            onClick={handleShowReplies}
-          >
-            <ChevronDown
-              size={16}
-              className={classNames({
-                'transition-all': true,
-                '-rotate-180': isShowReplies
-              })}
-            />
-            <span>{commentData.replyCount} phản hồi</span>
-          </Button>
+        {/* Danh sách phản hồi comment */}
+        {replies.length > 0 && isShowReplies && (
+          <div className='pl-11 py-4 space-y-3'>
+            {replies.map((comment) => (
+              <CommentRow key={comment._id} commentData={comment} contentId={contentId} isRootComment={false} />
+            ))}
+          </div>
         )}
       </div>
-      <Popover>
-        <PopoverTrigger className='opacity-0 group-hover:opacity-100' asChild>
-          <Button size='icon' variant='ghost' className='flex-shrink-0 rounded-full'>
-            <MoreVertical size={18} />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent align='start' className='p-0 w-auto flex flex-col py-2 rounded-xl'>
-          <Button variant='ghost' className='space-x-3 justify-start rounded-none pr-10'>
-            <Flag size={18} strokeWidth={1.5} />
-            <span>Báo vi phạm</span>
-          </Button>
-        </PopoverContent>
-      </Popover>
-    </div>
+    </CommentItemContext.Provider>
   )
 }
 

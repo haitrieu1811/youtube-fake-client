@@ -5,7 +5,10 @@ import {
   CreateCommentResponse,
   ReplyCommentReqBody,
   ReplyCommentResponse,
-  GetRepliesCommentResponse
+  GetRepliesCommentResponse,
+  GetCommentDetailResponse,
+  UpdateCommentResponse,
+  UpdateCommentReqBody
 } from '@/types/comment.types'
 import { PaginationReqQuery } from '@/types/utils.types'
 
@@ -28,6 +31,16 @@ const commentApis = {
   // Lấy danh sách trả lời comment
   getRepliesComment({ commentId, params }: { commentId: string; params?: PaginationReqQuery }) {
     return http.get<GetRepliesCommentResponse>(`/comments/${commentId}/replies`, { params })
+  },
+
+  // Lấy chi tiết bình luận
+  getCommentDetail(commentId: string) {
+    return http.get<GetCommentDetailResponse>(`/comments/${commentId}`)
+  },
+
+  // Cập nhật bình luận
+  updateComment({ commentId, body }: { commentId: string; body: UpdateCommentReqBody }) {
+    return http.patch<UpdateCommentResponse>(`/comments/${commentId}`, body)
   }
 } as const
 

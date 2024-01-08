@@ -6,7 +6,7 @@ import { Fragment, useEffect, useState } from 'react'
 
 import commentApis from '@/apis/comment.apis'
 import CommentInput from '@/components/comment-input'
-import CommentRow from '@/components/comment-row'
+import CommentItem from '@/components/comment-item'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { AccountType } from '@/types/account.types'
@@ -23,7 +23,7 @@ const Comment = ({ accountData, videoId }: CommentProps) => {
 
   // Query: Lấy danh sách comment
   const getCommentsQuery = useQuery({
-    queryKey: ['getComments'],
+    queryKey: ['getComments', videoId],
     queryFn: () => commentApis.getComments({ contentId: videoId })
   })
 
@@ -62,16 +62,11 @@ const Comment = ({ accountData, videoId }: CommentProps) => {
         </Popover>
       </div>
       {accountData && (
-        <CommentInput
-          isRootComment
-          accountData={accountData}
-          contentId={videoId}
-          onSuccess={(newComment) => handleNewComment(newComment)}
-        />
+        <CommentInput isRootComment contentId={videoId} onSuccess={(newComment) => handleNewComment(newComment)} />
       )}
       <div className='mt-6 space-y-5'>
         {comments.map((comment) => (
-          <CommentRow key={comment._id} commentData={comment} contentId={videoId} />
+          <CommentItem key={comment._id} commentData={comment} contentId={videoId} />
         ))}
       </div>
     </Fragment>

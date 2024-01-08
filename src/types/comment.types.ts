@@ -22,6 +22,18 @@ export type CommentItemType = {
   updatedAt: string
 }
 
+export type CommentDetailType = {
+  _id: string
+  accountId: string
+  contentId: string
+  parentId: string | null
+  content: string
+  type: number
+  replyAccountId: string | null
+  createdAt: string
+  updatedAt: string
+}
+
 // Request: Thêm comment
 export type CreateCommentReqBody = {
   contentId: string
@@ -33,6 +45,11 @@ export type CreateCommentReqBody = {
 export type ReplyCommentReqBody = {
   content: string
   replyAccountId?: string
+}
+
+// Request: Cập nhật comment
+export type UpdateCommentReqBody = {
+  content: string
 }
 
 // Response: Lấy danh sách comment
@@ -55,4 +72,14 @@ export type ReplyCommentResponse = SuccessResponse<{
 export type GetRepliesCommentResponse = SuccessResponse<{
   comments: CommentItemType[]
   pagination: PaginationType
+}>
+
+// Response: Lấy chi tiết bình luận
+export type GetCommentDetailResponse = SuccessResponse<{
+  comment: CommentDetailType
+}>
+
+// Response: Cập nhật bình luận
+export type UpdateCommentResponse = SuccessResponse<{
+  comment: CommentDetailType
 }>

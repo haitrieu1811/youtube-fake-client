@@ -2,48 +2,55 @@
 
 import { useMutation } from '@tanstack/react-query'
 import classNames from 'classnames'
-import { ChangeEvent, FormEvent, Fragment, useState } from 'react'
 import { Loader2 } from 'lucide-react'
+import { ChangeEvent, FormEvent, Fragment, useContext, useState } from 'react'
 
 import commentApis from '@/apis/comment.apis'
 import { CommentType } from '@/constants/enum'
-import { AccountType } from '@/types/account.types'
+import { AppContext } from '@/providers/app-provider'
+import { CommentItemType } from '@/types/comment.types'
+import { CommentItemContext } from './comment-item'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
-import { CommentItemType } from '@/types/comment.types'
 
 type CommentInputProps = {
-  accountData: AccountType
   isRootComment?: boolean
-  contentId: string
-  onSuccess?: (newComment: CommentItemType) => void
   isShow?: boolean
-  onCancel?: () => void
-  parentCommentId?: string
   authorId?: string
-  onReplySuccess?: (newComment: CommentItemType) => void
+  contentId: string
+  autoFocus?: boolean
+  value?: string
+  actionText?: string
+  cancelText?: string
+  commentId?: string
+  onCancel?: () => void
+  onSuccess?: (newComment: CommentItemType) => void
 }
 
 const CommentInput = ({
-  accountData,
   isRootComment = false,
-  contentId,
-  onSuccess,
   isShow = true,
-  onCancel,
-  parentCommentId,
   authorId,
-  onReplySuccess
+  contentId,
+  autoFocus = false,
+  value,
+  actionText = 'Bình luận',
+  cancelText = 'Hủy',
+  commentId,
+  onCancel,
+  onSuccess
 }: CommentInputProps) => {
-  const [content, setContent] = useState<string>('')
-  const [isStart, setIsStart] = useState<boolean>(false)
+  const { account } = useContext(AppContext)
+  const { rootCommentData, setReplies, setReplyCount } = useContext(CommentItemContext)
+  const [content, setContent] = useState<string>(value || '')
+  const [isStartComment, setIsStartComment] = useState<boolean>(false)
 
   const startComment = () => {
-    setIsStart(true)
+    setIsStartComment(true)
   }
 
   const stopComment = () => {
-    setIsStart(false)
+    setIsStartComment(false)
     setContent('')
     onCancel && onCancel()
   }
@@ -52,7 +59,7 @@ const CommentInput = ({
     setContent(e.target.value)
   }
 
-  // Mutation: Thêm comment
+  // Mutation: Thêm bình luận
   const createCommentMutation = useMutation({
     mutationKey: ['createComment'],
     mutationFn: commentApis.createComment,
@@ -63,7 +70,7 @@ const CommentInput = ({
     }
   })
 
-  // Mutation: Trả lời comment
+  // Mutation: Trả lời bình luận
   const replyCommentMutation = useMutation({
     mutationKey: ['replyComment'],
     mutationFn: commentApis.replyComment,
@@ -71,14 +78,28 @@ const CommentInput = ({
       const { comment } = data.data.data
       onSuccess && onSuccess(comment)
       stopComment()
-      onReplySuccess && onReplySuccess(comment)
+      setReplies((prevState) => [comment, ...prevState])
+      setReplyCount((prevState) => (prevState += 1))
     }
   })
 
-  // Thêm comment
-  const handleCreateComment = (e: FormEvent<HTMLFormElement>) => {
+  // Mutation: Cập nhật bình luận
+  const updateCommentMutation = useMutation({
+    mutationKey: ['updateComment'],
+    mutationFn: commentApis.updateComment
+  })
+
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!content.trim()) return
+    if (commentId) {
+      updateCommentMutation.mutate({
+        commentId,
+        body: {
+          content
+        }
+      })
+    }
     if (isRootComment) {
       createCommentMutation.mutate({
         content,
@@ -86,9 +107,9 @@ const CommentInput = ({
         type: CommentType.Video
       })
     } else {
-      if (!parentCommentId) return
+      if (!rootCommentData) return
       replyCommentMutation.mutate({
-        commentId: parentCommentId,
+        commentId: rootCommentData._id,
         body: {
           content,
           replyAccountId: authorId
@@ -101,19 +122,21 @@ const CommentInput = ({
     <Fragment>
       {isShow && (
         <div className='flex items-start space-x-5'>
-          <Avatar
-            className={classNames({
-              'flex-shrink-0': true,
-              'w-6 h-6': !isRootComment
-            })}
-          >
-            <AvatarImage src={accountData.avatar} alt={accountData.channelName} />
-            <AvatarFallback>{accountData.channelName[0].toUpperCase()}</AvatarFallback>
-          </Avatar>
+          {account && (
+            <Avatar
+              className={classNames({
+                'flex-shrink-0': true,
+                'w-6 h-6': !isRootComment
+              })}
+            >
+              <AvatarImage src={account.avatar} alt={account.channelName} />
+              <AvatarFallback>{account.channelName[0].toUpperCase()}</AvatarFallback>
+            </Avatar>
+          )}
           <div className='flex-1'>
-            <form onSubmit={handleCreateComment}>
+            <form onSubmit={onSubmit}>
               <input
-                autoFocus={!isRootComment}
+                autoFocus={autoFocus}
                 type='text'
                 placeholder={isRootComment ? 'Viết bình luận...' : 'Phản hồi...'}
                 value={content}
@@ -126,10 +149,10 @@ const CommentInput = ({
                 onFocus={startComment}
               />
               <div className='flex justify-end items-center space-x-3 mt-2'>
-                {isStart && (
+                {isStartComment && (
                   <Fragment>
                     <Button type='button' variant='ghost' className='rounded-full' onClick={stopComment}>
-                      Hủy
+                      {cancelText}
                     </Button>
                     <Button
                       type='submit'
@@ -137,7 +160,7 @@ const CommentInput = ({
                       className='rounded-full bg-blue-700 hover:bg-blue-800 text-white'
                     >
                       {createCommentMutation.isPending && <Loader2 className='w-4 h-4 mr-3 animate-spin' />}
-                      {isRootComment ? 'Bình luận' : 'Phản hồi'}
+                      {actionText}
                     </Button>
                   </Fragment>
                 )}

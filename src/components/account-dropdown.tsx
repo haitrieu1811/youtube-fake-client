@@ -85,7 +85,7 @@ const AccountDropdown = ({ accountData }: AccountDropdownProps) => {
       {
         icon: MonitorPlay,
         text: 'YouTube Studio',
-        onClick: () => router.push(PATH.STUDIO)
+        path: PATH.STUDIO
       },
       {
         icon: Settings,
@@ -130,18 +130,35 @@ const AccountDropdown = ({ accountData }: AccountDropdownProps) => {
               <Separator />
               <div className='py-2'>
                 {accountMenus.map((item) => (
-                  <Button
-                    key={item.text}
-                    variant='ghost'
-                    className='flex justify-between items-center rounded-none w-full px-4 py-5 font-normal'
-                    onClick={item.onClick}
-                  >
-                    <div className='space-x-4 flex items-center'>
-                      <item.icon size={18} strokeWidth={1.5} />
-                      <span>{item.text}</span>
-                    </div>
-                    {item.isHasChildrenMenu && <ChevronRight size={20} strokeWidth={1.5} />}
-                  </Button>
+                  <Fragment>
+                    {!item.path && (
+                      <Button
+                        key={item.text}
+                        variant='ghost'
+                        className='flex justify-between items-center rounded-none w-full px-4 py-5 font-normal'
+                        onClick={item.onClick}
+                      >
+                        <div className='space-x-4 flex items-center'>
+                          <item.icon size={18} strokeWidth={1.5} />
+                          <span>{item.text}</span>
+                        </div>
+                        {item.isHasChildrenMenu && <ChevronRight size={20} strokeWidth={1.5} />}
+                      </Button>
+                    )}
+                    {item.path && (
+                      <Button
+                        key={item.text}
+                        variant='ghost'
+                        className='justify-start space-x-4 rounded-none w-full px-4 py-5 font-normal'
+                        asChild
+                      >
+                        <Link href={item.path}>
+                          <item.icon size={18} strokeWidth={1.5} />
+                          <span>{item.text}</span>
+                        </Link>
+                      </Button>
+                    )}
+                  </Fragment>
                 ))}
               </div>
             </Fragment>
