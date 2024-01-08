@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter as FontSans } from 'next/font/google'
+import NextTopLoader from 'nextjs-toploader'
 
 import { Toaster } from '@/components/ui/toaster'
 import { cn } from '@/lib/utils'
@@ -33,6 +34,7 @@ const RootLayout = ({ children, uploadVideo }: RootLayoutProps) => {
               {children}
               {uploadVideo}
               <Toaster />
+              <NextTopLoader color='red' showSpinner={false} />
             </ThemeProvider>
           </AppProvider>
         </TanstackProvider>
