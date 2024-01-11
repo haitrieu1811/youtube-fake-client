@@ -8,6 +8,7 @@ import { SearchResultItem } from '@/types/search.types'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Badge } from './ui/badge'
 import VideoActions from './video-actions'
+import PATH from '@/constants/path'
 
 type HorizontalVideoProps = {
   videoData: SearchResultItem
@@ -16,7 +17,7 @@ type HorizontalVideoProps = {
 const HorizontalVideo = ({ videoData }: HorizontalVideoProps) => {
   return (
     <div className='flex space-x-4'>
-      <Link href={`/watch/${videoData.idName}`} className='flex-shrink-0 basis-1/3 h-[200px]'>
+      <Link href={PATH.WATCH(videoData.idName)} className='flex-shrink-0 basis-1/3 h-[200px]'>
         <Image
           width={500}
           height={500}
@@ -28,7 +29,7 @@ const HorizontalVideo = ({ videoData }: HorizontalVideoProps) => {
       <div className='flex-1 group'>
         <div className='flex space-x-4'>
           <div className='flex-1'>
-            <Link href={`/watch/${videoData.idName}`} className='text-lg tracking-tight'>
+            <Link href={PATH.WATCH(videoData.idName)} className='text-lg tracking-tight'>
               <h3 className='line-clamp-2'>{videoData.title}</h3>
             </Link>
             <div className='flex items-center space-x-2 text-xs text-muted-foreground'>
@@ -36,7 +37,7 @@ const HorizontalVideo = ({ videoData }: HorizontalVideoProps) => {
               <span className='w-[3px] h-[3px] bg-muted-foreground rounded-full' />
               <span>{convertMomentToVietnamese(moment(videoData.createdAt).fromNow())}</span>
             </div>
-            <Link href={`/@${videoData.author.username}`} className='inline-flex items-center space-x-2 my-3'>
+            <Link href={PATH.PROFILE(videoData.author.username)} className='inline-flex items-center space-x-2 my-3'>
               <Avatar className='w-6 h-6'>
                 <AvatarImage src={videoData.author.avatar} alt={videoData.author.channelName} />
                 <AvatarFallback>{videoData.author.channelName[0].toUpperCase()}</AvatarFallback>

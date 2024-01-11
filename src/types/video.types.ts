@@ -107,6 +107,12 @@ export type UpdateVideoReqBody = {
   isDraft?: boolean
 }
 
+// Request: Lấy danh sách video của tôi
+export type GetVideosOfMeReqQuery = PaginationReqQuery & {
+  sortBy?: string
+  orderBy?: 'asc' | 'desc'
+}
+
 // Response: Lấy danh sách video công khai
 export type GetPublicVideosResponse = SuccessResponse<{
   videos: VideoItemType[]
@@ -130,6 +136,12 @@ export type GetVideosOfMeResponse = SuccessResponse<{
   pagination: PaginationType
 }>
 
+// Response: Lấy danh sách video theo username
+export type GetVideosByUsernameResponse = SuccessResponse<{
+  videos: VideoItemType[]
+  pagination: PaginationType
+}>
+
 // Response: Cập nhật video
 export type UpdateVideoResponse = SuccessResponse<{
   video: {
@@ -147,19 +159,6 @@ export type UpdateVideoResponse = SuccessResponse<{
     updatedAt: string
   }
 }>
-
-const a = {
-  _id: '_id',
-  idName: 'RvwnogKHWrs4IHiXcKMkJ',
-  thumbnail: 'http://localhost:4000/static/images/8f150360e0fb01ee0533e9704.jpg',
-  title: 'RvwnogKHWrs4IHiXcKMkJ',
-  description: '',
-  viewCount: 0,
-  audience: 1,
-  isDraft: true,
-  createdAt: '2024-01-03T03:04:13.739Z',
-  updatedAt: '2024-01-03T03:04:23.795Z'
-}
 
 // Response: Lấy thông tin video để cập nhật
 export type GetVideoDetailToUpdateResponse = SuccessResponse<{

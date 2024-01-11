@@ -1,30 +1,22 @@
 'use client'
 
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { MediaPlayer, MediaProvider } from '@vidstack/react'
 import { DefaultVideoLayout, defaultLayoutIcons } from '@vidstack/react/player/layouts/default'
 import '@vidstack/react/player/styles/default/layouts/video.css'
 import '@vidstack/react/player/styles/default/theme.css'
-import { Bell, CheckCircle2, Download, Flag, ListPlus, Loader2, MoreHorizontal, Share2 } from 'lucide-react'
+import { CheckCircle2, Download, Flag, ListPlus, MoreHorizontal, Share2 } from 'lucide-react'
 import moment from 'moment'
 import Link from 'next/link'
 import { Fragment, useContext, useEffect, useMemo, useState } from 'react'
 
 import videoApis from '@/apis/video.apis'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTrigger
-} from '@/components/ui/alert-dialog'
+import SubscribeButton from '@/components/subscribe-button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
+import PATH from '@/constants/path'
 import { convertMomentToVietnamese } from '@/lib/utils'
 import { AppContext } from '@/providers/app-provider'
 import Comment from './comment'
@@ -39,7 +31,6 @@ const MAX_LENGTH_OF_DESCRIPTION = 50
 const WatchClient = ({ idName }: WatchClientProps) => {
   const { account } = useContext(AppContext)
   const [isShowMoreDescription, setIsShowMoreDescription] = useState<boolean>(false)
-  const [isSubscribed, setIsSubscribed] = useState<boolean>(false)
   const [subscribeCount, setSubscribeCount] = useState<number>(0)
 
   // Query: Lấy thông tin chi tiết video
@@ -54,45 +45,12 @@ const WatchClient = ({ idName }: WatchClientProps) => {
   // Cập nhật thông tin video
   useEffect(() => {
     if (!videoInfo) return
-    setIsSubscribed(videoInfo.channel.isSubscribed)
     setSubscribeCount(videoInfo.channel.subscribeCount)
   }, [videoInfo])
 
   // Xem thêm mô tả
   const handleShowMoreDescription = () => {
     setIsShowMoreDescription((prevState) => !prevState)
-  }
-
-  // Mutation: Đăng ký kênh
-  const subscribeMutation = useMutation({
-    mutationKey: ['subscribe'],
-    mutationFn: videoApis.subscribe,
-    onSuccess: () => {
-      setIsSubscribed(true)
-      setSubscribeCount((prev) => (prev += 1))
-    }
-  })
-
-  // Mutation: Hủy đăng ký kênh
-  const unsubscribeMutation = useMutation({
-    mutationKey: ['unsubscribe'],
-    mutationFn: videoApis.unsubscribe,
-    onSuccess: () => {
-      setIsSubscribed(false)
-      setSubscribeCount((prev) => (prev -= 1))
-    }
-  })
-
-  // Đăng ký kênh
-  const handleSubscribe = () => {
-    if (!videoInfo || isSubscribed) return
-    subscribeMutation.mutate(videoInfo.channel._id)
-  }
-
-  // Hủy đăng ký kênh
-  const handleUnsubscribe = () => {
-    if (!videoInfo || !isSubscribed) return
-    unsubscribeMutation.mutate(videoInfo.channel._id)
   }
 
   return (
@@ -116,7 +74,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
                   {/* Thông tin kênh người đăng */}
                   <div className='flex items-center space-x-6'>
                     <div className='flex'>
-                      <Link href='/'>
+                      <Link href={PATH.PROFILE(videoInfo.channel.username)}>
                         <Avatar>
                           <AvatarImage src={videoInfo.channel.avatar} alt={videoInfo.channel.channelName} />
                           <AvatarFallback>{videoInfo.channel.channelName[0].toUpperCase()}</AvatarFallback>
@@ -124,7 +82,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
                       </Link>
                       <div className='flex-1 ml-3'>
                         <div className='flex items-center'>
-                          <Link href='/' className='font-medium'>
+                          <Link href={PATH.PROFILE(videoInfo.channel.username)} className='font-medium'>
                             {videoInfo.channel.channelName}
                           </Link>
                           {videoInfo.channel.tick && (
@@ -134,40 +92,13 @@ const WatchClient = ({ idName }: WatchClientProps) => {
                         <div className='text-xs text-muted-foreground'>{subscribeCount} người đăng ký</div>
                       </div>
                     </div>
-                    {!isSubscribed && (
-                      <Button disabled={subscribeMutation.isPending} className='rounded-full' onClick={handleSubscribe}>
-                        {subscribeMutation.isPending && <Loader2 className='w-4 h-4 mr-3 animate-spin' />}
-                        Đăng ký
-                      </Button>
-                    )}
-                    {isSubscribed && (
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant='secondary' className='rounded-full space-x-3'>
-                            <Bell size={18} strokeWidth={1.5} />
-                            <span>Đã đăng ký</span>
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent className='max-w-xs'>
-                          <AlertDialogHeader>
-                            <AlertDialogDescription className='pb-6'>
-                              Hủy đăng ký {videoInfo.channel.channelName}?
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel className='rounded-full'>Hủy</AlertDialogCancel>
-                            <AlertDialogAction
-                              disabled={unsubscribeMutation.isPending}
-                              className='rounded-full'
-                              onClick={handleUnsubscribe}
-                            >
-                              {unsubscribeMutation.isPending && <Loader2 className='w-3 h-3 mr-2 animate-spin' />}
-                              Hủy đăng ký
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    )}
+                    <SubscribeButton
+                      isSubscribedBefore={videoInfo.channel.isSubscribed}
+                      channelId={videoInfo.channel._id}
+                      channelName={videoInfo.channel.channelName}
+                      onSubscribeSuccess={() => setSubscribeCount((prevState) => (prevState += 1))}
+                      onUnsubscribeSuccess={() => setSubscribeCount((prevState) => (prevState -= 1))}
+                    />
                   </div>
                   {/* Like, dislike, chia sẻ */}
                   <div className='flex items-center space-x-4'>

@@ -56,6 +56,8 @@ const ME_LINKS = [
   }
 ]
 
+const SUBSCRIBED_CHANNELS_LIMIT = 7
+
 const MainSidebar = () => {
   const pathname = usePathname()
   const { isAuthenticated } = useContext(AppContext)
@@ -104,7 +106,7 @@ const MainSidebar = () => {
         {isClientWithAuthenticated && (
           <Fragment>
             <div className='space-y-1'>
-              <h2 className='font-bold px-4 mb-4'>Bạn</h2>
+              <h2 className='font-semibold px-4 mb-4'>Bạn</h2>
               {ME_LINKS.map((item) => (
                 <Button
                   key={item.text}
@@ -125,29 +127,29 @@ const MainSidebar = () => {
             </div>
             <Separator />
             <div className='space-y-1'>
-              <h2 className='font-bold px-4 mb-4'>Kênh đăng ký</h2>
-              {subscribedChannels.map((channel) => (
+              <h2 className='font-semibold px-4 mb-4'>Kênh đăng ký</h2>
+              {subscribedChannels.slice(0, SUBSCRIBED_CHANNELS_LIMIT).map((channel) => (
                 <Button
                   key={channel._id}
                   variant='ghost'
                   className='w-full flex justify-start space-x-5 font-normal'
                   asChild
                 >
-                  <Link href={`/@${channel.username}`}>
+                  <Link href={PATH.PROFILE(channel.username)}>
                     <Avatar className='w-6 h-6'>
                       <AvatarImage src={channel.avatar} className='object-cover' />
-                      <AvatarFallback className='text-xs font-semibold'>
-                        {channel.channelName[0].toUpperCase()}{' '}
-                      </AvatarFallback>
+                      <AvatarFallback className='text-xs'>{channel.channelName[0].toUpperCase()} </AvatarFallback>
                     </Avatar>
                     <span>{channel.channelName}</span>
                   </Link>
                 </Button>
               ))}
-              <Button variant='ghost' className='w-full flex justify-start space-x-5 font-normal'>
-                <ChevronDown strokeWidth={1.5} size={18} />
-                <span className='line-clamp-1'>Hiển thị thêm</span>
-              </Button>
+              {subscribedChannels.length > SUBSCRIBED_CHANNELS_LIMIT && (
+                <Button variant='ghost' className='w-full flex justify-start space-x-5 font-normal'>
+                  <ChevronDown strokeWidth={1.5} size={18} />
+                  <span className='line-clamp-1'>Hiển thị thêm</span>
+                </Button>
+              )}
             </div>
           </Fragment>
         )}

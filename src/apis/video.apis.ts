@@ -10,7 +10,9 @@ import {
   GetVideosOfMeResponse,
   UpdateVideoReqBody,
   UpdateVideoResponse,
-  WatchVideoResponse
+  WatchVideoResponse,
+  GetVideosOfMeReqQuery,
+  GetVideosByUsernameResponse
 } from '@/types/video.types'
 
 const videoApis = {
@@ -30,8 +32,13 @@ const videoApis = {
   },
 
   // Lấy danh sách video của tôi
-  getVideosOfMe(params?: PaginationReqQuery) {
+  getVideosOfMe(params?: GetVideosOfMeReqQuery) {
     return http.get<GetVideosOfMeResponse>('/videos/me', { params })
+  },
+
+  // Lấy danh sách video theo username
+  getVideosByUsername({ params, username }: { params?: GetVideosOfMeReqQuery; username: string }) {
+    return http.get<GetVideosByUsernameResponse>(`/videos/username/${username}`, { params })
   },
 
   // Cập nhật video

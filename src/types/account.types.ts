@@ -15,7 +15,7 @@ export type AccountType = {
   updatedAt: string
 }
 
-type MeType = {
+type ProfileType = {
   _id: string
   email: string
   username: string
@@ -24,8 +24,10 @@ type MeType = {
   avatar: string
   cover: string
   tick: boolean
-  videoCount: boolean
-  subscriptionCount: boolean
+  videoCount: number
+  subscribeCount: number
+  isSubscribed: boolean
+  totalViewCount: number
   createdAt: string
   updatedAt: string
 }
@@ -56,7 +58,7 @@ export type UpdateMeReqBody = {
 export type GetMeResponse = SuccessResponse<{
   accessToken: string
   refreshToken: string
-  me: MeType
+  me: ProfileType
 }>
 
 // Response: Cập nhật kênh của tôi
@@ -64,4 +66,9 @@ export type UpdateMeResponse = SuccessResponse<{
   accessToken: string
   refreshToken: string
   account: AccountType
+}>
+
+// Response: Lấy thông tin channel
+export type GetChannelByUsernameResponse = SuccessResponse<{
+  account: ProfileType
 }>

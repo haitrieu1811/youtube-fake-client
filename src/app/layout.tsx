@@ -1,5 +1,5 @@
 import type { Metadata } from 'next'
-import { Kanit } from 'next/font/google'
+import { Chivo as FontSans } from 'next/font/google'
 import NextTopLoader from 'nextjs-toploader'
 
 import { Toaster } from '@/components/ui/toaster'
@@ -8,7 +8,7 @@ import TanstackProvider from '@/providers/tanstack-provider'
 import ThemeProvider from '@/providers/theme-provider'
 import './globals.css'
 
-export const fontSans = Kanit({
+export const fontSans = FontSans({
   subsets: ['latin'],
   weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900']
 })
@@ -33,7 +33,7 @@ const RootLayout = ({ children, uploadVideo }: RootLayoutProps) => {
               {children}
               {uploadVideo}
               <Toaster />
-              <NextTopLoader color='red' height={2} showSpinner={false} shadow={false} />
+              <NextTopLoader color='red' showSpinner={false} shadow={false} />
             </ThemeProvider>
           </AppProvider>
         </TanstackProvider>

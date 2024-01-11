@@ -1,6 +1,13 @@
 import { getRefreshTokenFromLS } from '@/lib/auth'
 import http from '@/lib/http'
-import { GetMeResponse, LoginReqBody, RegisterReqBody, UpdateMeResponse, UpdateMeReqBody } from '@/types/account.types'
+import {
+  GetMeResponse,
+  LoginReqBody,
+  RegisterReqBody,
+  UpdateMeResponse,
+  UpdateMeReqBody,
+  GetChannelByUsernameResponse
+} from '@/types/account.types'
 import { AuthResponse } from '@/types/auth.types'
 import { OnlyMessageResponse } from '@/types/utils.types'
 
@@ -34,6 +41,11 @@ const accountApis = {
   // Cập nhật kênh của tôi
   updateMe(body: UpdateMeReqBody) {
     return http.patch<UpdateMeResponse>('/accounts/me', body)
+  },
+
+  // Lấy thông tin channel theo username
+  getChannelByUsername(username: string) {
+    return http.get<GetChannelByUsernameResponse>(`/accounts/profile/${username}`)
   }
 }
 

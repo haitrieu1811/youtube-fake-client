@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 
-import ChannelPage from '@/components/channel-page'
+import ChannelClient from './_components/channel-client'
 
 export const metadata: Metadata = {
   title: 'Kênh của tôi',
@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 }
 
 const Channel = () => {
-  return <ChannelPage />
+  return <ChannelClient />
 }
 
 export default Channel
