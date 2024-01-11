@@ -2,10 +2,10 @@
 
 import { useMutation } from '@tanstack/react-query'
 import Tippy from '@tippyjs/react/headless'
-import { ArrowLeft, Check, ChevronRight, LogOut, MonitorPlay, Moon, Settings } from 'lucide-react'
+import { ArrowLeft, Check, ChevronRight, LogOut, MonitorPlay, Moon, Settings, Youtube } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { Fragment, useContext, useMemo, useState } from 'react'
 
 import accountApis from '@/apis/account.apis'
@@ -43,6 +43,7 @@ const modeToVietnamese = {
 
 const AccountDropdown = ({ accountData }: AccountDropdownProps) => {
   const router = useRouter()
+  const pathname = usePathname()
   const { setTheme, theme } = useTheme()
   const [isParentMenu, setIsParentMenu] = useState<boolean>(true)
   const { setIsAuthenticated, setAccount } = useContext(AppContext)
@@ -82,11 +83,17 @@ const AccountDropdown = ({ accountData }: AccountDropdownProps) => {
         isHasChildrenMenu: true,
         onClick: nextToChildrenMenu
       },
-      {
-        icon: MonitorPlay,
-        text: 'YouTube Studio',
-        path: PATH.STUDIO
-      },
+      !pathname.includes('/studio')
+        ? {
+            icon: MonitorPlay,
+            text: 'YouTube Studio',
+            path: PATH.STUDIO
+          }
+        : {
+            icon: Youtube,
+            text: 'YouTube',
+            path: PATH.HOME
+          },
       {
         icon: Settings,
         text: 'Cài đặt'

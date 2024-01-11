@@ -6,6 +6,8 @@ const PATH = {
   COMMUNITY: '/community',
   SUBSCRIPTIONS: '/subscriptions',
   UPLOAD_VIDEO: '/upload-video',
+  RESULTS: '/results',
+
   STUDIO: '/studio',
   STUDIO_CONTENT: '/studio/content',
   STUDIO_COMMENT: '/studio/comment',

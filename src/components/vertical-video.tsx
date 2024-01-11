@@ -1,4 +1,4 @@
-import { CheckCircle2, Flag, History, ListPlus, MoreVertical } from 'lucide-react'
+import { CheckCircle2 } from 'lucide-react'
 import moment from 'moment'
 import Image from 'next/image'
 import Link from 'next/link'
@@ -6,8 +6,7 @@ import Link from 'next/link'
 import { convertMomentToVietnamese, formatViews } from '@/lib/utils'
 import { VideoItemType } from '@/types/video.types'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
-import { Button } from './ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
+import VideoActions from './video-actions'
 
 type VerticalVideoProps = {
   videoData: VideoItemType
@@ -47,27 +46,7 @@ const VerticalVideo = ({ videoData }: VerticalVideoProps) => {
                 )}
               </div>
             </div>
-            <DropdownMenu>
-              <DropdownMenuTrigger className='opacity-0 group-hover:opacity-100' asChild>
-                <Button size='icon' variant='ghost' className='w-9 h-9 rounded-full'>
-                  <MoreVertical size={18} />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align='end' className='bg-background py-2'>
-                <DropdownMenuItem className='space-x-4 px-4 py-2.5 hover:cursor-pointer'>
-                  <History size={18} strokeWidth={1.5} />
-                  <span>Thêm vào danh sách xem sau</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className='space-x-4 px-4 py-2.5 hover:cursor-pointer'>
-                  <Flag size={18} strokeWidth={1.5} />
-                  <span>Báo vi phạm</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem className='space-x-4 px-4 py-2.5 hover:cursor-pointer'>
-                  <ListPlus size={18} strokeWidth={1.5} />
-                  <span>Thêm vào playlist</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            <VideoActions className='opacity-0 group-hover:opacity-100' />
           </div>
           <div className='text-sm text-muted-foreground flex items-center space-x-2'>
             <div>{formatViews(videoData.viewCount)} lượt xem</div>

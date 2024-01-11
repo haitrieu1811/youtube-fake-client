@@ -1,17 +1,16 @@
 import type { Metadata } from 'next'
-import { Inter as FontSans } from 'next/font/google'
+import { Kanit } from 'next/font/google'
 import NextTopLoader from 'nextjs-toploader'
 
 import { Toaster } from '@/components/ui/toaster'
-import { cn } from '@/lib/utils'
 import AppProvider from '@/providers/app-provider'
 import TanstackProvider from '@/providers/tanstack-provider'
 import ThemeProvider from '@/providers/theme-provider'
 import './globals.css'
 
-export const fontSans = FontSans({
+export const fontSans = Kanit({
   subsets: ['latin'],
-  variable: '--font-sans'
+  weight: ['100', '200', '300', '400', '500', '600', '700', '800', '900']
 })
 
 export const metadata: Metadata = {
@@ -27,14 +26,14 @@ type RootLayoutProps = {
 const RootLayout = ({ children, uploadVideo }: RootLayoutProps) => {
   return (
     <html lang='en' suppressHydrationWarning>
-      <body className={cn('min-h-screen bg-background font-sans antialiased', fontSans.variable)}>
+      <body className={fontSans.className}>
         <TanstackProvider>
           <AppProvider>
             <ThemeProvider attribute='class' defaultTheme='system'>
               {children}
               {uploadVideo}
               <Toaster />
-              <NextTopLoader color='red' showSpinner={false} />
+              <NextTopLoader color='red' height={2} showSpinner={false} shadow={false} />
             </ThemeProvider>
           </AppProvider>
         </TanstackProvider>
