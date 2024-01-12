@@ -15,6 +15,7 @@ export const URL_LOGIN = '/accounts/login'
 export const URL_LOGOUT = '/accounts/logout'
 export const URL_REGISTER = '/accounts/register'
 export const URL_REFRESH_TOKEN = '/accounts/refresh-token'
+export const URL_UPDATE_ME = '/accounts/me'
 
 const accountApis = {
   // Đăng nhập
@@ -40,7 +41,7 @@ const accountApis = {
 
   // Cập nhật kênh của tôi
   updateMe(body: UpdateMeReqBody) {
-    return http.patch<UpdateMeResponse>('/accounts/me', body)
+    return http.patch<UpdateMeResponse>(URL_UPDATE_ME, body)
   },
 
   // Lấy thông tin channel theo username

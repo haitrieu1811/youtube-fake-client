@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
 import Cookies from 'js-cookie'
 
-import { URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN, URL_REGISTER } from '@/apis/account.apis'
+import { URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN, URL_REGISTER, URL_UPDATE_ME } from '@/apis/account.apis'
 import { AccountType } from '@/types/account.types'
 import { AuthResponse, RefreshTokenResponse } from '@/types/auth.types'
 import {
@@ -51,8 +51,13 @@ class Http {
 
     this.instance.interceptors.response.use(
       (response) => {
-        const { url } = response.config
-        if (url && [URL_LOGIN, URL_REGISTER].includes(url)) {
+        const { url, method } = response.config
+        if (
+          url &&
+          method &&
+          [URL_LOGIN, URL_REGISTER, URL_UPDATE_ME].includes(url) &&
+          ['patch', 'post'].includes(method)
+        ) {
           const { accessToken, refreshToken, account } = (response.data as AuthResponse).data
           this.accessToken = accessToken
           this.refreshToken = refreshToken

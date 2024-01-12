@@ -74,8 +74,10 @@ const StudioSidebar = () => {
           </Tooltip>
         </TooltipProvider>
         <div className='space-y-1'>
-          <div className='text-[15px] font-medium'>Kênh của bạn</div>
-          {isClientWithAccount && <div className='text-xs text-muted-foreground'>{account.channelName}</div>}
+          <div className='text-[15px] font-medium text-center'>Kênh của bạn</div>
+          {isClientWithAccount && (
+            <div className='text-xs text-muted-foreground text-center'>{account.channelName}</div>
+          )}
           {!isClientWithAccount && <Skeleton className='w-[100px] h-4 rounded-sm' />}
         </div>
       </div>

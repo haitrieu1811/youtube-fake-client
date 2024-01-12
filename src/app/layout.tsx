@@ -33,7 +33,7 @@ const RootLayout = ({ children, uploadVideo }: RootLayoutProps) => {
               {children}
               {uploadVideo}
               <Toaster />
-              <NextTopLoader color='red' showSpinner={false} shadow={false} />
+              <NextTopLoader color='red' height={2} showSpinner={false} shadow={false} />
             </ThemeProvider>
           </AppProvider>
         </TanstackProvider>
