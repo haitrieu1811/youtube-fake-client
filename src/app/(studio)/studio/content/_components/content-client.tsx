@@ -6,7 +6,7 @@ import { useMemo } from 'react'
 import videoApis from '@/apis/video.apis'
 import DataTable from '@/components/data-table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { columns as videoColumns } from './_columns/video-columns'
+import { columns as videoColumns } from '../_columns/video-columns'
 
 const ContentClient = () => {
   // Query: Lấy danh sách video

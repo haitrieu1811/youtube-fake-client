@@ -44,6 +44,7 @@ import {
 } from '@/components/ui/dialog'
 import { formatViews } from '@/lib/utils'
 import moment from 'moment'
+import PATH from '@/constants/path'
 
 type ChannelClientProps = {
   username?: string
@@ -374,11 +375,11 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
               </Dialog>
               {isMyChannel && (
                 <div className='space-x-4'>
-                  <Button variant='secondary' className='rounded-full'>
-                    Tùy chỉnh kênh
+                  <Button variant='secondary' className='rounded-full' asChild>
+                    <Link href={PATH.STUDIO_CUSTOM}>Tùy chỉnh kênh</Link>
                   </Button>
-                  <Button variant='secondary' className='rounded-full'>
-                    Quản lý video
+                  <Button variant='secondary' className='rounded-full' asChild>
+                    <Link href={PATH.STUDIO_CONTENT}>Quản lý video</Link>
                   </Button>
                 </div>
               )}

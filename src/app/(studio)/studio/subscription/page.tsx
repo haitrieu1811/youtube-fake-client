@@ -1,6 +1,6 @@
 import { Metadata } from 'next'
 
-import SubscriptionsClient from './client'
+import SubscriptionsClient from './_components/subscription-client'
 
 export const metadata: Metadata = {
   title: 'Người đăng ký - YouTube',

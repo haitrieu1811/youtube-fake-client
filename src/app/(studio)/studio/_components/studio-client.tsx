@@ -14,8 +14,8 @@ import PATH from '@/constants/path'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export const metadata: Metadata = {
-  title: 'Tùy chỉnh kênh - YouTube',
-  description: 'Tùy chỉnh kênh - YouTube'
+  title: 'Trang tổng quan - YouTube Studio',
+  description: 'Trang tổng quan - YouTube Studio'
 }
 
 const LIMIT_CHANNELS_SUBSCRIBED_FOR_ME = 3

@@ -8,6 +8,7 @@ import Link from 'next/link'
 import { Fragment, useContext, useMemo, useState } from 'react'
 
 import commentApis from '@/apis/comment.apis'
+import PATH from '@/constants/path'
 import { convertMomentToVietnamese } from '@/lib/utils'
 import { AppContext } from '@/providers/app-provider'
 import { CommentItemType } from '@/types/comment.types'
@@ -62,7 +63,7 @@ const CommentRow = ({ isRootComment = true, commentData, contentId, isShowReplie
     <>
       {!isEditing && (
         <div className='flex items-start space-x-4 group'>
-          <Link href={'/'} className='flex-shrink-0'>
+          <Link href={PATH.PROFILE(commentData.author.username)} className='flex-shrink-0'>
             <Avatar
               className={classNames({
                 'w-6 h-6': !isRootComment
@@ -81,7 +82,9 @@ const CommentRow = ({ isRootComment = true, commentData, contentId, isShowReplie
           <div className='flex-1 space-y-1'>
             <div className='flex items-center space-x-3'>
               <div className='flex items-center space-x-1'>
-                <h4 className='text-[13px] font-medium'>@{commentData.author.username}</h4>
+                <Link href={PATH.PROFILE(commentData.author.username)}>
+                  <h4 className='text-[13px] font-medium'>@{commentData.author.username}</h4>
+                </Link>
                 <CheckCircle2 size={12} className='fill-blue-600 dark:fill-blue-500 stroke-background' />
               </div>
               <div className='text-muted-foreground text-xs'>

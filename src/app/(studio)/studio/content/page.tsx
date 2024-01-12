@@ -1,10 +1,10 @@
 import { Metadata } from 'next'
 
-import ContentClient from './client'
+import ContentClient from './_components/content-client'
 
 export const metadata: Metadata = {
-  title: 'Nội dung của kênh - YouTube',
-  description: 'Nội dung của kênh - YouTube'
+  title: 'Nội dung của kênh - YouTube Studio',
+  description: 'Nội dung của kênh - YouTube Studio'
 }
 
 const Content = () => {

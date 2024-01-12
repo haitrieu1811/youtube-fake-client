@@ -88,11 +88,7 @@ const StudioHeaderSearch = () => {
             </div>
             <div>
               {searchResults.slice(0, MAX_LIMIT_SEARCH_RESULTS).map((searchResult) => (
-                <Link
-                  key={searchResult._id}
-                  href={PATH.HOME}
-                  className='flex px-6 py-3 border-b last:border-b-0 hover:bg-muted group'
-                >
+                <div key={searchResult._id} className='flex px-6 py-3 border-b last:border-b-0 hover:bg-muted group'>
                   <div className='relative flex-shrink-0'>
                     {/* Khi đã có hình thu nhỏ */}
                     {!!searchResult.thumbnail && (
@@ -128,7 +124,7 @@ const StudioHeaderSearch = () => {
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button size='icon' variant='ghost' className='w-8 h-8 rounded-full' asChild>
-                                  <Link href={`${PATH.STUDIO_CONTENT_VIDEO}/${searchResult._id}`}>
+                                  <Link href={PATH.STUDIO_CONTENT_VIDEO(searchResult._id)}>
                                     <Pencil size={18} strokeWidth={1.5} />
                                   </Link>
                                 </Button>
@@ -138,7 +134,9 @@ const StudioHeaderSearch = () => {
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button size='icon' variant='ghost' className='w-8 h-8 rounded-full ml-3'>
-                                  <Youtube size={22} strokeWidth={1} />
+                                  <Link href={PATH.WATCH(searchResult.idName)}>
+                                    <Youtube size={22} strokeWidth={1} />
+                                  </Link>
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>Xem trên YouTube</TooltipContent>
@@ -157,7 +155,7 @@ const StudioHeaderSearch = () => {
                       </div>
                     </div>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           </div>

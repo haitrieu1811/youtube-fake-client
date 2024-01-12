@@ -5,9 +5,9 @@ import { useMemo } from 'react'
 
 import subscriptionApis from '@/apis/subscription.apis'
 import DataTable from '@/components/data-table'
-import { columns } from './columns'
+import { columns } from '../_columns/subscription-columns'
 
-const SubscriptionsClient = () => {
+const SubscriptionClient = () => {
   // Query: Lấy danh sách kênh đã đăng ký cho tôi
   const getChannelsSubscribedForMeQuery = useQuery({
     queryKey: ['getChannelsSubscribedForMe'],
@@ -21,10 +21,10 @@ const SubscriptionsClient = () => {
   )
 
   // Số kênh đã đăng ký cho tôi
-  const channelsSubscribedForMeCount = useMemo(
-    () => getChannelsSubscribedForMeQuery.data?.data.data.pagination.totalRows || 0,
-    [getChannelsSubscribedForMeQuery.data?.data.data.pagination.totalRows]
-  )
+  // const channelsSubscribedForMeCount = useMemo(
+  //   () => getChannelsSubscribedForMeQuery.data?.data.data.pagination.totalRows || 0,
+  //   [getChannelsSubscribedForMeQuery.data?.data.data.pagination.totalRows]
+  // )
 
   return (
     <div className='p-6'>
@@ -37,4 +37,4 @@ const SubscriptionsClient = () => {
   )
 }
 
-export default SubscriptionsClient
+export default SubscriptionClient

@@ -103,7 +103,7 @@ export const columns: ColumnDef<VideoItemType>[] = [
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button size='icon' variant='ghost' className='rounded-full' asChild>
-                        <Link href={`${PATH.STUDIO_CONTENT_VIDEO}/${video._id}`}>
+                        <Link href={PATH.STUDIO_CONTENT_VIDEO(video._id)}>
                           <Pencil size={16} strokeWidth={1.5} />
                         </Link>
                       </Button>
@@ -113,7 +113,9 @@ export const columns: ColumnDef<VideoItemType>[] = [
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button size='icon' variant='ghost' className='rounded-full'>
-                        <Youtube size={16} strokeWidth={1.5} />
+                        <Link href={PATH.WATCH(video.idName)}>
+                          <Youtube size={16} strokeWidth={1.5} />
+                        </Link>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>Xem trên YouTube</TooltipContent>
