@@ -15,7 +15,7 @@ export type AccountType = {
   updatedAt: string
 }
 
-type ProfileType = {
+export type ProfileType = {
   _id: string
   email: string
   username: string

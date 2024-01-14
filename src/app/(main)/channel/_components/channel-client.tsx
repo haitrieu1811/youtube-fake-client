@@ -158,57 +158,38 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
   }
 
   // Hủy cập nhật ảnh bìa
-  const handleCancelUpdateCoverImage = () => {
+  const handleCancelCoverFile = () => {
     setCoverFile(null)
   }
 
   // Hủy cập nhật ảnh đại diện
-  const handleCancelUpdateAvatarImage = () => {
+  const handleCancelAvatarFile = () => {
     setAvatarFile(null)
   }
 
   // Xử lử cập nhật ảnh bìa
-  const handleSaveCoverImage = async () => {
-    if (!coverFile) return
-    const formData = new FormData()
-    formData.append('image', coverFile)
-    const res = await uploadImagesMutation.mutateAsync(formData)
-    if (!res) return
-    const { imageIds } = res.data.data
-    updateMeMutation.mutate(
-      { cover: imageIds[0] },
-      {
-        onSuccess: () => {
-          toast({
-            title: ACCOUNT_MESSAGES.UPDATE_COVER_SUCCEED
-          })
-          getMeQuery.refetch()
-          setCoverFile(null)
+  const handleSaveImage = async ({ file, field }: { file: File; field: 'avatar' | 'cover' }) => {
+    try {
+      const formData = new FormData()
+      formData.append('image', file)
+      const res = await uploadImagesMutation.mutateAsync(formData)
+      const { imageIds } = res.data.data
+      updateMeMutation.mutate(
+        { [field]: imageIds[0] },
+        {
+          onSuccess: () => {
+            toast({
+              title: `Cập nhật ảnh ${field === 'avatar' ? 'đại diện' : 'bìa'} thành công`,
+              className: 'bg-blue-500 text-white'
+            })
+            getMeQuery.refetch()
+            field === 'avatar' ? setAvatarFile(null) : setCoverFile(null)
+          }
         }
-      }
-    )
-  }
-
-  // Xử lử cập nhật ảnh bìa
-  const handleSaveAvatarImage = async () => {
-    if (!avatarFile) return
-    const formData = new FormData()
-    formData.append('image', avatarFile)
-    const res = await uploadImagesMutation.mutateAsync(formData)
-    if (!res) return
-    const { imageIds } = res.data.data
-    updateMeMutation.mutate(
-      { avatar: imageIds[0] },
-      {
-        onSuccess: () => {
-          toast({
-            title: ACCOUNT_MESSAGES.UPDATE_AVATAR_SUCCEED
-          })
-          getMeQuery.refetch()
-          setAvatarFile(null)
-        }
-      }
-    )
+      )
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   // Thông tin chi tiết kênh
@@ -271,10 +252,14 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
             )}
             {coverFile && isMyChannel && (
               <div className='flex justify-end items-center space-x-2 absolute bottom-0 left-0 right-0 bg-muted-foreground/20 px-4 py-2'>
-                <Button variant='secondary' className='rounded-full' onClick={handleCancelUpdateCoverImage}>
+                <Button variant='secondary' className='rounded-full' onClick={handleCancelCoverFile}>
                   Hủy
                 </Button>
-                <Button className='rounded-full' disabled={isUpdating} onClick={handleSaveCoverImage}>
+                <Button
+                  className='rounded-full'
+                  disabled={isUpdating}
+                  onClick={() => handleSaveImage({ file: coverFile, field: 'cover' })}
+                >
                   {isUpdating && <Loader2 className='w-4 h-4 mr-2 animate-spin' />}
                   Lưu lại
                 </Button>
@@ -307,19 +292,14 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
               )}
               {avatarFile && isMyChannel && (
                 <div className='flex justify-center items-center space-x-2 absolute bottom-0 left-0 right-0 bg-muted-foreground/20 px-4 py-2 rounded-lg'>
-                  <Button
-                    variant='secondary'
-                    size='sm'
-                    className='rounded-full'
-                    onClick={handleCancelUpdateAvatarImage}
-                  >
+                  <Button variant='secondary' size='sm' className='rounded-full' onClick={handleCancelAvatarFile}>
                     Hủy
                   </Button>
                   <Button
                     size='sm'
                     disabled={isUpdating}
                     className='rounded-full space-x-2'
-                    onClick={handleSaveAvatarImage}
+                    onClick={() => handleSaveImage({ file: avatarFile, field: 'avatar' })}
                   >
                     {isUpdating && <Loader2 className='w-3 h-3 mr-3 animate-spin' />}
                     Lưu lại

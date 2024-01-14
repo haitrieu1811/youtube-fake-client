@@ -14,11 +14,12 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
+import { toast } from '@/components/ui/use-toast'
 import { isEntityErrror } from '@/lib/utils'
+import { AppContext } from '@/providers/app-provider'
 import { UpdateMeSchema, updateMeSchema } from '@/rules/account.rules'
 import { ErrorResponse } from '@/types/utils.types'
-import { AppContext } from '@/providers/app-provider'
-import { toast } from '@/components/ui/use-toast'
+import Branding from './branding'
 
 const CustomClient = () => {
   const { setAccount } = useContext(AppContext)
@@ -91,6 +92,14 @@ const CustomClient = () => {
     updateMeMutation.mutate(omit(data, omitFields))
   })
 
+  // Hủy bỏ thay đổi
+  const handleCancel = () => {
+    if (!me) return
+    form.setValue('channelName', me.channelName)
+    form.setValue('username', me.username)
+    form.setValue('bio', me.bio)
+  }
+
   return (
     <div className='p-6'>
       <h1 className='text-[25px] font-medium tracking-tight mb-6'>Tùy chỉnh kênh</h1>
@@ -160,7 +169,7 @@ const CustomClient = () => {
                 />
                 {/* Submit */}
                 <div className='flex items-center space-x-2'>
-                  <Button type='button' variant='outline'>
+                  <Button type='button' variant='outline' onClick={handleCancel}>
                     Hủy bỏ
                   </Button>
                   <Button type='submit' disabled={updateMeMutation.isPending}>
@@ -172,7 +181,9 @@ const CustomClient = () => {
             </Form>
           )}
         </TabsContent>
-        <TabsContent value='branding'>Change your password here.</TabsContent>
+        <TabsContent value='branding' className='w-1/2 py-6 space-y-10'>
+          <Branding infoMe={me} />
+        </TabsContent>
       </Tabs>
     </div>
   )

@@ -8,9 +8,10 @@ type InputFileProps = {
   onChange?: (file?: File[]) => void
   multiple?: boolean
   maxFileSize?: number
+  className?: string
 }
 
-const InputFile = ({ children, onChange, multiple = false, maxFileSize = 300 * 1024 }: InputFileProps) => {
+const InputFile = ({ children, onChange, multiple = false, maxFileSize = 300 * 1024, className }: InputFileProps) => {
   const inputFileRef = useRef<HTMLInputElement>(null)
 
   const handleUpload = () => {
@@ -25,8 +26,7 @@ const InputFile = ({ children, onChange, multiple = false, maxFileSize = 300 * 1
     if (!isSizeValid)
       toast({
         variant: 'destructive',
-        title: 'Uh oh! Có một chút vấn đề.',
-        description: `Dung lượng file tối đa ${maxFileSize / 1024}KB`
+        title: `Dung lượng file tối đa ${maxFileSize / 1024}KB`
       })
     onChange && onChange(isValidFiles)
   }
@@ -42,7 +42,7 @@ const InputFile = ({ children, onChange, multiple = false, maxFileSize = 300 * 1
         onClick={(e) => ((e.target as any).value = null)}
         multiple={multiple}
       />
-      <div tabIndex={0} role='button' aria-hidden='true' onClick={handleUpload}>
+      <div tabIndex={0} role='button' aria-hidden='true' className={className} onClick={handleUpload}>
         {children}
       </div>
     </Fragment>

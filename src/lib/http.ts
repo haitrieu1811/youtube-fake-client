@@ -52,12 +52,8 @@ class Http {
     this.instance.interceptors.response.use(
       (response) => {
         const { url, method } = response.config
-        if (
-          url &&
-          method &&
-          [URL_LOGIN, URL_REGISTER, URL_UPDATE_ME].includes(url) &&
-          ['patch', 'post'].includes(method)
-        ) {
+        // Xử lý khi đăng nhập, đăng ký
+        if (url && [URL_LOGIN, URL_REGISTER].includes(url)) {
           const { accessToken, refreshToken, account } = (response.data as AuthResponse).data
           this.accessToken = accessToken
           this.refreshToken = refreshToken
@@ -67,6 +63,15 @@ class Http {
           setAccountToLS(account)
           Cookies.set('accessToken', accessToken)
         }
+        // Xử lý khi cập nhật tài khoản
+        if (url && method && url === URL_UPDATE_ME && method === 'patch') {
+          const { accessToken, account } = (response.data as AuthResponse).data
+          this.accessToken = accessToken
+          this.account = account
+          setAccessTokenToLS(accessToken)
+          setAccountToLS(account)
+        }
+        // Xử lý khi đăng xuất
         if (url && url === URL_LOGOUT) {
           this.accessToken = null
           this.refreshToken = null
