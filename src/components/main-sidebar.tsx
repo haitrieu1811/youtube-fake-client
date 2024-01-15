@@ -42,7 +42,7 @@ const ME_LINKS = [
   {
     icon: History,
     text: 'Video đã xem',
-    href: PATH.COMMUNITY
+    href: PATH.HISTORY
   },
   {
     icon: ThumbsUp,

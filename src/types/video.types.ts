@@ -14,6 +14,7 @@ export type VideoItemType = {
   idName: string
   thumbnail: string
   title: string
+  description: string
   author: {
     _id: string
     email: string

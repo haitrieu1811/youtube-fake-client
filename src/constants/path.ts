@@ -7,6 +7,7 @@ const PATH = {
   SUBSCRIPTIONS: '/subscriptions',
   UPLOAD_VIDEO: '/upload-video',
   RESULTS: '/results',
+  HISTORY: '/history',
   PROFILE: (username: string) => `/@${username}`,
   WATCH: (idName: string) => `/watch/${idName}`,
 

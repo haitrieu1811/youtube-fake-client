@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { MediaPlayer, MediaProvider } from '@vidstack/react'
 import { DefaultVideoLayout, defaultLayoutIcons } from '@vidstack/react/player/layouts/default'
 import '@vidstack/react/player/styles/default/layouts/video.css'
@@ -21,6 +21,7 @@ import { convertMomentToVietnamese } from '@/lib/utils'
 import { AppContext } from '@/providers/app-provider'
 import Comment from './comment'
 import Reaction from './reaction'
+import watchHistoryApis from '@/apis/watchHistory.apis'
 
 type WatchClientProps = {
   idName: string
@@ -47,6 +48,18 @@ const WatchClient = ({ idName }: WatchClientProps) => {
     if (!videoInfo) return
     setSubscribeCount(videoInfo.channel.subscribeCount)
   }, [videoInfo])
+
+  // Mutation: Thêm vào lịch sử xem
+  const createWatchHistoryMutation = useMutation({
+    mutationKey: ['createWatchHistory'],
+    mutationFn: watchHistoryApis.createWatchHistory
+  })
+
+  // Thêm vào lịch sử xem
+  useEffect(() => {
+    if (!videoInfo) return
+    createWatchHistoryMutation.mutate(videoInfo._id)
+  }, [videoInfo?._id])
 
   // Xem thêm mô tả
   const handleShowMoreDescription = () => {
