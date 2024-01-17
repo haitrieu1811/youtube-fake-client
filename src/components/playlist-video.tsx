@@ -10,14 +10,21 @@ import VideoActions from './video-actions'
 type PlaylistVideoProps = {
   index: number
   videoData: VideoItemType
+  playlistId: string
 }
 
-const PlaylistVideo = ({ index, videoData }: PlaylistVideoProps) => {
+const PlaylistVideo = ({ index, videoData, playlistId }: PlaylistVideoProps) => {
   return (
     <div className='flex items-center p-2 hover:bg-muted cursor-pointer rounded-lg group'>
       <div className='w-[50px] text-center'>{index}</div>
       <div className='flex flex-1 space-x-2'>
-        <Link href={PATH.WATCH(videoData.idName)} className='flex-shrink-0'>
+        <Link
+          href={{
+            pathname: PATH.WATCH(videoData.idName),
+            query: { list: playlistId }
+          }}
+          className='flex-shrink-0'
+        >
           <Image
             width={160}
             height={90}
@@ -27,7 +34,13 @@ const PlaylistVideo = ({ index, videoData }: PlaylistVideoProps) => {
           />
         </Link>
         <div className='flex-1 space-y-1'>
-          <Link href={PATH.WATCH(videoData.idName)} className='font-medium line-clamp-2'>
+          <Link
+            href={{
+              pathname: PATH.WATCH(videoData.idName),
+              query: { list: playlistId }
+            }}
+            className='font-medium line-clamp-2'
+          >
             {videoData.title}
           </Link>
           <div className='flex items-center space-x-2 text-xs text-muted-foreground'>

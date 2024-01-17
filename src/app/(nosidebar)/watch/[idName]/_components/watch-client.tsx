@@ -8,9 +8,11 @@ import '@vidstack/react/player/styles/default/theme.css'
 import { CheckCircle2, Download, Flag, ListPlus, MoreHorizontal, Share2 } from 'lucide-react'
 import moment from 'moment'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { Fragment, useContext, useEffect, useMemo, useState } from 'react'
 
 import videoApis from '@/apis/video.apis'
+import watchHistoryApis from '@/apis/watchHistory.apis'
 import SubscribeButton from '@/components/subscribe-button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
@@ -20,8 +22,8 @@ import PATH from '@/constants/path'
 import { convertMomentToVietnamese } from '@/lib/utils'
 import { AppContext } from '@/providers/app-provider'
 import Comment from './comment'
+import Playlist from './playlist'
 import Reaction from './reaction'
-import watchHistoryApis from '@/apis/watchHistory.apis'
 
 type WatchClientProps = {
   idName: string
@@ -30,6 +32,8 @@ type WatchClientProps = {
 const MAX_LENGTH_OF_DESCRIPTION = 50
 
 const WatchClient = ({ idName }: WatchClientProps) => {
+  const searchParams = useSearchParams()
+  const playlistId = searchParams.get('list')
   const { account } = useContext(AppContext)
   const [isShowMoreDescription, setIsShowMoreDescription] = useState<boolean>(false)
   const [subscribeCount, setSubscribeCount] = useState<number>(0)
@@ -68,8 +72,8 @@ const WatchClient = ({ idName }: WatchClientProps) => {
 
   return (
     <div>
-      <div className='flex justify-between'>
-        <div className='w-3/4'>
+      <div className='flex space-x-8'>
+        <div className='flex-1'>
           {videoInfo && (
             <Fragment>
               {/* Trình phát video */}
@@ -194,7 +198,10 @@ const WatchClient = ({ idName }: WatchClientProps) => {
             </Fragment>
           )}
         </div>
-        <div></div>
+        <div className='w-1/3'>
+          {/* Playlist */}
+          {!!playlistId && <Playlist playlistId={playlistId} currentIdName={idName} />}
+        </div>
       </div>
     </div>
   )

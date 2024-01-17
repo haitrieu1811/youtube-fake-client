@@ -45,7 +45,12 @@ const LikedClient = () => {
       <div className='w-[360px] p-6 rounded-2xl space-y-6 sticky top-[80px] bg-muted'>
         {latestVideo && (
           <div className='relative group'>
-            <Link href={PATH.WATCH(latestVideo.idName)}>
+            <Link
+              href={{
+                pathname: PATH.WATCH(latestVideo.idName),
+                query: { list: 'liked' }
+              }}
+            >
               <Image
                 width={500}
                 height={500}
@@ -56,8 +61,8 @@ const LikedClient = () => {
             </Link>
             <div className='absolute inset-0 bg-black/70 rounded-2xl flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all'>
               <span className='flex items-center space-x-2'>
-                <Play size={18} strokeWidth={0} className='fill-background' />
-                <span className='text-background uppercase font-medium text-sm'>Phát tất cả</span>
+                <Play size={18} strokeWidth={0} className='fill-white' />
+                <span className='text-white uppercase font-medium text-sm'>Phát tất cả</span>
               </span>
             </div>
           </div>
@@ -70,10 +75,19 @@ const LikedClient = () => {
           <div className='text-xs text-muted-foreground'>{totalVideos} video</div>
         </div>
         <div className='flex flex-auto items-center space-x-2'>
-          <Button className='rounded-full basis-1/2'>
-            <Play className='w-4 h-4 mr-2' />
-            Phát tất cả
-          </Button>
+          {latestVideo && (
+            <Button className='rounded-full basis-1/2' asChild>
+              <Link
+                href={{
+                  pathname: PATH.WATCH(latestVideo.idName),
+                  query: { list: 'liked' }
+                }}
+              >
+                <Play className='w-4 h-4 mr-2' />
+                Phát tất cả
+              </Link>
+            </Button>
+          )}
           <Button variant='outline' className='rounded-full basis-1/2'>
             <Shuffle className='w-4 h-4 mr-2' />
             Trộn bài
@@ -82,7 +96,7 @@ const LikedClient = () => {
       </div>
       <div className='flex-1'>
         {videos.map((video, index) => (
-          <PlaylistVideo key={video._id} index={index + 1} videoData={video} />
+          <PlaylistVideo key={video._id} index={index + 1} videoData={video} playlistId='liked' />
         ))}
       </div>
     </div>
