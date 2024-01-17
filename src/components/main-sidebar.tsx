@@ -47,7 +47,7 @@ const ME_LINKS = [
   {
     icon: ThumbsUp,
     text: 'Video đã thích',
-    href: PATH.SUBSCRIPTIONS
+    href: PATH.LIKED
   },
   {
     icon: Clock,

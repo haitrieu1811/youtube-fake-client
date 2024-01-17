@@ -3,16 +3,17 @@ import { OnlyMessageResponse, PaginationReqQuery } from '@/types/utils.types'
 import {
   CreateVideoReqBody,
   CreateVideoResponse,
+  GetLikedVideosResponse,
   GetPublicVideosReqQuery,
   GetPublicVideosResponse,
   GetVideoCategoriesResponse,
   GetVideoDetailToUpdateResponse,
+  GetVideosByUsernameResponse,
+  GetVideosOfMeReqQuery,
   GetVideosOfMeResponse,
   UpdateVideoReqBody,
   UpdateVideoResponse,
-  WatchVideoResponse,
-  GetVideosOfMeReqQuery,
-  GetVideosByUsernameResponse
+  WatchVideoResponse
 } from '@/types/video.types'
 
 const videoApis = {
@@ -79,6 +80,11 @@ const videoApis = {
   // Like video
   likeVideo() {
     return http.post<OnlyMessageResponse>('/reactions')
+  },
+
+  // Lấy danh sách video đã thích
+  getLikedVideos(params?: PaginationReqQuery) {
+    return http.get<GetLikedVideosResponse>('/videos/liked', { params })
   }
 }
 

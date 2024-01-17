@@ -9,29 +9,31 @@ export type VideoCategoryType = {
   updatedAt: string
 }
 
+export type AuthorVideoItemType = {
+  _id: string
+  email: string
+  username: string
+  channelName: string
+  avatar: string
+  tick: boolean
+  createdAt: string
+  updatedAt: string
+}
+
 export type VideoItemType = {
   _id: string
   idName: string
   thumbnail: string
   title: string
   description: string
-  author: {
-    _id: string
-    email: string
-    username: string
-    channelName: string
-    avatar: string
-    tick: boolean
-    createdAt: string
-    updatedAt: string
-  }
+  author: AuthorVideoItemType
   category: VideoCategoryType | null
-  audience: number
-  isDraft: boolean
+  audience: VideoAudience
+  isDraft?: boolean
   viewCount: number
-  commentCount: number
-  likeCount: number
-  dislikeCount: number
+  commentCount?: number
+  likeCount?: number
+  dislikeCount?: number
   createdAt: string
   updatedAt: string
 }
@@ -181,4 +183,10 @@ export type GetVideoDetailToUpdateResponse = SuccessResponse<{
 // Response: Xem video
 export type WatchVideoResponse = SuccessResponse<{
   video: WatchedVideoType
+}>
+
+// Response: Lấy danh sách video đã thích
+export type GetLikedVideosResponse = SuccessResponse<{
+  videos: VideoItemType[],
+  pagination: PaginationType
 }>

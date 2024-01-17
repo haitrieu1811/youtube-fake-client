@@ -8,6 +8,7 @@ const PATH = {
   UPLOAD_VIDEO: '/upload-video',
   RESULTS: '/results',
   HISTORY: '/history',
+  LIKED: '/liked',
   PROFILE: (username: string) => `/@${username}`,
   WATCH: (idName: string) => `/watch/${idName}`,
 
