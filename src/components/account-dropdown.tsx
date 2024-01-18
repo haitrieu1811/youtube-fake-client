@@ -152,7 +152,7 @@ const AccountDropdown = ({ accountData }: AccountDropdownProps) => {
                       className={buttonVariants({
                         variant: 'ghost',
                         className:
-                          'justify-between items-center rounded-none w-full px-4 py-5 font-normal bg-background text-black dark:text-white'
+                          'justify-between items-center rounded-none w-full px-4 py-5 font-normal shadow-none bg-background text-black dark:text-white'
                       })}
                     >
                       <div className='space-x-4 flex items-center'>

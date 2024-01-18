@@ -55,3 +55,8 @@ export const formatViews = (viewCount: number): string => {
     return `${billions} T`
   }
 }
+
+// Sinh một số nguyên ngẫu nhiên từ 0 đến n
+export const getRandomInt = (n: number) => {
+  return Math.floor(Math.random() * (n + 1))
+}

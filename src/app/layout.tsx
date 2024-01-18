@@ -7,6 +7,7 @@ import AppProvider from '@/providers/app-provider'
 import TanstackProvider from '@/providers/tanstack-provider'
 import ThemeProvider from '@/providers/theme-provider'
 import './globals.css'
+import WatchProvider from '@/providers/watch-provider'
 
 export const fontSans = FontSans({
   subsets: ['latin'],
@@ -30,10 +31,12 @@ const RootLayout = ({ children, uploadVideo }: RootLayoutProps) => {
         <TanstackProvider>
           <AppProvider>
             <ThemeProvider attribute='class' defaultTheme='system'>
-              {children}
-              {uploadVideo}
-              <Toaster />
-              <NextTopLoader color='red' height={2} showSpinner={false} shadow={false} />
+              <WatchProvider>
+                {children}
+                {uploadVideo}
+                <Toaster />
+                <NextTopLoader color='red' height={2} showSpinner={false} shadow={false} />
+              </WatchProvider>
             </ThemeProvider>
           </AppProvider>
         </TanstackProvider>

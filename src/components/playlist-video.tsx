@@ -5,6 +5,7 @@ import Link from 'next/link'
 import PATH from '@/constants/path'
 import { convertMomentToVietnamese, formatViews } from '@/lib/utils'
 import { VideoItemType } from '@/types/video.types'
+import { CheckCircle2 } from 'lucide-react'
 import VideoActions from './video-actions'
 
 type PlaylistVideoProps = {
@@ -44,7 +45,12 @@ const PlaylistVideo = ({ index, videoData, playlistId }: PlaylistVideoProps) => 
             {videoData.title}
           </Link>
           <div className='flex items-center space-x-2 text-xs text-muted-foreground'>
-            <Link href={PATH.WATCH(videoData.author.username)}>{videoData.author.channelName}</Link>
+            <Link href={PATH.WATCH(videoData.author.username)} className='flex items-center space-x-1'>
+              <span>{videoData.author.channelName}</span>
+              {videoData.author.tick && (
+                <CheckCircle2 size={12} strokeWidth={1.5} className='fill-muted-foreground stroke-background' />
+              )}
+            </Link>
             <span className='w-1 h-1 rounded-full bg-muted-foreground' />
             <div>{formatViews(videoData.viewCount)} lượt xem</div>
             <span className='w-1 h-1 rounded-full bg-muted-foreground' />

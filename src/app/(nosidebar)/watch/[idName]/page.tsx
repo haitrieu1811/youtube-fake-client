@@ -6,7 +6,7 @@ type WatchProps = {
   params: { idName: string }
 }
 
-export async function generateMetadata({ params }: WatchProps): Promise<Metadata> {
+export const generateMetadata = async ({ params }: WatchProps): Promise<Metadata> => {
   const { idName } = params
   const res = await fetch(`http://localhost:4000/videos/watch/idName/${idName}`)
   const data = await res.json()

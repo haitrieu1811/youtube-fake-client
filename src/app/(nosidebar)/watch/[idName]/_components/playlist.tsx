@@ -1,79 +1,56 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
-import { ChevronDown, Lock, X } from 'lucide-react'
+import classNames from 'classnames'
+import { CheckCircle2, ChevronDown, Lock, Repeat, Shuffle, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Fragment, useContext, useEffect, useMemo, useState } from 'react'
+import { useContext, useRef } from 'react'
 
-import videoApis from '@/apis/video.apis'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import VideoActions from '@/components/video-actions'
 import PATH from '@/constants/path'
 import useIsClient from '@/hooks/useIsClient'
 import { AppContext } from '@/providers/app-provider'
+import { WatchContext } from '@/providers/watch-provider'
 import { VideoItemType } from '@/types/video.types'
-import classNames from 'classnames'
 
 type PlaylistProps = {
   playlistId: string
   currentIdName: string
+  currentVideoIndex: number
+  videos: VideoItemType[]
+  totalVideo: number
 }
 
-const Playlist = ({ playlistId, currentIdName }: PlaylistProps) => {
+const Playlist = ({ playlistId, videos, totalVideo, currentIdName, currentVideoIndex }: PlaylistProps) => {
   const { account } = useContext(AppContext)
+  const { isOpenPlaylist, setIsOpenPlaylist, isRepeat, setIsRepeat, isShuffle, setIsShuffle } = useContext(WatchContext)
   const { isClient } = useIsClient()
-  const [isShow, setIsShow] = useState<boolean>(true)
-  const [videos, setVideos] = useState<VideoItemType[]>([])
-
-  // Query: Lấy danh sách video đã thích
-  const getLikedVideosQuery = useQuery({
-    queryKey: ['getLikedVideos'],
-    queryFn: () => videoApis.getLikedVideos(),
-    enabled: playlistId === 'liked'
-  })
-
-  // Đặt giá trị cho video
-  useEffect(() => {
-    if (playlistId === 'liked') {
-      if (!getLikedVideosQuery.data) return
-      setVideos(getLikedVideosQuery.data.data.data.videos)
-    }
-  }, [getLikedVideosQuery.data])
-
-  // Tổng số video
-  const totalVideo = useMemo(() => {
-    if (playlistId === 'liked') {
-      if (!getLikedVideosQuery.data) return
-      return getLikedVideosQuery.data.data.data.pagination.totalRows
-    }
-  }, [getLikedVideosQuery.data?.data.data.pagination.totalRows])
-
-  // Index video hiện tại
-  const currentIndex = useMemo(() => videos.findIndex((video) => video.idName === currentIdName) + 1, [videos])
+  const listVideosRef = useRef<HTMLDivElement>(null)
 
   // Ẩn hiện playlist
   const handleToggle = () => {
-    setIsShow((prevState) => !prevState)
+    setIsOpenPlaylist((prevState) => !prevState)
   }
 
   return (
-    <Fragment>
-      {!isShow && (
-        <div className='rounded-xl p-4 flex items-center space-x-4 bg-muted'>
+    <TooltipProvider>
+      {!isOpenPlaylist && (
+        <div className='rounded-xl p-4 flex items-start space-x-4 bg-muted'>
           <div className='flex-1 space-y-1'>
             <span className='font-semibold text-sm'>
-              {videos[currentIndex]?.title ? 'Tiếp theo: ' : 'Hết danh sách phát'}
+              {videos[currentVideoIndex]?.title ? 'Tiếp theo: ' : 'Hết danh sách phát'}
             </span>
-            {videos[currentIndex] && (
-              <span className='text-muted-foreground line-clamp-1 text-sm'>{videos[currentIndex].title}</span>
+            {videos[currentVideoIndex] && (
+              <span className='text-muted-foreground line-clamp-1 text-sm'>{videos[currentVideoIndex].title}</span>
             )}
             <div className='flex items-center space-x-2 text-muted-foreground text-xs'>
-              <Link href='/'>Video đã thích</Link>
+              <Link href={PATH.LIKED}>Video đã thích</Link>
               <span className='w-1 h-px bg-muted-foreground' />
               <span>
-                {currentIndex}/{totalVideo}
+                {currentVideoIndex}/{totalVideo}
               </span>
             </div>
           </div>
@@ -82,10 +59,10 @@ const Playlist = ({ playlistId, currentIdName }: PlaylistProps) => {
           </Button>
         </div>
       )}
-      {isShow && (
-        <div className='border border-border rounded-xl'>
-          <div className='flex justify-between items-center p-4'>
-            <div className='space-y-3'>
+      {isOpenPlaylist && (
+        <div ref={listVideosRef} className='border border-border rounded-xl'>
+          <div className='flex justify-between items-start p-4'>
+            <div className='space-y-2'>
               <h2 className='text-xl font-semibold'>Video đã thích</h2>
               <div className='space-x-2 flex items-center'>
                 <Badge className='space-x-2 rounded-sm bg-muted-foreground hover:bg-muted-foreground'>
@@ -98,8 +75,48 @@ const Playlist = ({ playlistId, currentIdName }: PlaylistProps) => {
                   </Link>
                 )}
                 <div className='text-xs text-muted-foreground'>
-                  {currentIndex}/{totalVideo}
+                  {currentVideoIndex}/{totalVideo}
                 </div>
+              </div>
+              <div className='flex -ml-2'>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant='ghost'
+                      size='icon'
+                      className='w-10 h-10 rounded-full'
+                      onClick={() => setIsRepeat((prevState) => !prevState)}
+                    >
+                      <Repeat
+                        size={18}
+                        strokeWidth={isRepeat ? 2 : 1.5}
+                        className={classNames({
+                          'stroke-muted-foreground': !isRepeat
+                        })}
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Danh sách phát lặp</TooltipContent>
+                </Tooltip>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant='ghost'
+                      size='icon'
+                      className='w-10 h-10 rounded-full'
+                      onClick={() => setIsShuffle((prevState) => !prevState)}
+                    >
+                      <Shuffle
+                        size={18}
+                        strokeWidth={isShuffle ? 2 : 1.5}
+                        className={classNames({
+                          'stroke-muted-foreground': !isShuffle
+                        })}
+                      />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Danh sách phát ngẫu nhiên</TooltipContent>
+                </Tooltip>
               </div>
             </div>
             <Button variant='ghost' size='icon' className='rounded-full' onClick={handleToggle}>
@@ -144,9 +161,14 @@ const Playlist = ({ playlistId, currentIdName }: PlaylistProps) => {
                     >
                       <span className='line-clamp-2'>{video.title}</span>
                     </Link>
-                    <Link href={PATH.PROFILE(video.author.username)} className='text-xs text-muted-foreground'>
-                      {video.author.channelName}
-                    </Link>
+                    <div className='flex items-center space-x-1'>
+                      <Link href={PATH.PROFILE(video.author.username)} className='text-xs text-muted-foreground'>
+                        {video.author.channelName}
+                      </Link>
+                      {video.author.tick && (
+                        <CheckCircle2 size={12} strokeWidth={1.5} className='fill-muted-foreground stroke-background' />
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className='opacity-0 group-hover:opacity-100'>
@@ -157,7 +179,7 @@ const Playlist = ({ playlistId, currentIdName }: PlaylistProps) => {
           </div>
         </div>
       )}
-    </Fragment>
+    </TooltipProvider>
   )
 }
 
