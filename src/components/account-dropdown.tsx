@@ -13,8 +13,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import PATH from '@/constants/path'
 import { AppContext } from '@/providers/app-provider'
 import { AccountType } from '@/types/account.types'
-import { Button } from './ui/button'
+import { Button, buttonVariants } from './ui/button'
 import { Separator } from './ui/separator'
+import classNames from 'classnames'
 
 type AccountDropdownProps = {
   accountData: AccountType
@@ -136,37 +137,32 @@ const AccountDropdown = ({ accountData }: AccountDropdownProps) => {
               </div>
               <Separator />
               <div className='py-2'>
-                {accountMenus.map((item) => (
-                  <Fragment>
-                    {!item.path && (
-                      <Button
-                        key={item.text}
-                        variant='ghost'
-                        className='flex justify-between items-center rounded-none w-full px-4 py-5 font-normal'
-                        onClick={item.onClick}
-                      >
-                        <div className='space-x-4 flex items-center'>
-                          <item.icon size={18} strokeWidth={1.5} />
-                          <span>{item.text}</span>
-                        </div>
-                        {item.isHasChildrenMenu && <ChevronRight size={20} strokeWidth={1.5} />}
-                      </Button>
-                    )}
-                    {item.path && (
-                      <Button
-                        key={item.text}
-                        variant='ghost'
-                        className='justify-start space-x-4 rounded-none w-full px-4 py-5 font-normal'
-                        asChild
-                      >
-                        <Link href={item.path}>
-                          <item.icon size={18} strokeWidth={1.5} />
-                          <span>{item.text}</span>
-                        </Link>
-                      </Button>
-                    )}
-                  </Fragment>
-                ))}
+                {accountMenus.map((item) => {
+                  let Component: any = Button
+                  let href = undefined
+                  if (item.path) {
+                    Component = Link
+                    href = item.path
+                  }
+                  return (
+                    <Component
+                      key={item.text}
+                      href={href}
+                      onClick={item.onClick}
+                      className={buttonVariants({
+                        variant: 'ghost',
+                        className:
+                          'justify-between items-center rounded-none w-full px-4 py-5 font-normal bg-background text-black dark:text-white'
+                      })}
+                    >
+                      <div className='space-x-4 flex items-center'>
+                        <item.icon size={18} strokeWidth={1.5} />
+                        <span>{item.text}</span>
+                      </div>
+                      {item.isHasChildrenMenu && <ChevronRight size={20} strokeWidth={1.5} />}
+                    </Component>
+                  )
+                })}
               </div>
             </Fragment>
           )}
