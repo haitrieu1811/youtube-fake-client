@@ -1,7 +1,7 @@
 'use client'
 
 import classNames from 'classnames'
-import { CheckCircle2, ChevronDown, Lock, Repeat, Shuffle, X } from 'lucide-react'
+import { CheckCircle2, ChevronDown, Lock, Play, Repeat, Shuffle, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useContext, useRef } from 'react'
@@ -125,57 +125,66 @@ const Playlist = ({ playlistId, videos, totalVideo, currentIdName, currentVideoI
           </div>
           {/* Danh sách video */}
           <div className='max-h-[400px] overflow-y-auto'>
-            {videos.map((video, index) => (
-              <div
-                key={video._id}
-                className={classNames({
-                  'flex items-center space-x-2 p-3 group': true,
-                  'hover:bg-muted': video.idName !== currentIdName,
-                  'bg-muted': video.idName === currentIdName
-                })}
-              >
-                <div className='text-xs text-muted-foreground'>{index + 1}</div>
-                <div className='flex-1 flex items-center space-x-2'>
-                  <Link
-                    href={{
-                      pathname: PATH.WATCH(video.idName),
-                      query: { list: playlistId }
-                    }}
-                    className='flex-shrink-0'
-                  >
-                    <Image
-                      width={100}
-                      height={100}
-                      src={video.thumbnail}
-                      alt={video.title}
-                      className='rounded-lg w-[100px] h-14 object-cover'
-                    />
-                  </Link>
-                  <div className='flex-1 leading-tight'>
+            {videos.map((video, index) => {
+              const isActive = video.idName === currentIdName
+              return (
+                <div
+                  key={video._id}
+                  className={classNames({
+                    'flex items-center space-x-2 px-3 py-1.5 group': true,
+                    'hover:bg-muted': !isActive,
+                    'bg-muted': isActive
+                  })}
+                >
+                  <div className='text-xs text-muted-foreground w-4'>
+                    {isActive ? <Play size={14} strokeWidth={0} className='fill-muted-foreground' /> : index + 1}
+                  </div>
+                  <div className='flex-1 flex items-center space-x-2'>
                     <Link
                       href={{
                         pathname: PATH.WATCH(video.idName),
                         query: { list: playlistId }
                       }}
-                      className='block font-medium'
+                      className='flex-shrink-0'
                     >
-                      <span className='line-clamp-2'>{video.title}</span>
+                      <Image
+                        width={100}
+                        height={100}
+                        src={video.thumbnail}
+                        alt={video.title}
+                        className='rounded-lg w-[100px] h-14 object-cover'
+                      />
                     </Link>
-                    <div className='flex items-center space-x-1'>
-                      <Link href={PATH.PROFILE(video.author.username)} className='text-xs text-muted-foreground'>
-                        {video.author.channelName}
+                    <div className='flex-1 leading-tight'>
+                      <Link
+                        href={{
+                          pathname: PATH.WATCH(video.idName),
+                          query: { list: playlistId }
+                        }}
+                        className='block font-medium'
+                      >
+                        <span className='line-clamp-2'>{video.title}</span>
                       </Link>
-                      {video.author.tick && (
-                        <CheckCircle2 size={12} strokeWidth={1.5} className='fill-muted-foreground stroke-background' />
-                      )}
+                      <div className='flex items-center space-x-1'>
+                        <Link href={PATH.PROFILE(video.author.username)} className='text-xs text-muted-foreground'>
+                          {video.author.channelName}
+                        </Link>
+                        {video.author.tick && (
+                          <CheckCircle2
+                            size={12}
+                            strokeWidth={1.5}
+                            className='fill-muted-foreground stroke-background'
+                          />
+                        )}
+                      </div>
                     </div>
                   </div>
+                  <div className='opacity-0 group-hover:opacity-100'>
+                    <VideoActions />
+                  </div>
                 </div>
-                <div className='opacity-0 group-hover:opacity-100'>
-                  <VideoActions />
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       )}

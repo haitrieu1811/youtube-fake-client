@@ -92,6 +92,7 @@ const LikedClient = () => {
           {latestVideo ? (
             <Button className='rounded-full basis-1/2' asChild>
               <Link
+                onClick={() => setIsShuffle(false)}
                 href={{
                   pathname: PATH.WATCH(latestVideo.idName),
                   query: { list: 'liked' }

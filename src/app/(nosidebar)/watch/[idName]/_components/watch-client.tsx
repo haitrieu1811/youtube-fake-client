@@ -5,6 +5,7 @@ import { MediaPlayer, MediaProvider } from '@vidstack/react'
 import { DefaultVideoLayout, defaultLayoutIcons } from '@vidstack/react/player/layouts/default'
 import '@vidstack/react/player/styles/default/layouts/video.css'
 import '@vidstack/react/player/styles/default/theme.css'
+import uniq from 'lodash/uniq'
 import { CheckCircle2, Download, Flag, ListPlus, MoreHorizontal, Share2 } from 'lucide-react'
 import moment from 'moment'
 import Link from 'next/link'
@@ -18,8 +19,9 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Separator } from '@/components/ui/separator'
+import WatchOtherVideo from '@/components/watch-other-video'
 import PATH from '@/constants/path'
-import { convertMomentToVietnamese, getRandomInt } from '@/lib/utils'
+import { convertMomentToVietnamese, randomIntegerExcludingArray } from '@/lib/utils'
 import { AppContext } from '@/providers/app-provider'
 import { WatchContext } from '@/providers/watch-provider'
 import { VideoItemType } from '@/types/video.types'
@@ -37,12 +39,11 @@ const WatchClient = ({ idName }: WatchClientProps) => {
   const searchParams = useSearchParams()
   const playlistId = searchParams.get('list')
   const { account } = useContext(AppContext)
-  const { isShuffle } = useContext(WatchContext)
+  const { isShuffle, isRepeat, playlistVideoIndexHistory, setPlaylistVideoIndexHistory } = useContext(WatchContext)
   const [isShowMoreDescription, setIsShowMoreDescription] = useState<boolean>(false)
   const [subscribeCount, setSubscribeCount] = useState<number>(0)
   const [playlistVideos, setPlaylistVideos] = useState<VideoItemType[]>([])
   const [nextVideoIdName, setNextVideoIdName] = useState<string>('')
-  const [playlistHistory, setPlaylistHistory] = useState<string[]>([])
   const linkRef = useRef<HTMLAnchorElement>(null)
 
   // Query: Lấy thông tin chi tiết video
@@ -90,6 +91,11 @@ const WatchClient = ({ idName }: WatchClientProps) => {
       if (!getLikedVideosQuery.data) return
       setPlaylistVideos(getLikedVideosQuery.data.data.data.videos)
     }
+    // Thêm index video đã xem vào history để tránh lặp lại video khi phát ngẫu nhiên
+    if (playlistId && idName && playlistVideos.length > 0) {
+      const foundIndex = playlistVideos.findIndex((video) => video.idName === idName)
+      setPlaylistVideoIndexHistory((prevState) => uniq([...prevState, foundIndex]))
+    }
   }, [getLikedVideosQuery.data])
 
   // Tổng số video có trong playlist
@@ -109,10 +115,22 @@ const WatchClient = ({ idName }: WatchClientProps) => {
 
   // Chuyển đến video tiếp theo khi hết video hiện tại nếu đang có playlist
   const handleNextVideoInPlaylist = () => {
-    if (!playlistId) return // Phát video riêng lẻ
-    if (currentPlaylistVideoIndex === totalPlaylistVideo) return // Video cuối cùng
-    const nextVideoIndex = isShuffle ? getRandomInt(totalPlaylistVideo - 1) : currentPlaylistVideoIndex
-    setNextVideoIdName(playlistVideos[nextVideoIndex].idName)
+    if (!playlistId) return // Phát video riêng lẻ thì không next video
+    let _playlistVideoIndexHistory = playlistVideoIndexHistory
+    // Khi phát hết video
+    if (playlistVideoIndexHistory.length === totalPlaylistVideo) {
+      if (!isRepeat) return
+      setPlaylistVideoIndexHistory([])
+      _playlistVideoIndexHistory = []
+    }
+    let nextVideoIndex = isShuffle
+      ? randomIntegerExcludingArray(totalPlaylistVideo - 1, _playlistVideoIndexHistory)
+      : currentPlaylistVideoIndex
+    console.log('>>> nextVideoIndex', nextVideoIndex)
+    if (isRepeat && nextVideoIndex === totalPlaylistVideo) {
+      nextVideoIndex = 0
+    }
+    setNextVideoIdName(playlistVideos[nextVideoIndex]?.idName)
   }
 
   // Tự chuyển video khi kết thúc video hiện tại nếu có playlist
@@ -243,7 +261,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
       <div className='w-1/3'>
         {/* Playlist */}
         {!!playlistId && (
-          <Fragment>
+          <div className='mb-6'>
             <Playlist
               playlistId={playlistId}
               currentIdName={idName}
@@ -259,8 +277,13 @@ const WatchClient = ({ idName }: WatchClientProps) => {
                 query: { list: playlistId }
               }}
             />
-          </Fragment>
+          </div>
         )}
+        <div className='space-y-2'>
+          {playlistVideos.map((video) => (
+            <WatchOtherVideo key={video._id} videoData={video} />
+          ))}
+        </div>
       </div>
     </div>
   )

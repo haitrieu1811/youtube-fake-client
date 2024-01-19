@@ -60,3 +60,11 @@ export const formatViews = (viewCount: number): string => {
 export const getRandomInt = (n: number) => {
   return Math.floor(Math.random() * (n + 1))
 }
+
+export const randomIntegerExcludingArray = (n: number, excludedArray: number[]) => {
+  let randomNum
+  do {
+    randomNum = Math.floor(Math.random() * (n + 1))
+  } while (excludedArray.includes(randomNum))
+  return randomNum
+}

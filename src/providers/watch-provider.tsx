@@ -1,6 +1,7 @@
 'use client'
 
-import { Dispatch, ReactNode, SetStateAction, createContext, useState } from 'react'
+import { usePathname } from 'next/navigation'
+import { Dispatch, ReactNode, SetStateAction, createContext, useEffect, useState } from 'react'
 
 type WatchContextType = {
   isOpenPlaylist: boolean
@@ -9,6 +10,9 @@ type WatchContextType = {
   setIsRepeat: Dispatch<SetStateAction<boolean>>
   isShuffle: boolean
   setIsShuffle: Dispatch<SetStateAction<boolean>>
+  playlistVideoIndexHistory: number[]
+  setPlaylistVideoIndexHistory: Dispatch<SetStateAction<number[]>>
+  resetPlaylist: () => void
 }
 
 const initialContext: WatchContextType = {
@@ -17,15 +21,33 @@ const initialContext: WatchContextType = {
   isRepeat: true,
   setIsRepeat: () => null,
   isShuffle: true,
-  setIsShuffle: () => null
+  setIsShuffle: () => null,
+  playlistVideoIndexHistory: [],
+  setPlaylistVideoIndexHistory: () => null,
+  resetPlaylist: () => null
 }
 
 export const WatchContext = createContext<WatchContextType>(initialContext)
 
 const WatchProvider = ({ children }: { children: ReactNode }) => {
-  const [isOpenPlaylist, setIsOpenPlaylist] = useState<boolean>(true)
-  const [isRepeat, setIsRepeat] = useState<boolean>(false)
-  const [isShuffle, setIsShuffle] = useState<boolean>(false)
+  const pathname = usePathname()
+
+  const [isOpenPlaylist, setIsOpenPlaylist] = useState<boolean>(initialContext.isOpenPlaylist)
+  const [isRepeat, setIsRepeat] = useState<boolean>(initialContext.isRepeat)
+  const [isShuffle, setIsShuffle] = useState<boolean>(initialContext.isShuffle)
+  const [playlistVideoIndexHistory, setPlaylistVideoIndexHistory] = useState<number[]>(
+    initialContext.playlistVideoIndexHistory
+  )
+
+  const resetPlaylist = () => {
+    setIsRepeat(false)
+    setIsShuffle(false)
+    setPlaylistVideoIndexHistory([])
+  }
+
+  useEffect(() => {
+    if (!pathname.includes('/watch')) resetPlaylist()
+  }, [pathname])
 
   return (
     <WatchContext.Provider
@@ -35,7 +57,10 @@ const WatchProvider = ({ children }: { children: ReactNode }) => {
         isRepeat,
         setIsRepeat,
         isShuffle,
-        setIsShuffle
+        setIsShuffle,
+        playlistVideoIndexHistory,
+        setPlaylistVideoIndexHistory,
+        resetPlaylist
       }}
     >
       {children}
