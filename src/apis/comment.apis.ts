@@ -10,7 +10,7 @@ import {
   UpdateCommentResponse,
   UpdateCommentReqBody
 } from '@/types/comment.types'
-import { PaginationReqQuery } from '@/types/utils.types'
+import { OnlyMessageResponse, PaginationReqQuery } from '@/types/utils.types'
 
 const commentApis = {
   // Lấy danh sách comment
@@ -41,6 +41,11 @@ const commentApis = {
   // Cập nhật bình luận
   updateComment({ commentId, body }: { commentId: string; body: UpdateCommentReqBody }) {
     return http.patch<UpdateCommentResponse>(`/comments/${commentId}`, body)
+  },
+
+  // Xóa bình luận
+  deleteComment(commentId: string) {
+    return http.delete<OnlyMessageResponse>(`/comments/${commentId}`)
   }
 } as const
 

@@ -140,7 +140,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
   }, [nextVideoIdName])
 
   return (
-    <div className='flex space-x-8'>
+    <div className='flex flex-wrap space-x-8'>
       <div className='flex-1'>
         {/* Trình phát video */}
         {videoInfo && !watchVideoQuery.isFetching ? (
@@ -188,7 +188,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
                       <Skeleton className='w-[100px] h-4' />
                     )}
                     {videoInfo && !watchVideoQuery.isFetching && videoInfo.channel.tick && (
-                      <CheckCircle2 className='fill-zinc-800 dark:fill-zinc-500 stroke-background w-[15px] h-[15px] ml-2' />
+                      <CheckCircle2 className='fill-blue-500 stroke-background w-[15px] h-[15px] ml-2' />
                     )}
                   </div>
                   {videoInfo && !watchVideoQuery.isFetching ? (
@@ -281,9 +281,9 @@ const WatchClient = ({ idName }: WatchClientProps) => {
           )}
         </div>
         {/* Bình luận */}
-        <div className='my-6'>{videoInfo && <Comment accountData={account} videoId={videoInfo._id} />}</div>
+        <div className='my-6'>{videoInfo && <Comment videoId={videoInfo._id} />}</div>
       </div>
-      <div className='w-1/3'>
+      <div className='w-full lg:w-1/3'>
         {/* Playlist */}
         {!!playlistId && (
           <div className='mb-6'>
