@@ -80,6 +80,7 @@ export type WatchedVideoType = {
     isSubscribed: boolean
     subscribeCount: number
   }
+  category: VideoCategoryType | null
   createdAt: string
   updatedAt: string
 }
@@ -187,6 +188,12 @@ export type WatchVideoResponse = SuccessResponse<{
 
 // Response: Lấy danh sách video đã thích
 export type GetLikedVideosResponse = SuccessResponse<{
-  videos: VideoItemType[],
+  videos: VideoItemType[]
+  pagination: PaginationType
+}>
+
+// Response: Lấy danh sách video cùng danh mục
+export type GetVideosSameCategoryResponse = SuccessResponse<{
+  videos: VideoItemType[]
   pagination: PaginationType
 }>

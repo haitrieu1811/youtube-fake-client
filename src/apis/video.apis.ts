@@ -11,6 +11,7 @@ import {
   GetVideosByUsernameResponse,
   GetVideosOfMeReqQuery,
   GetVideosOfMeResponse,
+  GetVideosSameCategoryResponse,
   UpdateVideoReqBody,
   UpdateVideoResponse,
   WatchVideoResponse
@@ -85,6 +86,11 @@ const videoApis = {
   // Lấy danh sách video đã thích
   getLikedVideos(params?: PaginationReqQuery) {
     return http.get<GetLikedVideosResponse>('/videos/liked', { params })
+  },
+
+  // Lấy danh sách video cùng danh mục
+  getVideosSameCategory({params, categoryId}: {params?: PaginationReqQuery, categoryId: string}) {
+    return http.get<GetVideosSameCategoryResponse>(`/videos/category/${categoryId}`, { params })
   }
 }
 

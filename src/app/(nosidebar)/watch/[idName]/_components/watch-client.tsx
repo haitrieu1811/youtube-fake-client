@@ -28,6 +28,7 @@ import { VideoItemType } from '@/types/video.types'
 import Comment from './comment'
 import Playlist from './playlist'
 import Reaction from './reaction'
+import OtherVideos from './other-videos'
 
 type WatchClientProps = {
   idName: string
@@ -279,11 +280,11 @@ const WatchClient = ({ idName }: WatchClientProps) => {
             />
           </div>
         )}
-        <div className='space-y-2'>
-          {playlistVideos.map((video) => (
-            <WatchOtherVideo key={video._id} videoData={video} />
-          ))}
-        </div>
+        {videoInfo && (
+          <div className='space-y-2'>
+            <OtherVideos categoryId={videoInfo.category?._id || null} currentIdName={idName} />
+          </div>
+        )}
       </div>
     </div>
   )
