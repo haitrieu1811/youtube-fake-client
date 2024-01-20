@@ -5,6 +5,7 @@ import { Fragment, useEffect, useState } from 'react'
 
 import videoApis from '@/apis/video.apis'
 import WatchOtherVideo from '@/components/watch-other-video'
+import WatchOtherVideoSkeleton from '@/components/watch-other-video-skeleton'
 import { VideoItemType } from '@/types/video.types'
 
 type OtherVideos = {
@@ -25,7 +26,8 @@ const OtherVideos = ({ categoryId, currentIdName }: OtherVideos) => {
   // Query: Lấy danh sách video công khai
   const getPublicVideosQuery = useQuery({
     queryKey: ['getPublicVideos'],
-    queryFn: () => videoApis.getPublicVideos()
+    queryFn: () => videoApis.getPublicVideos(),
+    enabled: categoryId === null
   })
 
   // Cập nhật giá trị cho videos
@@ -39,13 +41,19 @@ const OtherVideos = ({ categoryId, currentIdName }: OtherVideos) => {
     setVideos(getPublicVideosQuery.data.data.data.videos)
   }, [getVideosSameCategoryQuery.data, getPublicVideosQuery.data])
 
+  const isFetching = getVideosSameCategoryQuery.isFetching || getPublicVideosQuery.isFetching
+
   return (
     <Fragment>
-      {videos
-        .filter((video) => video.idName !== currentIdName)
-        .map((video) => (
-          <WatchOtherVideo key={video._id} videoData={video} />
-        ))}
+      {!isFetching &&
+        videos
+          .filter((video) => video.idName !== currentIdName)
+          .map((video) => <WatchOtherVideo key={video._id} videoData={video} />)}
+
+      {isFetching &&
+        Array(10)
+          .fill(0)
+          .map((_, index) => <WatchOtherVideoSkeleton key={index} />)}
     </Fragment>
   )
 }

@@ -34,7 +34,8 @@ const CommentRow = ({ isRootComment = true, commentData, contentId, isShowReplie
   // Query: Lấy thông tin comment
   const getCommentDetailQuery = useQuery({
     queryKey: ['getCommentDetail', commentData._id],
-    queryFn: () => commentApis.getCommentDetail(commentData._id)
+    queryFn: () => commentApis.getCommentDetail(commentData._id),
+    enabled: isEditing
   })
 
   // Thông tin comment
