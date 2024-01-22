@@ -1,5 +1,5 @@
 import { CommentType } from '@/constants/enum'
-import { PaginationType, SuccessResponse } from './utils.types'
+import { PaginationReqQuery, PaginationType, SuccessResponse } from './utils.types'
 
 export type CommentItemType = {
   _id: string
@@ -32,6 +32,12 @@ export type CommentDetailType = {
   replyAccountId: string | null
   createdAt: string
   updatedAt: string
+}
+
+// Request: Lấy danh sách bình luận
+export type GetCommentsReqQuery = PaginationReqQuery & {
+  sortBy?: 'createdAt' | 'likeCount'
+  orderBy?: 'asc' | 'desc'
 }
 
 // Request: Thêm comment

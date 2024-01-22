@@ -8,27 +8,28 @@ import {
   GetRepliesCommentResponse,
   GetCommentDetailResponse,
   UpdateCommentResponse,
-  UpdateCommentReqBody
+  UpdateCommentReqBody,
+  GetCommentsReqQuery
 } from '@/types/comment.types'
 import { OnlyMessageResponse, PaginationReqQuery } from '@/types/utils.types'
 
 const commentApis = {
-  // Lấy danh sách comment
-  getComments({ contentId, params }: { contentId: string; params?: PaginationReqQuery }) {
+  // Lấy danh sách bình luận
+  getComments({ contentId, params }: { contentId: string; params?: GetCommentsReqQuery }) {
     return http.get<GetCommentsResponse>(`/comments/content/${contentId}`, { params })
   },
 
-  // Thêm comment
+  // Thêm bình luận
   createComment(body: CreateCommentReqBody) {
     return http.post<CreateCommentResponse>('/comments', body)
   },
 
-  // Trả lời comment
+  // Trả lời bình luận
   replyComment({ body, commentId }: { body: ReplyCommentReqBody; commentId: string }) {
     return http.post<ReplyCommentResponse>(`/comments/${commentId}/reply`, body)
   },
 
-  // Lấy danh sách trả lời comment
+  // Lấy danh sách trả lời bình luận
   getRepliesComment({ commentId, params }: { commentId: string; params?: PaginationReqQuery }) {
     return http.get<GetRepliesCommentResponse>(`/comments/${commentId}/replies`, { params })
   },

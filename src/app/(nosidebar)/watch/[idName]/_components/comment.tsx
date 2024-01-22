@@ -1,8 +1,9 @@
 'use client'
 
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { BarChart } from 'lucide-react'
+import { BarChart, Loader2 } from 'lucide-react'
 import { Dispatch, SetStateAction, createContext, useContext, useEffect, useState } from 'react'
+import classNames from 'classnames'
 
 import commentApis from '@/apis/comment.apis'
 import CommentInput from '@/components/comment-input'
@@ -30,15 +31,18 @@ type CommentProps = {
   videoId: string
 }
 
+type SortBy = 'createdAt' | 'likeCount'
+
 const Comment = ({ videoId }: CommentProps) => {
   const { account } = useContext(AppContext)
   const [comments, setComments] = useState<CommentItemType[]>([])
   const [commentCount, setCommentCount] = useState<number>(0)
+  const [sortBy, setSortBy] = useState<SortBy>('likeCount')
 
   // Query: Lấy danh sách comment
   const getCommentsQuery = useQuery({
-    queryKey: ['getComments', videoId],
-    queryFn: () => commentApis.getComments({ contentId: videoId })
+    queryKey: ['getComments', videoId, sortBy],
+    queryFn: () => commentApis.getComments({ contentId: videoId, params: { sortBy } })
   })
 
   // Cập nhật lại danh sách comment
@@ -68,6 +72,11 @@ const Comment = ({ videoId }: CommentProps) => {
     })
   }
 
+  // Sắp xếp bình luận
+  const handleSort = (value: SortBy) => {
+    setSortBy(value)
+  }
+
   return (
     <WatchCommentContext.Provider
       value={{
@@ -85,10 +94,24 @@ const Comment = ({ videoId }: CommentProps) => {
             </Button>
           </PopoverTrigger>
           <PopoverContent align='start' className='px-0 py-2 rounded-lg w-auto flex-col flex'>
-            <Button variant='ghost' className='h-12 rounded-none font-normal'>
+            <Button
+              variant='ghost'
+              className={classNames({
+                'h-12 rounded-none font-normal': true,
+                'bg-accent': sortBy === 'likeCount'
+              })}
+              onClick={() => handleSort('likeCount')}
+            >
               Bình luận hàng đầu
             </Button>
-            <Button variant='ghost' className='h-12 rounded-none font-normal'>
+            <Button
+              variant='ghost'
+              className={classNames({
+                'h-12 rounded-none font-normal': true,
+                'bg-accent': sortBy === 'createdAt'
+              })}
+              onClick={() => handleSort('createdAt')}
+            >
               Mới nhất xếp trước
             </Button>
           </PopoverContent>
@@ -109,10 +132,17 @@ const Comment = ({ videoId }: CommentProps) => {
         </div>
       </div>
       {/* Danh sách bình luận */}
-      <div className='mt-6 space-y-5'>
-        {comments.map((comment) => (
-          <CommentItem key={comment._id} commentData={comment} />
-        ))}
+      <div className='mt-6 relative'>
+        <div className='space-y-5'>
+          {comments.map((comment) => (
+            <CommentItem key={comment._id} commentData={comment} />
+          ))}
+        </div>
+        {getCommentsQuery.isFetching && (
+          <div className='absolute inset-0 bg-background/60 flex justify-center'>
+            <Loader2 size={40} className='animate-spin mt-10 stroke-muted-foreground' />
+          </div>
+        )}
       </div>
     </WatchCommentContext.Provider>
   )
