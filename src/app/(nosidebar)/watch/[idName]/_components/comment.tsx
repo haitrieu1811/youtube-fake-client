@@ -14,6 +14,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { CommentType } from '@/constants/enum'
 import { AppContext } from '@/providers/app-provider'
 import { CommentItemType } from '@/types/comment.types'
+import CommentList from '@/components/comment-list'
 
 type WatchCommentContextType = {
   setComments: Dispatch<SetStateAction<CommentItemType[]>>
@@ -133,11 +134,7 @@ const Comment = ({ videoId }: CommentProps) => {
       </div>
       {/* Danh sách bình luận */}
       <div className='mt-6 relative'>
-        <div className='space-y-5'>
-          {comments.map((comment) => (
-            <CommentItem key={comment._id} commentData={comment} />
-          ))}
-        </div>
+        <CommentList comments={comments} setComments={setComments} setCommentCount={setCommentCount} />
         {getCommentsQuery.isFetching && (
           <div className='absolute inset-0 bg-background/60 flex justify-center'>
             <Loader2 size={40} className='animate-spin mt-10 stroke-muted-foreground' />

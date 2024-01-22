@@ -43,7 +43,7 @@ const VerticalVideo = ({ videoData }: VerticalVideoProps) => {
                   {videoData.author.channelName}
                 </Link>
                 {videoData.author.tick && (
-                  <CheckCircle2 className='w-[14px] h-[14px] fill-muted-foreground stroke-white dark:stroke-black' />
+                  <CheckCircle2 className='w-[14px] h-[14px] fill-blue-500 stroke-white dark:stroke-black' />
                 )}
               </div>
             </div>

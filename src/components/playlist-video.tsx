@@ -48,7 +48,7 @@ const PlaylistVideo = ({ index, videoData, playlistId }: PlaylistVideoProps) => 
             <Link href={PATH.PROFILE(videoData.author.username)} className='flex items-center space-x-1'>
               <span>{videoData.author.channelName}</span>
               {videoData.author.tick && (
-                <CheckCircle2 size={12} strokeWidth={1.5} className='fill-muted-foreground stroke-background' />
+                <CheckCircle2 size={12} strokeWidth={1.5} className='fill-blue-500 stroke-background' />
               )}
             </Link>
             <span className='w-1 h-1 rounded-full bg-muted-foreground' />

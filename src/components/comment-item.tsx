@@ -73,13 +73,13 @@ const CommentItem = ({ commentData }: CommentItemProps) => {
         </div>
       )}
       {/* Loading danh sách phản hồi */}
-      {getRepliesCommentQuery.isLoading && (
+      {getRepliesCommentQuery.isFetching && (
         <div className='flex justify-center'>
           <Loader2 className='animate-spin w-10 h-10 stroke-muted-foreground' />
         </div>
       )}
       {/* Danh sách phản hồi */}
-      {replies.length > 0 && isShowReplies && !getRepliesCommentQuery.isLoading && (
+      {replies.length > 0 && isShowReplies && !getRepliesCommentQuery.isFetching && (
         <div className='pl-11 py-4 space-y-3'>
           {replies.map((comment) => (
             <CommentRow

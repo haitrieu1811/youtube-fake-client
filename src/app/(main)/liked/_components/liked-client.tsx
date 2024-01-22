@@ -126,12 +126,12 @@ const LikedClient = () => {
       </div>
       <div className='flex-1'>
         {/* Danh sách video */}
-        {!getLikedVideosQuery.isLoading &&
+        {!getLikedVideosQuery.isFetching &&
           videos.map((video, index) => (
             <PlaylistVideo key={video._id} index={index + 1} videoData={video} playlistId='liked' />
           ))}
         {/* Skeleton */}
-        {getLikedVideosQuery.isLoading &&
+        {getLikedVideosQuery.isFetching &&
           Array(10)
             .fill(0)
             .map((_, index) => <PlaylistVideoSkeleton key={index} />)}

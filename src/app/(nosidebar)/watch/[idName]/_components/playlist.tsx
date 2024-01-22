@@ -170,11 +170,7 @@ const Playlist = ({ playlistId, videos, totalVideo, currentIdName, currentVideoI
                           {video.author.channelName}
                         </Link>
                         {video.author.tick && (
-                          <CheckCircle2
-                            size={12}
-                            strokeWidth={1.5}
-                            className='fill-muted-foreground stroke-background'
-                          />
+                          <CheckCircle2 size={12} strokeWidth={1.5} className='fill-blue-500 stroke-background' />
                         )}
                       </div>
                     </div>

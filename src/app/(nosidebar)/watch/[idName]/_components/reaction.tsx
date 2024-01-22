@@ -1,15 +1,14 @@
 'use client'
 
-import { useMutation } from '@tanstack/react-query'
 import '@vidstack/react/player/styles/default/layouts/video.css'
 import '@vidstack/react/player/styles/default/theme.css'
 import classNames from 'classnames'
 import { ThumbsDown, ThumbsUp } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import reactionApis from '@/apis/reaction.apis'
 import { Button } from '@/components/ui/button'
 import { ReactionContentType, ReactionType } from '@/constants/enum'
+import useReaction from '@/hooks/useReaction'
 import { WatchedVideoType } from '@/types/video.types'
 
 type ReactionProps = {
@@ -22,6 +21,46 @@ const Reaction = ({ videoInfo }: ReactionProps) => {
   const [likeCount, setLikeCount] = useState<number>(0)
   const [dislikeCount, setDislikeCount] = useState<number>(0)
 
+  const { handleReaction } = useReaction({
+    onCreateSuccess(data) {
+      const { type } = data.data.data.reaction
+      if (type === ReactionType.Like) {
+        setLikeCount((prev) => prev + 1)
+        setIsLiked(true)
+      }
+      if (type === ReactionType.Dislike) {
+        setDislikeCount((prev) => prev + 1)
+        setIsDisiked(true)
+      }
+    },
+    onUpdateSuccess(data) {
+      const { type } = data.data.data.reaction
+      if (type === ReactionType.Like) {
+        setLikeCount((prev) => prev + 1)
+        setDislikeCount((prev) => prev - 1)
+        setIsLiked(true)
+        setIsDisiked(false)
+      }
+      if (type === ReactionType.Dislike) {
+        setDislikeCount((prev) => prev + 1)
+        setLikeCount((prev) => prev - 1)
+        setIsDisiked(true)
+        setIsLiked(false)
+      }
+    },
+    onDeleteSuccess(data) {
+      const { type } = data.data.data.reaction
+      if (type === ReactionType.Like) {
+        setLikeCount((prev) => prev - 1)
+        setIsLiked(false)
+      }
+      if (type === ReactionType.Dislike) {
+        setDislikeCount((prev) => prev - 1)
+        setIsDisiked(false)
+      }
+    }
+  })
+
   // Cập nhật thông tin video
   useEffect(() => {
     if (!videoInfo) return
@@ -31,91 +70,20 @@ const Reaction = ({ videoInfo }: ReactionProps) => {
     setDislikeCount(videoInfo.dislikeCount)
   }, [videoInfo])
 
-  // Mutation: Thêm reaction
-  const createReactionMutation = useMutation({
-    mutationKey: ['createReaction'],
-    mutationFn: reactionApis.createReaction,
-    onSuccess: (data) => {
-      const { type } = data.data.data.reaction
-      if (type === ReactionType.Like) {
-        setLikeCount((prev) => prev + 1)
-        setIsLiked(true)
-      }
-      if (type === ReactionType.Dislike) {
-        setDislikeCount((prev) => prev + 1)
-        setIsDisiked(true)
-      }
-    }
-  })
-
-  // Mutation: Cập nhật reaction
-  const updateReactionMutation = useMutation({
-    mutationKey: ['updateReaction'],
-    mutationFn: reactionApis.updateReaction,
-    onSuccess: (data) => {
-      const { type } = data.data.data.reaction
-      if (type === ReactionType.Like) {
-        setLikeCount((prev) => prev + 1)
-        setDislikeCount((prev) => prev - 1)
-        setIsLiked(true)
-        setIsDisiked(false)
-      }
-      if (type === ReactionType.Dislike) {
-        setDislikeCount((prev) => prev + 1)
-        setLikeCount((prev) => prev - 1)
-        setIsDisiked(true)
-        setIsLiked(false)
-      }
-    }
-  })
-
-  // Mutation: Xóa reaction
-  const deleteReactionMutation = useMutation({
-    mutationKey: ['deleteReaction'],
-    mutationFn: reactionApis.deleteReaction,
-    onSuccess: (data) => {
-      const { type } = data.data.data.reaction
-      if (type === ReactionType.Like) {
-        setLikeCount((prev) => prev - 1)
-        setIsLiked(false)
-      }
-      if (type === ReactionType.Dislike) {
-        setDislikeCount((prev) => prev - 1)
-        setIsDisiked(false)
-      }
-    }
-  })
-
-  // Xử lý reaction
-  const handleReaction = (type: ReactionType) => {
-    if (!videoInfo) return
-    if (!isLiked && !isDisliked) {
-      createReactionMutation.mutate({
-        contentType: ReactionContentType.Video,
-        contentId: videoInfo._id,
-        type
-      })
-    }
-    if (isLiked || isDisliked) {
-      if ((isLiked && type === ReactionType.Like) || (isDisliked && type === ReactionType.Dislike)) {
-        deleteReactionMutation.mutate(videoInfo._id)
-      } else {
-        updateReactionMutation.mutate({
-          contentId: videoInfo._id,
-          body: {
-            type
-          }
-        })
-      }
-    }
-  }
-
   return (
     <div className='flex'>
       <Button
         variant='secondary'
         className='rounded-l-full space-x-3 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-        onClick={() => handleReaction(ReactionType.Like)}
+        onClick={() =>
+          handleReaction({
+            contentId: videoInfo._id,
+            contentType: ReactionContentType.Video,
+            type: ReactionType.Like,
+            isLiked,
+            isDisliked
+          })
+        }
       >
         <ThumbsUp
           size={20}
@@ -130,7 +98,15 @@ const Reaction = ({ videoInfo }: ReactionProps) => {
       <Button
         variant='secondary'
         className='rounded-r-full space-x-3 hover:bg-zinc-200 dark:hover:bg-zinc-700'
-        onClick={() => handleReaction(ReactionType.Dislike)}
+        onClick={() =>
+          handleReaction({
+            contentId: videoInfo._id,
+            contentType: ReactionContentType.Video,
+            type: ReactionType.Dislike,
+            isLiked,
+            isDisliked
+          })
+        }
       >
         <ThumbsDown
           size={20}

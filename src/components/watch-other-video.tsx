@@ -28,11 +28,11 @@ const WatchOtherVideo = ({ videoData }: WatchOtherVideoProps) => {
         <Link href={PATH.WATCH(videoData.idName)} className='text-sm font-medium line-clamp-2'>
           {videoData.title}
         </Link>
-        <div className='flex items-center space-x-3'>
+        <div className='flex items-center space-x-1.5'>
           <Link href={PATH.PROFILE(videoData.author.username)} className='text-muted-foreground text-xs'>
             {videoData.author.channelName}
           </Link>
-          <CheckCircle2 size={14} strokeWidth={1.5} className='stroke-background fill-muted-foreground' />
+          <CheckCircle2 size={14} strokeWidth={1.5} className='stroke-background fill-blue-500' />
         </div>
         <div className='text-muted-foreground text-xs space-x-2 flex items-center'>
           <span>{formatViews(videoData.viewCount)} lượt xem</span>

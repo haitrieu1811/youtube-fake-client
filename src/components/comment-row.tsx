@@ -20,7 +20,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
+import { ReactionContentType, ReactionType } from '@/constants/enum'
 import PATH from '@/constants/path'
+import useReaction from '@/hooks/useReaction'
 import { convertMomentToVietnamese } from '@/lib/utils'
 import { AppContext } from '@/providers/app-provider'
 import { CommentItemType } from '@/types/comment.types'
@@ -29,6 +31,7 @@ import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { toast } from './ui/use-toast'
+import { CommentListContext } from './comment-list'
 
 type CommentRowProps = {
   isRootComment?: boolean
@@ -40,6 +43,8 @@ type CommentRowProps = {
   setReplyCount: Dispatch<SetStateAction<number>>
 }
 
+const MAX_LENGTH_COMMENT_CONTENT = 50
+
 const CommentRow = ({
   isRootComment = true,
   commentData,
@@ -50,9 +55,14 @@ const CommentRow = ({
   setReplyCount
 }: CommentRowProps) => {
   const { account } = useContext(AppContext)
-  const { setComments, setCommentCount } = useContext(WatchCommentContext)
+  const { setComments, setCommentCount } = useContext(CommentListContext)
   const [isShowReplyInput, setIsShowReplyInput] = useState<boolean>(false)
   const [isEditing, setIsEditing] = useState<boolean>(false)
+  const [isSeeMoreContent, setIsSeeMoreContent] = useState<boolean>(false)
+
+  const toggleSeeMoreContent = () => {
+    setIsSeeMoreContent((prevState) => !prevState)
+  }
 
   // Query: Lấy thông tin bình luận
   const getCommentDetailQuery = useQuery({
@@ -75,7 +85,7 @@ const CommentRow = ({
       const { comment } = data.data.data
       setReplies((prevState) => [...prevState, comment])
       setReplyCount((prevState) => (prevState += 1))
-      setCommentCount((prevState) => (prevState += 1))
+      setCommentCount && setCommentCount((prevState) => (prevState += 1))
     }
   })
 
@@ -140,16 +150,99 @@ const CommentRow = ({
         })
         if (!isRootComment) {
           setReplyCount((prevState) => (prevState -= 1))
-          setCommentCount((prevState) => (prevState -= 1))
+          setCommentCount && setCommentCount((prevState) => (prevState -= 1))
           setReplies((prevState) => prevState.filter((item) => item._id !== commentId))
         } else {
           if (replyCount === undefined) return
-          setCommentCount((prevState) => (prevState -= replyCount + 1))
+          setCommentCount && setCommentCount((prevState) => (prevState -= replyCount + 1))
           setComments((prevState) => prevState.filter((item) => item._id !== commentId))
         }
       }
     })
   }
+
+  // Like/dislike bình luận
+  const { handleReaction } = useReaction({
+    onCreateSuccess(data) {
+      const { reaction } = data.data.data
+      let setState = setComments
+      if (!isRootComment) setState = setReplies
+      setState((prevState) =>
+        prevState.map((item) => {
+          if (item._id === commentData._id) {
+            if (reaction.type === ReactionType.Like) {
+              return {
+                ...item,
+                isLiked: true,
+                likeCount: item.likeCount + 1
+              }
+            } else {
+              return {
+                ...item,
+                isDisliked: true,
+                dislikeCount: item.dislikeCount + 1
+              }
+            }
+          }
+          return item
+        })
+      )
+    },
+    onUpdateSuccess(data) {
+      const { reaction } = data.data.data
+      let setState = setComments
+      if (!isRootComment) setState = setReplies
+      setState((prevState) =>
+        prevState.map((item) => {
+          if (item._id === commentData._id) {
+            if (reaction.type === ReactionType.Like) {
+              return {
+                ...item,
+                isLiked: true,
+                isDisliked: false,
+                likeCount: item.likeCount + 1,
+                dislikeCount: item.dislikeCount - 1
+              }
+            } else {
+              return {
+                ...item,
+                isLiked: false,
+                isDisliked: true,
+                likeCount: item.likeCount - 1,
+                dislikeCount: item.dislikeCount + 1
+              }
+            }
+          }
+          return item
+        })
+      )
+    },
+    onDeleteSuccess(data) {
+      const { reaction } = data.data.data
+      let setState = setComments
+      if (!isRootComment) setState = setReplies
+      setState((prevState) =>
+        prevState.map((item) => {
+          if (item._id === commentData._id) {
+            if (reaction.type === ReactionType.Like) {
+              return {
+                ...item,
+                isLiked: false,
+                likeCount: item.likeCount - 1
+              }
+            } else {
+              return {
+                ...item,
+                isDisliked: false,
+                dislikeCount: item.dislikeCount - 1
+              }
+            }
+          }
+          return item
+        })
+      )
+    }
+  })
 
   return (
     <div className='flex items-start space-x-4 group'>
@@ -184,19 +277,70 @@ const CommentRow = ({
                 {convertMomentToVietnamese(moment(commentData.createdAt).fromNow())}
               </div>
             </div>
-            <div className='text-sm'>{commentData.content}</div>
+            <div className='space-y-1'>
+              <div className='text-sm'>
+                {commentData.content.split(' ').length <= MAX_LENGTH_COMMENT_CONTENT
+                  ? commentData.content
+                  : !isSeeMoreContent
+                  ? `${commentData.content.split(' ').slice(0, MAX_LENGTH_COMMENT_CONTENT).join(' ')}...`
+                  : commentData.content}
+              </div>
+              {commentData.content.split(' ').length > MAX_LENGTH_COMMENT_CONTENT && (
+                <Button variant='link' className='p-0 h-auto' onClick={toggleSeeMoreContent}>
+                  {!isSeeMoreContent ? 'Đọc thêm' : 'Ẩn bớt'}
+                </Button>
+              )}
+            </div>
             <div className='flex items-center space-x-3 -ml-2'>
               <div className='space-x-1 flex items-center'>
-                <Button variant='ghost' size='icon' className='rounded-full'>
-                  <ThumbsUp strokeWidth={1.5} size={16} />
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='rounded-full'
+                  onClick={() =>
+                    handleReaction({
+                      contentId: commentData._id,
+                      contentType: ReactionContentType.Comment,
+                      isLiked: commentData.isLiked,
+                      isDisliked: commentData.isDisliked,
+                      type: ReactionType.Like
+                    })
+                  }
+                >
+                  <ThumbsUp
+                    strokeWidth={1.5}
+                    size={16}
+                    className={classNames({
+                      'fill-black dark:fill-white': commentData.isLiked
+                    })}
+                  />
                 </Button>
                 <span className='text-xs text-muted-foreground'>{commentData.likeCount}</span>
               </div>
               <div className='space-x-1 flex items-center'>
-                <Button variant='ghost' size='icon' className='rounded-full'>
-                  <ThumbsDown strokeWidth={1.5} size={16} />
+                <Button
+                  variant='ghost'
+                  size='icon'
+                  className='rounded-full'
+                  onClick={() =>
+                    handleReaction({
+                      contentId: commentData._id,
+                      contentType: ReactionContentType.Comment,
+                      isLiked: commentData.isLiked,
+                      isDisliked: commentData.isDisliked,
+                      type: ReactionType.Dislike
+                    })
+                  }
+                >
+                  <ThumbsDown
+                    strokeWidth={1.5}
+                    size={16}
+                    className={classNames({
+                      'fill-black dark:fill-white': commentData.isDisliked
+                    })}
+                  />
                 </Button>
-                <span className='text-xs text-muted-foreground'>{commentData.likeCount}</span>
+                <span className='text-xs text-muted-foreground'>{commentData.dislikeCount}</span>
               </div>
               <Button variant='ghost' className='text-xs rounded-full' onClick={() => setIsShowReplyInput(true)}>
                 Phản hồi

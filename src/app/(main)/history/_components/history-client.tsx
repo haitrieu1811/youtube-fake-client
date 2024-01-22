@@ -21,6 +21,7 @@ import {
 import { Button } from '@/components/ui/button'
 import useDebounce from '@/hooks/useDebounce'
 import { WatchHistoryItemType } from '@/types/watchHistory.types'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const HistoryClient = () => {
   const searchParams = useSearchParams()
@@ -85,19 +86,37 @@ const HistoryClient = () => {
       <h1 className='font-black text-[36px] tracking-tight py-8'>Nhật ký xem</h1>
       <div className='flex items-start space-x-24'>
         <div className='space-y-5 flex-1'>
-          {videos.map((video) => (
-            <HorizontalVideo
-              videoData={video}
-              classNameThumbnail='flex-shrink-0 w-[250px] h-[140px] object-cover rounded-xl'
-              videoActions={[
-                {
-                  icon: X,
-                  explainText: 'Xóa khỏi danh sách video đã xem',
-                  method: () => handleDeleteWatchHistory(video.historyId)
-                }
-              ]}
-            />
-          ))}
+          {getWatchHistories.isFetching &&
+            Array(10)
+              .fill(0)
+              .map((_, index) => (
+                <div key={index} className='flex space-x-4'>
+                  <Skeleton className='w-[250px] h-[140px] rounded-xl' />
+                  <div className='flex-1 space-y-3'>
+                    <Skeleton className='w-[240px] h-8' />
+                    <Skeleton className='w-[240px] h-3' />
+                    <div className='flex items-center space-x-2'>
+                      <Skeleton className='w-6 h-6 rounded-full' />
+                      <Skeleton className='w-[100px] h-3' />
+                    </div>
+                    <Skeleton className='w-[240px] h-6' />
+                  </div>
+                </div>
+              ))}
+          {!getWatchHistories.isFetching &&
+            videos.map((video) => (
+              <HorizontalVideo
+                videoData={video}
+                classNameThumbnail='flex-shrink-0 w-[250px] h-[140px] object-cover rounded-xl'
+                videoActions={[
+                  {
+                    icon: X,
+                    explainText: 'Xóa khỏi danh sách video đã xem',
+                    method: () => handleDeleteWatchHistory(video.historyId)
+                  }
+                ]}
+              />
+            ))}
         </div>
         <div className='basis-1/3 sticky top-24'>
           <div className='flex items-center border-b border-b-border pb-2 space-x-3 focus-within:border-b-muted-foreground'>
