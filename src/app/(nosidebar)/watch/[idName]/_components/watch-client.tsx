@@ -281,7 +281,11 @@ const WatchClient = ({ idName }: WatchClientProps) => {
           )}
         </div>
         {/* Bình luận */}
-        <div className='my-6'>{videoInfo && <Comment videoId={videoInfo._id} />}</div>
+        {videoInfo && (
+          <div className='my-6'>
+            <Comment videoId={videoInfo._id} />
+          </div>
+        )}
       </div>
       <div className='w-full lg:w-1/3'>
         {/* Playlist */}

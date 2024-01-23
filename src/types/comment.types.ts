@@ -12,6 +12,12 @@ export type CommentItemType = {
     createdAt: string
     updatedAt: string
   }
+  replyAccount?: {
+    _id: string
+    username: string
+    createdAt: string
+    updatedAt: string
+  }
   content: string
   replyCount: number
   likeCount: number
@@ -61,7 +67,9 @@ export type UpdateCommentReqBody = {
 // Response: Lấy danh sách comment
 export type GetCommentsResponse = SuccessResponse<{
   comments: CommentItemType[]
-  pagination: PaginationType
+  pagination: PaginationType & {
+    totalRowsWithReplies: number
+  }
 }>
 
 // Response: Thêm comment

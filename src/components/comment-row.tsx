@@ -279,6 +279,11 @@ const CommentRow = ({
             </div>
             <div className='space-y-1'>
               <div className='text-sm'>
+                {commentData.replyAccount && (
+                  <Link href={PATH.PROFILE(commentData.replyAccount.username)} className='text-blue-500 mr-1.5'>
+                    @{commentData.replyAccount.username}
+                  </Link>
+                )}
                 {commentData.content.split(' ').length <= MAX_LENGTH_COMMENT_CONTENT
                   ? commentData.content
                   : !isSeeMoreContent

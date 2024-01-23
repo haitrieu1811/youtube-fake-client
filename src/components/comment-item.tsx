@@ -1,8 +1,8 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
-import { ChevronDown, Loader2 } from 'lucide-react'
+import { ChevronDown, CornerDownRight, Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 import commentApis from '@/apis/comment.apis'
@@ -14,22 +14,36 @@ type CommentItemProps = {
   commentData: CommentItemType
 }
 
+const MAX_REPLIES_ONE_PAGE = 2
+
 const CommentItem = ({ commentData }: CommentItemProps) => {
   const [replies, setReplies] = useState<CommentItemType[]>([])
   const [replyCount, setReplyCount] = useState<number>(0)
   const [isShowReplies, setIsShowReplies] = useState<boolean>(false)
 
   // Query: Lấy danh sách trả lời bình luận
-  const getRepliesCommentQuery = useQuery({
+  const getRepliesCommentQuery = useInfiniteQuery({
     queryKey: ['getRepliesComment', commentData._id],
-    queryFn: () => commentApis.getRepliesComment({ commentId: commentData._id }),
+    queryFn: ({ pageParam }) =>
+      commentApis.getRepliesComment({
+        commentId: commentData._id,
+        params: {
+          page: String(pageParam),
+          limit: String(MAX_REPLIES_ONE_PAGE)
+        }
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.data.data.pagination.page < lastPage.data.data.pagination.totalPages
+        ? lastPage.data.data.pagination.page + 1
+        : undefined,
     enabled: isShowReplies
   })
 
   // Đặt giá trị cho mảng replies
   useEffect(() => {
     if (!getRepliesCommentQuery.data) return
-    setReplies(getRepliesCommentQuery.data.data.data.comments)
+    setReplies(getRepliesCommentQuery.data.pages.map((page) => page.data.data.comments).flat())
   }, [getRepliesCommentQuery.data])
 
   // Đặt giá trị cho reply count
@@ -73,13 +87,13 @@ const CommentItem = ({ commentData }: CommentItemProps) => {
         </div>
       )}
       {/* Loading danh sách phản hồi */}
-      {getRepliesCommentQuery.isFetching && (
+      {getRepliesCommentQuery.isLoading && (
         <div className='flex justify-center'>
           <Loader2 className='animate-spin w-10 h-10 stroke-muted-foreground' />
         </div>
       )}
       {/* Danh sách phản hồi */}
-      {replies.length > 0 && isShowReplies && !getRepliesCommentQuery.isFetching && (
+      {replies.length > 0 && isShowReplies && !getRepliesCommentQuery.isLoading && (
         <div className='pl-11 py-4 space-y-3'>
           {replies.map((comment) => (
             <CommentRow
@@ -92,6 +106,19 @@ const CommentItem = ({ commentData }: CommentItemProps) => {
               setReplyCount={setReplyCount}
             />
           ))}
+          {/* Hiển thị thêm phản hồi */}
+          {replyCount > MAX_REPLIES_ONE_PAGE && getRepliesCommentQuery.hasNextPage && (
+            <div className='py-2'>
+              <Button
+                variant='ghost'
+                className='rounded-full space-x-2 text-blue-600 hover:text-blue-600 hover:bg-blue-500/10'
+                onClick={() => getRepliesCommentQuery.fetchNextPage()}
+              >
+                <CornerDownRight size={16} />
+                <span>Hiện thêm phản hồi</span>
+              </Button>
+            </div>
+          )}
         </div>
       )}
     </div>

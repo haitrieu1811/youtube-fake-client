@@ -1,20 +1,19 @@
 'use client'
 
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery, useMutation } from '@tanstack/react-query'
+import classNames from 'classnames'
 import { BarChart, Loader2 } from 'lucide-react'
 import { Dispatch, SetStateAction, createContext, useContext, useEffect, useState } from 'react'
-import classNames from 'classnames'
 
 import commentApis from '@/apis/comment.apis'
 import CommentInput from '@/components/comment-input'
-import CommentItem from '@/components/comment-item'
+import CommentList from '@/components/comment-list'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { CommentType } from '@/constants/enum'
 import { AppContext } from '@/providers/app-provider'
 import { CommentItemType } from '@/types/comment.types'
-import CommentList from '@/components/comment-list'
 
 type WatchCommentContextType = {
   setComments: Dispatch<SetStateAction<CommentItemType[]>>
@@ -41,16 +40,28 @@ const Comment = ({ videoId }: CommentProps) => {
   const [sortBy, setSortBy] = useState<SortBy>('likeCount')
 
   // Query: Lấy danh sách comment
-  const getCommentsQuery = useQuery({
-    queryKey: ['getComments', videoId, sortBy],
-    queryFn: () => commentApis.getComments({ contentId: videoId, params: { sortBy } })
+  const getCommentsQuery = useInfiniteQuery({
+    queryKey: ['getComments', videoId],
+    queryFn: ({ pageParam }) =>
+      commentApis.getComments({
+        contentId: videoId,
+        params: {
+          page: String(pageParam),
+          limit: '10'
+        }
+      }),
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.data.data.pagination.page < lastPage.data.data.pagination.totalPages
+        ? lastPage.data.data.pagination.page + 1
+        : undefined
   })
 
   // Cập nhật lại danh sách comment
   useEffect(() => {
     if (!getCommentsQuery.data) return
-    setComments(getCommentsQuery.data.data.data.comments)
-    setCommentCount(getCommentsQuery.data?.data.data.pagination.totalRows)
+    setComments(getCommentsQuery.data.pages.flatMap((page) => page.data.data.comments))
+    setCommentCount(getCommentsQuery.data.pages[0].data.data.pagination.totalRowsWithReplies)
   }, [getCommentsQuery.data])
 
   // Mutation: Thêm bình luận
@@ -134,8 +145,14 @@ const Comment = ({ videoId }: CommentProps) => {
       </div>
       {/* Danh sách bình luận */}
       <div className='mt-6 relative'>
-        <CommentList comments={comments} setComments={setComments} setCommentCount={setCommentCount} />
-        {getCommentsQuery.isFetching && (
+        <CommentList
+          comments={comments}
+          setComments={setComments}
+          setCommentCount={setCommentCount}
+          fetchMoreComments={getCommentsQuery.fetchNextPage}
+          hasMoreComments={getCommentsQuery.hasNextPage}
+        />
+        {getCommentsQuery.isLoading && (
           <div className='absolute inset-0 bg-background/60 flex justify-center'>
             <Loader2 size={40} className='animate-spin mt-10 stroke-muted-foreground' />
           </div>
