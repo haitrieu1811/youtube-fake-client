@@ -8,7 +8,6 @@ import Link from 'next/link'
 import { Dispatch, Fragment, SetStateAction, useContext, useMemo, useState } from 'react'
 
 import commentApis from '@/apis/comment.apis'
-import { WatchCommentContext } from '@/app/(nosidebar)/watch/[idName]/_components/comment'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,11 +26,11 @@ import { convertMomentToVietnamese } from '@/lib/utils'
 import { AppContext } from '@/providers/app-provider'
 import { CommentItemType } from '@/types/comment.types'
 import CommentInput from './comment-input'
+import { CommentListContext } from './comment-list'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
 import { toast } from './ui/use-toast'
-import { CommentListContext } from './comment-list'
 
 type CommentRowProps = {
   isRootComment?: boolean

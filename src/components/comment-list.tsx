@@ -1,11 +1,11 @@
 'use client'
 
+import { Loader2 } from 'lucide-react'
 import { Dispatch, SetStateAction, createContext } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 
 import { CommentItemType } from '@/types/comment.types'
 import CommentItem from './comment-item'
-import { Loader2 } from 'lucide-react'
 
 type CommentListContextType = {
   comments: CommentItemType[]

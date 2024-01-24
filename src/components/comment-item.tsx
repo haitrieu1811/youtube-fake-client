@@ -1,6 +1,6 @@
 'use client'
 
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
 import { ChevronDown, CornerDownRight, Loader2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
