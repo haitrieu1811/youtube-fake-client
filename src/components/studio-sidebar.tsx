@@ -14,7 +14,7 @@ import { Button } from './ui/button'
 import { Skeleton } from './ui/skeleton'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
 
-const LINKS = [
+export const STUDIO_SIDEBAR_LINKS = [
   {
     icon: GanttChartSquare,
     text: 'Trang tổng quan',
@@ -82,7 +82,7 @@ const StudioSidebar = () => {
         </div>
       </div>
       <div>
-        {LINKS.map((link) => {
+        {STUDIO_SIDEBAR_LINKS.map((link) => {
           const isActive = link.href === pathname
           return (
             <Button

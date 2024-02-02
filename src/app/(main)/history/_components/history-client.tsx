@@ -2,7 +2,6 @@
 
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Loader2, Pause, Search, Trash2, X } from 'lucide-react'
-import { useSearchParams } from 'next/navigation'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 
 import watchHistoryApis from '@/apis/watchHistory.apis'
@@ -19,46 +18,47 @@ import {
   AlertDialogTrigger
 } from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
+import { Skeleton } from '@/components/ui/skeleton'
 import useDebounce from '@/hooks/useDebounce'
 import { WatchHistoryItemType } from '@/types/watchHistory.types'
-import { Skeleton } from '@/components/ui/skeleton'
 
 const HistoryClient = () => {
-  const searchParams = useSearchParams()
   const [videos, setVideos] = useState<WatchHistoryItemType[]>([])
   const [searchQuery, setSearchQuery] = useState<string>('')
   const searchQueryDebounce = useDebounce(searchQuery, 1500)
   const inputRef = useRef<HTMLInputElement>(null)
 
+  // Change search query
   const handleChangeSearchQuery = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchQuery(e.target.value)
   }
 
+  // Clear search query
   const handleClearSearchQuery = () => {
     setSearchQuery('')
     inputRef.current?.focus()
   }
 
-  // Query: Lấy lich sử xem
+  // Query: Get watch history
   const getWatchHistories = useQuery({
     queryKey: ['getWatchHistories', searchQueryDebounce],
     queryFn: () => watchHistoryApis.getWatchHistories({ searchQuery: searchQueryDebounce })
   })
 
-  // Đặt lại giá trị lịch sử xem
+  // Set watch history
   useEffect(() => {
     if (!getWatchHistories.data) return
     const resVideos = getWatchHistories.data.data.data.videos
     setVideos(resVideos)
   }, [getWatchHistories.data])
 
-  // Mutation: Xóa một lịch sử xem
+  // Mutation: Delete one history
   const deleteWatchHistoryMutation = useMutation({
     mutationKey: ['deleteWatchHistory'],
     mutationFn: watchHistoryApis.deleteWatchHistory
   })
 
-  // Mutation: Xóa toàn bộ lịch sử xem
+  // Mutation: Delete all history
   const deleteAllWatchHistoriesMutation = useMutation({
     mutationKey: ['deleteAllWatchHistories'],
     mutationFn: watchHistoryApis.deleteAllWatchHistories,
@@ -67,7 +67,7 @@ const HistoryClient = () => {
     }
   })
 
-  // Xóa một lịch sử xem
+  // Delete one history
   const handleDeleteWatchHistory = (watchHistoryId: string) => {
     deleteWatchHistoryMutation.mutate(watchHistoryId, {
       onSuccess: () => {
@@ -76,7 +76,7 @@ const HistoryClient = () => {
     })
   }
 
-  // Xóa toàn bộ lịch sử xem
+  // Delete all history
   const handleDeleteAllWatchHistories = () => {
     deleteAllWatchHistoriesMutation.mutate()
   }
@@ -86,6 +86,7 @@ const HistoryClient = () => {
       <h1 className='font-black text-[36px] tracking-tight py-8'>Nhật ký xem</h1>
       <div className='flex items-start space-x-24'>
         <div className='space-y-5 flex-1'>
+          {/* Fetching */}
           {getWatchHistories.isFetching &&
             Array(10)
               .fill(0)
@@ -103,6 +104,7 @@ const HistoryClient = () => {
                   </div>
                 </div>
               ))}
+          {/* Watch history */}
           {!getWatchHistories.isFetching &&
             videos.map((video) => (
               <HorizontalVideo

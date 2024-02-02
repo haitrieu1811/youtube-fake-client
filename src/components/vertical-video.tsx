@@ -8,6 +8,7 @@ import { convertMomentToVietnamese, formatViews } from '@/lib/utils'
 import { VideoItemType } from '@/types/video.types'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import VideoActions from './video-actions'
+import VideoThumbnailFallback from './video-thumbnail-fallback'
 
 type VerticalVideoProps = {
   videoData: VideoItemType
@@ -17,13 +18,16 @@ const VerticalVideo = ({ videoData }: VerticalVideoProps) => {
   return (
     <div className='space-y-2'>
       <Link href={PATH.WATCH(videoData.idName)}>
-        <Image
-          width={800}
-          height={800}
-          src={videoData.thumbnail}
-          alt={videoData.title}
-          className='w-full h-[180px] object-cover rounded-lg'
-        />
+        {videoData.thumbnail && (
+          <Image
+            width={800}
+            height={800}
+            src={videoData.thumbnail}
+            alt={videoData.title}
+            className='w-full h-[180px] object-cover rounded-lg'
+          />
+        )}
+        {!videoData.thumbnail && <VideoThumbnailFallback wrapperClassName='h-[180px] rounded-lg' />}
       </Link>
       <div className='flex space-x-3 group'>
         <Link href={PATH.PROFILE(videoData.author.username)} className='flex-shrink-0'>

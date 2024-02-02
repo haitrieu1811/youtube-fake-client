@@ -6,6 +6,7 @@ import { CheckCircle2, Flag, MoreVertical, Pencil, ThumbsDown, ThumbsUp, Trash2 
 import moment from 'moment'
 import Link from 'next/link'
 import { Dispatch, Fragment, SetStateAction, useContext, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 
 import commentApis from '@/apis/comment.apis'
 import {
@@ -30,7 +31,6 @@ import { CommentListContext } from './comment-list'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover'
-import { toast } from './ui/use-toast'
 
 type CommentRowProps = {
   isRootComment?: boolean
@@ -140,13 +140,7 @@ const CommentRow = ({
   const handleDeleteComment = (commentId: string) => {
     deleteCommentMutation.mutate(commentId, {
       onSuccess: () => {
-        const title = isRootComment ? 'Đã xóa bình luận' : 'Đã xóa phản hồi'
-        const description = isRootComment ? 'Bình luận đã được xóa vĩnh viễn' : 'Phản hồi đã được xóa vĩnh viễn'
-        toast({
-          title,
-          description,
-          className: 'shadow-none bg-black dark:bg-white text-white dark:text-black'
-        })
+        toast.success(isRootComment ? 'Đã xóa bình luận' : 'Đã xóa phản hồi')
         if (!isRootComment) {
           setReplyCount((prevState) => (prevState -= 1))
           setCommentCount && setCommentCount((prevState) => (prevState -= 1))

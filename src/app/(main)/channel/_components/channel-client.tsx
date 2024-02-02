@@ -18,6 +18,7 @@ import {
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useContext, useEffect, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 
 import accountApis from '@/apis/account.apis'
 import mediaApis from '@/apis/media.apis'
@@ -27,13 +28,6 @@ import ProfileVideo from '@/components/profile-video'
 import SubscribeButton from '@/components/subscribe-button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
-import { toast } from '@/components/ui/use-toast'
-import { ACCOUNT_MESSAGES } from '@/constants/messages'
-import { AppContext } from '@/providers/app-provider'
-import { VideoItemType } from '@/types/video.types'
 import {
   Dialog,
   DialogContent,
@@ -42,9 +36,14 @@ import {
   DialogTitle,
   DialogTrigger
 } from '@/components/ui/dialog'
-import { formatViews } from '@/lib/utils'
-import moment from 'moment'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group'
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import PATH from '@/constants/path'
+import { formatViews } from '@/lib/utils'
+import { AppContext } from '@/providers/app-provider'
+import { VideoItemType } from '@/types/video.types'
+import moment from 'moment'
 
 type ChannelClientProps = {
   username?: string
@@ -178,10 +177,7 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
         { [field]: imageIds[0] },
         {
           onSuccess: () => {
-            toast({
-              title: `Cập nhật ảnh ${field === 'avatar' ? 'đại diện' : 'bìa'} thành công`,
-              className: 'bg-blue-500 text-white'
-            })
+            toast.success(`Cập nhật ảnh ${field === 'avatar' ? 'đại diện' : 'bìa'} thành công`)
             getMeQuery.refetch()
             field === 'avatar' ? setAvatarFile(null) : setCoverFile(null)
           }

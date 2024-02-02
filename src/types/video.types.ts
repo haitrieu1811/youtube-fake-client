@@ -29,7 +29,6 @@ export type VideoItemType = {
   author: AuthorVideoItemType
   category: VideoCategoryType | null
   audience: VideoAudience
-  isDraft?: boolean
   viewCount: number
   commentCount?: number
   likeCount?: number
@@ -88,16 +87,11 @@ export type WatchedVideoType = {
 // Resquest: Tạo video
 export type CreateVideoReqBody = {
   idName: string
-  thumbnail?: string
   title: string
-  category?: string
-  description?: string
-  audience?: VideoAudience
-  isDraft: boolean
 }
 
-// Requests: Lấy danh sách video công khai
-export type GetPublicVideosReqQuery = PaginationReqQuery & {
+// Requests: Lấy danh sách video đề xuất
+export type GetSuggestedVideosReqQuery = PaginationReqQuery & {
   category?: string
 }
 
@@ -108,7 +102,6 @@ export type UpdateVideoReqBody = {
   category?: string
   description?: string
   audience?: VideoAudience
-  isDraft?: boolean
 }
 
 // Request: Lấy danh sách video của tôi
@@ -117,15 +110,15 @@ export type GetVideosOfMeReqQuery = PaginationReqQuery & {
   orderBy?: 'asc' | 'desc'
 }
 
-// Response: Lấy danh sách video công khai
-export type GetPublicVideosResponse = SuccessResponse<{
+// Response: Lấy danh sách video đề xuất
+export type GetSuggestedVideosResponse = SuccessResponse<{
   videos: VideoItemType[]
   pagination: PaginationType
 }>
 
 // Response: Tạo video
 export type CreateVideoResponse = SuccessResponse<{
-  newVideo: VideoCreatedType
+  video: VideoCreatedType
 }>
 
 // Response: Lấy danh sách danh mục video
@@ -158,14 +151,13 @@ export type UpdateVideoResponse = SuccessResponse<{
     description: string
     views: number
     audience: number
-    isDraft: boolean
     createdAt: string
     updatedAt: string
   }
 }>
 
 // Response: Lấy thông tin video để cập nhật
-export type GetVideoDetailToUpdateResponse = SuccessResponse<{
+export type GetVideoToUpdateResponse = SuccessResponse<{
   video: {
     _id: string
     idName: string
@@ -174,7 +166,6 @@ export type GetVideoDetailToUpdateResponse = SuccessResponse<{
     description: string
     viewCount: number
     audience: number
-    isDraft: boolean
     category: VideoCategoryType | null
     createdAt: string
     updatedAt: string
@@ -188,12 +179,6 @@ export type WatchVideoResponse = SuccessResponse<{
 
 // Response: Lấy danh sách video đã thích
 export type GetLikedVideosResponse = SuccessResponse<{
-  videos: VideoItemType[]
-  pagination: PaginationType
-}>
-
-// Response: Lấy danh sách video cùng danh mục
-export type GetVideosSameCategoryResponse = SuccessResponse<{
   videos: VideoItemType[]
   pagination: PaginationType
 }>

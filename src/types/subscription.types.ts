@@ -1,6 +1,6 @@
 import { PaginationType, SuccessResponse } from './utils.types'
 
-export type SubscribedChannelType = {
+export type SubscribedAccountType = {
   _id: string
   username: string
   channelName: string
@@ -12,7 +12,7 @@ export type SubscribedChannelType = {
 }
 
 // Response: Lấy danh sách kênh đã đăng ký
-export type GetSubscribedChannelsResponse = SuccessResponse<{
-  channels: SubscribedChannelType[]
+export type GetSubscribedAccountsResponse = SuccessResponse<{
+  accounts: SubscribedAccountType[]
   pagination: PaginationType
 }>

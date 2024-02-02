@@ -6,8 +6,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CheckCircle2, Globe2, ImagePlus, Loader2, Lock } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { useEffect, useMemo, useState } from 'react'
+import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 
 import mediaApis from '@/apis/media.apis'
 import videoApis from '@/apis/video.apis'
@@ -20,8 +21,11 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { EncodingStatus, VideoAudience } from '@/constants/enum'
+import useVideoCategories from '@/hooks/useVideoCategories'
+import useVideoStatus from '@/hooks/useVideoStatus'
 import { cn } from '@/lib/utils'
 import { CreateVideoSchema, createVideoSchema } from '@/rules/video.rules'
+import { Skeleton } from './ui/skeleton'
 
 type UpdateVideoFormProps = {
   videoId: string
@@ -33,6 +37,7 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
   const [isUploadSucceed, setIsUploadSucceed] = useState<boolean>(false)
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
   const thumbnailPreview = useMemo(() => (thumbnailFile ? URL.createObjectURL(thumbnailFile) : ''), [thumbnailFile])
+  const { videoCategories } = useVideoCategories()
 
   // Form
   const form = useForm<CreateVideoSchema>({
@@ -45,103 +50,70 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
     resolver: zodResolver(createVideoSchema)
   })
 
-  // Query: Lấy thông tin của video
+  // Query: Get video info
   const getVideoDetailQuery = useQuery({
-    queryKey: ['getVideoDetailToUpdate'],
-    queryFn: () => videoApis.getVideoDetailToUpdate(videoId)
+    queryKey: ['getVideoToUpdate'],
+    queryFn: () => videoApis.getVideoToUpdate(videoId)
   })
 
-  // Thông tin video
+  // Video info
   const videoInfo = useMemo(
     () => getVideoDetailQuery.data?.data.data.video,
     [getVideoDetailQuery.data?.data.data.video]
   )
 
-  // Cập nhật lại form khi tải lên video thành công
+  // Video status
+  const { videoStatus } = useVideoStatus({
+    refetchIntervalEnabled: !isUploadSucceed,
+    videoIdName: videoInfo?.idName || null
+  })
+
+  // Update form
   useEffect(() => {
     if (!videoInfo) return
-    form.setValue('title', videoInfo.title)
-    form.setValue('description', videoInfo.description)
-    form.setValue('category', videoInfo.category?._id || null)
-    form.setValue('audience', videoInfo.audience.toString())
+    const { setValue } = form
+    setValue('title', videoInfo.title)
+    setValue('description', videoInfo.description)
+    setValue('category', videoInfo.category?._id || null)
+    setValue('audience', String(videoInfo.audience))
   }, [videoInfo])
 
-  // Query: Danh sách danh mục video
-  const getVideoCategoriesQuery = useQuery({
-    queryKey: ['getVideos'],
-    queryFn: () => videoApis.getVideoCategories({ limit: '100' })
-  })
-
-  // Danh sách danh mục video
-  const videoCategories = useMemo(
-    () => getVideoCategoriesQuery.data?.data.data.categories || [],
-    [getVideoCategoriesQuery.data?.data.data.categories]
-  )
-
-  // Query: Lấy trạng thái video (đang upload, upload thành công - lỗi)
-  const getVideoStatusQuery = useQuery({
-    queryKey: ['getVideoStatus', videoInfo?.idName],
-    queryFn: () => mediaApis.getVideoStatus(videoInfo?.idName as string),
-    enabled: !!videoInfo,
-    refetchInterval: !isUploadSucceed ? 5000 : false
-  })
-
-  // Trạng thái video
-  const videoStatus = useMemo(
-    () => getVideoStatusQuery.data?.data.data.videoStatus,
-    [getVideoStatusQuery.data?.data.data.videoStatus]
-  )
-
-  // Cập nhật trạng thái thành công khi encode video thành công
+  // Update video status when update succeed
   useEffect(() => {
     if (!videoStatus) return
-    if (videoStatus.status === EncodingStatus.Succeed) {
-      setIsUploadSucceed(true)
-    }
+    if (videoStatus.status === EncodingStatus.Succeed) setIsUploadSucceed(true)
   }, [videoStatus])
 
-  // Thay đổi hình thu nhỏ video
+  // Change thumbnail file
   const handleChangeThumbnailFile = (files?: File[]) => {
     if (!files) return
     setThumbnailFile(files[0])
   }
 
-  // Mutation: Upload ảnh
+  // Mutation: Upload image
   const uploadImagesMutation = useMutation({
     mutationKey: ['uploadImages'],
     mutationFn: mediaApis.uploadImage
   })
 
-  // Mutation: Cập nhật video
+  // Mutation: Update video
   const updateVideoMutation = useMutation({
     mutationKey: ['updateVideo'],
     mutationFn: videoApis.updateVideo,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['getVideosOfMe'] })
-      router.back()
-    }
-  })
-
-  // Mutation: Xóa thumbnail video
-  const deleteThumbnailImageMutation = useMutation({
-    mutationKey: ['deleteThumbnailImage'],
-    mutationFn: videoApis.deleteThumbnailImage,
-    onSuccess: () => {
       getVideoDetailQuery.refetch()
+      toast.success('Đã lưu thay đổi')
+      thumbnailFile && setThumbnailFile(null)
+      queryClient.invalidateQueries({ queryKey: ['getVideosOfMe'] })
     }
   })
 
-  // Hủy bỏ hình thu nhỏ đã chọn - Nếu đã tải lên hình thu nhỏ thì xóa
+  // Cancel thumbnail file
   const handleResetThumbnailFile = () => {
-    if (!videoInfo) return
-    if (!videoInfo.thumbnail) {
-      setThumbnailFile(null)
-    } else {
-      deleteThumbnailImageMutation.mutate(videoInfo._id)
-    }
+    setThumbnailFile(null)
   }
 
-  // Lưu ảnh thu nhỏ
+  // Save thumbnail
   const handleSaveThumbnailImage = async () => {
     if (!thumbnailFile || !videoInfo) return
     const form = new FormData()
@@ -149,9 +121,7 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
     const res = await uploadImagesMutation.mutateAsync(form)
     const { imageIds } = res.data.data
     updateVideoMutation.mutate({
-      body: {
-        thumbnail: imageIds[0]
-      },
+      body: { thumbnail: imageIds[0] },
       videoId: videoInfo._id
     })
   }
@@ -166,8 +136,7 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
       body: {
         ...data,
         audience: Number(data.audience),
-        category: data.category ? data.category : undefined,
-        isDraft: false
+        category: data.category ? data.category : undefined
       },
       videoId: videoInfo._id
     })
@@ -177,60 +146,58 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
     <div className='flex space-x-10 py-6'>
       <div className='space-y-4'>
         <h3 className='font-medium text-sm leading-none'>Hình thu nhỏ</h3>
-        {/* Hình thu nhỏ */}
         <div className='relative'>
-          {thumbnailPreview && (
+          {/* Thumbnail */}
+          {videoInfo && !getVideoDetailQuery.isLoading && (thumbnailPreview || videoInfo.thumbnail) && (
             <Image
               width={200}
               height={200}
-              src={thumbnailPreview ? thumbnailPreview : videoInfo?.thumbnail || ''}
-              alt=''
-              className='w-[300px] h-[170px] rounded-lg object-cover'
-            />
-          )}
-          {videoInfo?.thumbnail && (
-            <Image
-              width={200}
-              height={200}
-              src={videoInfo.thumbnail}
+              src={thumbnailPreview ? thumbnailPreview : videoInfo.thumbnail}
               alt={videoInfo.title}
               className='w-[300px] h-[170px] rounded-lg object-cover'
             />
           )}
-          {(thumbnailPreview || videoInfo?.thumbnail) && (
-            <div className='absolute bottom-0 left-0 right-0 px-4 py-2 bg-black/30 flex justify-end space-x-3'>
-              <Button size='sm' variant='destructive' className='rounded-full' onClick={handleResetThumbnailFile}>
-                Hủy bỏ
-              </Button>
-              {thumbnailFile && (
-                <Button size='sm' disabled={isUpdating} className='rounded-full' onClick={handleSaveThumbnailImage}>
+          {/* Thumbnail fallback */}
+          {videoInfo && !getVideoDetailQuery.isLoading && !thumbnailPreview && !videoInfo.thumbnail && (
+            <div className='w-[300px] h-[170px] rounded-lg bg-secondary flex justify-center items-center flex-col space-y-2'>
+              <ImagePlus strokeWidth={1.5} />
+              <span className='text-muted-foreground text-sm'>Chưa tải hình thu nhỏ</span>
+            </div>
+          )}
+          {/* Thumbnail fetching */}
+          {getVideoDetailQuery.isLoading && <Skeleton className='w-[300px] h-[170px] rounded-lg' />}
+          <div className='absolute bottom-0 left-0 right-0 px-4 py-2 bg-secondary/20 rounded-b-lg flex justify-end space-x-2'>
+            {!thumbnailFile && (
+              <InputFile onChange={(files) => handleChangeThumbnailFile(files)}>
+                <Button size='sm' onClick={handleResetThumbnailFile}>
+                  Thay đổi
+                </Button>
+              </InputFile>
+            )}
+            {thumbnailFile && (
+              <Fragment>
+                <Button size='sm' variant='outline' onClick={handleResetThumbnailFile}>
+                  Hủy bỏ
+                </Button>
+                <Button size='sm' disabled={isUpdating} onClick={handleSaveThumbnailImage}>
                   {isUpdating && <Loader2 className='w-3 h-3 mr-2 animate-spin' />}
                   Lưu lại
                 </Button>
-              )}
-            </div>
-          )}
+              </Fragment>
+            )}
+          </div>
         </div>
-        {/* Input file */}
-        {!videoInfo?.thumbnail && !thumbnailPreview && (
-          <InputFile onChange={(files) => handleChangeThumbnailFile(files)}>
-            <div className='w-[300px] h-[170px] border border-dashed flex justify-center items-center flex-col space-y-4 rounded-lg'>
-              <ImagePlus strokeWidth={1.5} />
-              <span className='text-sm text-muted-foreground'>Tải hình thu nhỏ lên</span>
-            </div>
-          </InputFile>
-        )}
-        {/* Báo video đang được tải lên */}
+        {/* Encoding video */}
         {!isUploadSucceed && (
           <div className='flex items-center space-x-4'>
             <Loader2 size={18} className='animate-spin stroke-muted-foreground' />
-            <span className='text-sm text-muted-foreground'>Video đang được tải lên</span>
+            <span className='text-sm text-muted-foreground'>Video đang được xử lý</span>
           </div>
         )}
-        {/* Báo video đã được tải lên thành công */}
+        {/* Encoded */}
         {isUploadSucceed && (
           <div className='flex items-center space-x-4'>
-            <CheckCircle2 size={20} className='fill-green-600 stroke-white dark:stroke-black' />
+            <CheckCircle2 size={20} className='fill-green-500 stroke-white dark:stroke-black' />
             <span className='text-sm text-muted-foreground'>Video đã tải lên</span>
           </div>
         )}
@@ -238,7 +205,7 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
       <div className='flex-1'>
         <Form {...form}>
           <form onSubmit={onSubmit} className='space-y-10'>
-            {/* Tiêu đề */}
+            {/* Title */}
             <FormField
               control={form.control}
               name='title'
@@ -253,7 +220,7 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
                 </FormItem>
               )}
             />
-            {/* Mô tả */}
+            {/* Description */}
             <FormField
               control={form.control}
               name='description'
@@ -261,7 +228,12 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
                 <FormItem>
                   <FormLabel>Mô tả</FormLabel>
                   <FormControl>
-                    <Textarea rows={6} placeholder='Mô tả video' className='resize-none' {...field} />
+                    <Textarea
+                      rows={15}
+                      placeholder='Giới thiệu về video của bạn cho người xem.'
+                      className='resize-none'
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
                     Mô tả nên khái quát được nội dung của video, để người xem có thể hiểu.
@@ -270,13 +242,13 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
                 </FormItem>
               )}
             />
-            {/* Danh mục video */}
+            {/* Category */}
             <FormField
               control={form.control}
               name='category'
               render={({ field }) => (
                 <FormItem className='flex flex-col'>
-                  <FormLabel>Danh mục video</FormLabel>
+                  <FormLabel>Danh mục</FormLabel>
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -321,12 +293,14 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
                       </Command>
                     </PopoverContent>
                   </Popover>
-                  <FormDescription>Chọn danh mục phù hợp với video của bạn.</FormDescription>
+                  <FormDescription>
+                    Thêm video của bạn vào một danh mục để người xem dễ dàng tìm thấy hơn.
+                  </FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            {/* Người xem */}
+            {/* Audience */}
             <FormField
               control={form.control}
               name='audience'
@@ -340,13 +314,13 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value={VideoAudience.Everyone.toString()} className='pr-10 cursor-pointer'>
+                      <SelectItem value={String(VideoAudience.Everyone)} className='pr-10 cursor-pointer'>
                         <div className='flex items-center space-x-2'>
                           <Globe2 strokeWidth={1.5} size={18} />
                           <span>Tất cả mọi người</span>
                         </div>
                       </SelectItem>
-                      <SelectItem value={VideoAudience.Onlyme.toString()} className='pr-10 cursor-pointer'>
+                      <SelectItem value={String(VideoAudience.Onlyme)} className='pr-10 cursor-pointer'>
                         <div className='flex items-center space-x-2'>
                           <Lock strokeWidth={1.5} size={18} />
                           <span>Chỉ mình tôi</span>
@@ -359,9 +333,10 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
                 </FormItem>
               )}
             />
-            <Button disabled={isUpdating} className='rounded-sm uppercase bg-blue-700 hover:bg-blue-800 text-white'>
+            {/* Submit */}
+            <Button disabled={isUpdating}>
               {isUpdating && <Loader2 className='w-4 h-4 mr-3 animate-spin' />}
-              Lưu
+              Lưu lại
             </Button>
           </form>
         </Form>

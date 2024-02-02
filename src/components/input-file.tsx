@@ -1,7 +1,6 @@
 import toArray from 'lodash/toArray'
 import { ChangeEvent, Fragment, ReactNode, useRef } from 'react'
-
-import { toast } from './ui/use-toast'
+import toast from 'react-hot-toast'
 
 type InputFileProps = {
   children: ReactNode
@@ -9,9 +8,17 @@ type InputFileProps = {
   multiple?: boolean
   maxFileSize?: number
   className?: string
+  accept?: string
 }
 
-const InputFile = ({ children, onChange, multiple = false, maxFileSize = 300 * 1024, className }: InputFileProps) => {
+const InputFile = ({
+  children,
+  onChange,
+  multiple = false,
+  maxFileSize = 300 * 1024,
+  className,
+  accept = '.jpg,.jpeg,.png,.webp,.mp4'
+}: InputFileProps) => {
   const inputFileRef = useRef<HTMLInputElement>(null)
 
   const handleUpload = () => {
@@ -23,11 +30,7 @@ const InputFile = ({ children, onChange, multiple = false, maxFileSize = 300 * 1
     const _filesFromLocal = toArray(filesFromLocal)
     const isSizeValid = _filesFromLocal.every((file) => file.size < maxFileSize)
     const isValidFiles = _filesFromLocal.filter((file) => file.size < maxFileSize)
-    if (!isSizeValid)
-      toast({
-        variant: 'destructive',
-        title: `Dung lượng file tối đa ${maxFileSize / 1024}KB`
-      })
+    if (!isSizeValid) toast.error(`Dung lượng file tối đa ${maxFileSize / 1024}KB`)
     onChange && onChange(isValidFiles)
   }
 
@@ -37,7 +40,7 @@ const InputFile = ({ children, onChange, multiple = false, maxFileSize = 300 * 1
         hidden
         ref={inputFileRef}
         type='file'
-        accept='.jpg,.jpeg,.png,.webp,.mp4'
+        accept={accept}
         onChange={handleFileChange}
         onClick={(e) => ((e.target as any).value = null)}
         multiple={multiple}

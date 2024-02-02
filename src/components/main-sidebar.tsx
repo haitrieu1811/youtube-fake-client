@@ -56,7 +56,7 @@ const ME_LINKS = [
   }
 ]
 
-const SUBSCRIBED_CHANNELS_LIMIT = 7
+const SUBSCRIBED_ACOUNTS_LIMIT = 7
 
 const MainSidebar = () => {
   const pathname = usePathname()
@@ -64,17 +64,17 @@ const MainSidebar = () => {
   const { isClient } = useIsClient()
   const isClientWithAuthenticated = isAuthenticated && isClient
 
-  // Query: Lấy danh sách kênh đã đăng ký
-  const getSubscribedChannelsQuery = useQuery({
-    queryKey: ['getSubscribedChannels'],
-    queryFn: () => subscriptionApis.getSubcribedChannels(),
+  // Query: Get my subscribed accounts
+  const getMySubscribedAccountsQuery = useQuery({
+    queryKey: ['getMySubscribedAccounts'],
+    queryFn: () => subscriptionApis.getMySubscribedAccounts(),
     enabled: isAuthenticated
   })
 
-  // Danh sách kênh đã đăng ký
-  const subscribedChannels = useMemo(
-    () => getSubscribedChannelsQuery.data?.data.data.channels || [],
-    [getSubscribedChannelsQuery.data?.data.data.channels]
+  // My subscribed accounts
+  const mySubscribedAccounts = useMemo(
+    () => getMySubscribedAccountsQuery.data?.data.data.accounts || [],
+    [getMySubscribedAccountsQuery.data?.data.data.accounts]
   )
 
   return (
@@ -128,23 +128,23 @@ const MainSidebar = () => {
             <Separator />
             <div className='space-y-1'>
               <h2 className='font-semibold px-4 mb-4'>Kênh đăng ký</h2>
-              {subscribedChannels.slice(0, SUBSCRIBED_CHANNELS_LIMIT).map((channel) => (
+              {mySubscribedAccounts.slice(0, SUBSCRIBED_ACOUNTS_LIMIT).map((account) => (
                 <Button
-                  key={channel._id}
+                  key={account._id}
                   variant='ghost'
                   className='w-full flex justify-start space-x-5 font-normal'
                   asChild
                 >
-                  <Link href={PATH.PROFILE(channel.username)}>
+                  <Link href={PATH.PROFILE(account.username)}>
                     <Avatar className='w-6 h-6'>
-                      <AvatarImage src={channel.avatar} className='object-cover' />
-                      <AvatarFallback className='text-xs'>{channel.channelName[0].toUpperCase()} </AvatarFallback>
+                      <AvatarImage src={account.avatar} className='object-cover' />
+                      <AvatarFallback className='text-xs'>{account.channelName[0].toUpperCase()} </AvatarFallback>
                     </Avatar>
-                    <span>{channel.channelName}</span>
+                    <span>{account.channelName}</span>
                   </Link>
                 </Button>
               ))}
-              {subscribedChannels.length > SUBSCRIBED_CHANNELS_LIMIT && (
+              {mySubscribedAccounts.length > SUBSCRIBED_ACOUNTS_LIMIT && (
                 <Button variant='ghost' className='w-full flex justify-start space-x-5 font-normal'>
                   <ChevronDown strokeWidth={1.5} size={18} />
                   <span className='line-clamp-1'>Hiển thị thêm</span>

@@ -74,3 +74,9 @@ export enum ReportStatus {
   Resolved,
   Unresolved
 }
+
+export enum VideoStatus {
+  Draft,
+  Active,
+  Unactive
+}

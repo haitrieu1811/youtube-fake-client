@@ -1,31 +1,25 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
 import { useEffect, useState } from 'react'
 
-import videoApis from '@/apis/video.apis'
+import useSuggestedVideos from '@/hooks/useSuggestedVideos'
 import { VideoItemType } from '@/types/video.types'
 import VerticalVideo from './vertical-video'
 import VerticalVideoSkeleton from './vertical-video-skeleton'
 
 const HomePage = () => {
   const [videos, setVideos] = useState<VideoItemType[]>([])
+  const { getSuggestedVideosQuery } = useSuggestedVideos({})
 
-  // Query: Lấy danh sách video công khai
-  const getPublicVideosQuery = useQuery({
-    queryKey: ['getPublicVideos'],
-    queryFn: () => videoApis.getPublicVideos()
-  })
-
+  // Đặt giá trị cho videos
   useEffect(() => {
-    if (!getPublicVideosQuery.data) return
-    const resVideos = getPublicVideosQuery.data.data.data.videos
-    setVideos(resVideos)
-  }, [getPublicVideosQuery.data])
+    if (!getSuggestedVideosQuery.data) return
+    setVideos(getSuggestedVideosQuery.data.pages.flatMap((page) => page.data.data.videos))
+  }, [getSuggestedVideosQuery.data])
 
   return (
     <div className='px-10 py-4'>
-      {videos.length > 0 && !getPublicVideosQuery.isLoading && (
+      {videos.length > 0 && !getSuggestedVideosQuery.isLoading && (
         <div className='grid grid-cols-12 gap-4'>
           {videos.map((video) => (
             <div key={video._id} className='col-span-12 md:col-span-4 lg:col-span-3'>
@@ -34,7 +28,7 @@ const HomePage = () => {
           ))}
         </div>
       )}
-      {getPublicVideosQuery.isLoading && (
+      {getSuggestedVideosQuery.isLoading && (
         <div className='grid grid-cols-12 gap-4'>
           {Array(12)
             .fill(0)

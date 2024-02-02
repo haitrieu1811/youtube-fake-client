@@ -8,23 +8,17 @@ import DataTable from '@/components/data-table'
 import { columns } from '../_columns/subscription-columns'
 
 const SubscriptionClient = () => {
-  // Query: Lấy danh sách kênh đã đăng ký cho tôi
-  const getChannelsSubscribedForMeQuery = useQuery({
-    queryKey: ['getChannelsSubscribedForMe'],
-    queryFn: () => subscriptionApis.getSubcribedChannelsForMe()
+  // Query: Get accounts subscribed to me
+  const getAccountsSubscribedToMe = useQuery({
+    queryKey: ['getAccountsSubscribedToMe'],
+    queryFn: () => subscriptionApis.getAccountsSubscribedToMe()
   })
 
-  // Danh sách kênh đã đăng ký cho tôi
-  const channelsSubscribedForMe = useMemo(
-    () => getChannelsSubscribedForMeQuery.data?.data.data.channels || [],
-    [getChannelsSubscribedForMeQuery.data?.data.data.channels]
+  // Get accounts subscribed to me
+  const accountsSubscribedToMe = useMemo(
+    () => getAccountsSubscribedToMe.data?.data.data.accounts || [],
+    [getAccountsSubscribedToMe.data?.data.data.accounts]
   )
-
-  // Số kênh đã đăng ký cho tôi
-  // const channelsSubscribedForMeCount = useMemo(
-  //   () => getChannelsSubscribedForMeQuery.data?.data.data.pagination.totalRows || 0,
-  //   [getChannelsSubscribedForMeQuery.data?.data.data.pagination.totalRows]
-  // )
 
   return (
     <div className='p-6'>
@@ -32,7 +26,7 @@ const SubscriptionClient = () => {
       <div className='text-[13px] text-muted-foreground mb-10'>
         Chỉ bao gồm những người dùng đã công khai thông tin đăng ký kênh.
       </div>
-      <DataTable columns={columns} data={channelsSubscribedForMe} searchField='channelName' />
+      <DataTable columns={columns} data={accountsSubscribedToMe} searchField='channelName' />
     </div>
   )
 }

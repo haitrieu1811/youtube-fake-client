@@ -4,14 +4,13 @@ import {
   CreateVideoReqBody,
   CreateVideoResponse,
   GetLikedVideosResponse,
-  GetPublicVideosReqQuery,
-  GetPublicVideosResponse,
+  GetSuggestedVideosReqQuery,
+  GetSuggestedVideosResponse,
   GetVideoCategoriesResponse,
-  GetVideoDetailToUpdateResponse,
+  GetVideoToUpdateResponse,
   GetVideosByUsernameResponse,
   GetVideosOfMeReqQuery,
   GetVideosOfMeResponse,
-  GetVideosSameCategoryResponse,
   UpdateVideoReqBody,
   UpdateVideoResponse,
   WatchVideoResponse
@@ -23,9 +22,9 @@ const videoApis = {
     return http.get<GetVideoCategoriesResponse>('/videos/categories', { params })
   },
 
-  // Lấy danh sách video công khai
-  getPublicVideos(params?: GetPublicVideosReqQuery) {
-    return http.get<GetPublicVideosResponse>('/videos/public', { params })
+  // Lấy danh sách video đề xuất
+  getSuggestedVideos(params?: GetSuggestedVideosReqQuery) {
+    return http.get<GetSuggestedVideosResponse>('/videos/suggested', { params })
   },
 
   // Tạo video mới
@@ -49,13 +48,8 @@ const videoApis = {
   },
 
   // Lấy thông tin video để cập nhật
-  getVideoDetailToUpdate(videoId: string) {
-    return http.get<GetVideoDetailToUpdateResponse>(`/videos/${videoId}/to-update`)
-  },
-
-  // Xóa hình thu nhỏ video
-  deleteThumbnailImage(videoId: string) {
-    return http.delete<OnlyMessageResponse>(`/videos/${videoId}/thumbnail`)
+  getVideoToUpdate(videoId: string) {
+    return http.get<GetVideoToUpdateResponse>(`/videos/${videoId}/update`)
   },
 
   // Xóa video (một hoặc nhiều)
@@ -86,11 +80,6 @@ const videoApis = {
   // Lấy danh sách video đã thích
   getLikedVideos(params?: PaginationReqQuery) {
     return http.get<GetLikedVideosResponse>('/videos/liked', { params })
-  },
-
-  // Lấy danh sách video cùng danh mục
-  getVideosSameCategory({params, categoryId}: {params?: PaginationReqQuery, categoryId: string}) {
-    return http.get<GetVideosSameCategoryResponse>(`/videos/category/${categoryId}`, { params })
   }
 }
 

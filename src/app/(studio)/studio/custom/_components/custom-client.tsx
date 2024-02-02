@@ -7,6 +7,7 @@ import omit from 'lodash/omit'
 import { Loader2 } from 'lucide-react'
 import { useContext, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 
 import accountApis from '@/apis/account.apis'
 import { Button } from '@/components/ui/button'
@@ -14,7 +15,6 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, For
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
-import { toast } from '@/components/ui/use-toast'
 import { isEntityErrror } from '@/lib/utils'
 import { AppContext } from '@/providers/app-provider'
 import { UpdateMeSchema, updateMeSchema } from '@/rules/account.rules'
@@ -51,10 +51,7 @@ const CustomClient = () => {
       const { account } = data.data.data
       setAccount(account)
       getMeQuery.refetch()
-      toast({
-        title: 'Cập nhật thông tin thành công',
-        className: 'bg-blue-500 text-white'
-      })
+      toast.success('Đã lưu thay đổi')
     },
     onError: (error) => {
       if (isEntityErrror<ErrorResponse<Record<keyof UpdateMeSchema, string>>>(error)) {

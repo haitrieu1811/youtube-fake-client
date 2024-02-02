@@ -4,12 +4,12 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import { Fragment, useContext, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 
 import accountApis from '@/apis/account.apis'
 import mediaApis from '@/apis/media.apis'
 import InputFile from '@/components/input-file'
 import { Button } from '@/components/ui/button'
-import { toast } from '@/components/ui/use-toast'
 import { AppContext } from '@/providers/app-provider'
 import { ProfileType } from '@/types/account.types'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
@@ -80,10 +80,7 @@ const Branding = ({ infoMe }: BradingProps) => {
             setAccount(account)
             queryClient.invalidateQueries({ queryKey: ['getMe'] })
             field === 'avatar' ? setAvatarFile(null) : setCoverFile(null)
-            toast({
-              title: `Cập nhật ảnh ${field === 'avatar' ? 'đại diện' : 'bìa'} thành công`,
-              className: 'bg-blue-500 text-white'
-            })
+            toast.success(`Cập nhật ảnh ${field === 'avatar' ? 'đại diện' : 'bìa'} thành công`)
           }
         }
       )
@@ -103,10 +100,7 @@ const Branding = ({ infoMe }: BradingProps) => {
           const { account } = data.data.data
           setAccount(account)
           queryClient.invalidateQueries({ queryKey: ['getMe'] })
-          toast({
-            title: `Xóa ảnh ${field === 'avatar' ? 'đại diện' : 'bìa'} thành công`,
-            className: 'bg-blue-500 text-white'
-          })
+          toast.success(`Xóa ảnh ${field === 'avatar' ? 'đại diện' : 'bìa'} thành công`)
         }
       }
     )

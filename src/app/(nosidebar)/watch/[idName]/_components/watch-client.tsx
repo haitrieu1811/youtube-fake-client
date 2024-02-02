@@ -22,7 +22,6 @@ import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import PATH from '@/constants/path'
 import { convertMomentToVietnamese, randomIntegerExcludingArray } from '@/lib/utils'
-import { AppContext } from '@/providers/app-provider'
 import { WatchContext } from '@/providers/watch-provider'
 import { VideoItemType } from '@/types/video.types'
 import Comment from './comment'
@@ -39,7 +38,6 @@ const MAX_LENGTH_OF_DESCRIPTION = 50
 const WatchClient = ({ idName }: WatchClientProps) => {
   const searchParams = useSearchParams()
   const playlistId = searchParams.get('list')
-  const { account } = useContext(AppContext)
   const { isShuffle, isRepeat, playlistVideoIndexHistory, setPlaylistVideoIndexHistory } = useContext(WatchContext)
   const [isShowMoreDescription, setIsShowMoreDescription] = useState<boolean>(false)
   const [subscribeCount, setSubscribeCount] = useState<number>(0)
@@ -47,46 +45,46 @@ const WatchClient = ({ idName }: WatchClientProps) => {
   const [nextVideoIdName, setNextVideoIdName] = useState<string>('')
   const linkRef = useRef<HTMLAnchorElement>(null)
 
-  // Query: Lấy thông tin chi tiết video
+  // Query: Get video info
   const watchVideoQuery = useQuery({
     queryKey: ['watchVideo'],
     queryFn: () => videoApis.watchVideo(idName)
   })
 
-  // Thông tin video
+  // Video info
   const videoInfo = useMemo(() => watchVideoQuery.data?.data.data.video, [watchVideoQuery.data?.data.data.video])
 
-  // Cập nhật thông tin video
+  // Update subscribe count
   useEffect(() => {
     if (!videoInfo) return
     setSubscribeCount(videoInfo.channel.subscribeCount)
-  }, [videoInfo])
+  }, [videoInfo?.channel.subscribeCount])
 
-  // Mutation: Thêm vào lịch sử xem
+  // Mutation: Add video to watch history
   const createWatchHistoryMutation = useMutation({
     mutationKey: ['createWatchHistory'],
     mutationFn: watchHistoryApis.createWatchHistory
   })
 
-  // Thêm vào lịch sử xem
+  // Add video to watch history
   useEffect(() => {
     if (!videoInfo) return
     createWatchHistoryMutation.mutate(videoInfo._id)
   }, [videoInfo?._id])
 
-  // Xem thêm mô tả
+  // See more description
   const handleShowMoreDescription = () => {
     setIsShowMoreDescription((prevState) => !prevState)
   }
 
-  // Query: Lấy danh sách video đã thích (playlist)
+  // Query: Get liked videos
   const getLikedVideosQuery = useQuery({
     queryKey: ['getLikedVideos'],
     queryFn: () => videoApis.getLikedVideos(),
     enabled: playlistId === 'liked'
   })
 
-  // Đặt giá trị cho playlist videos
+  // Set playlist videos
   useEffect(() => {
     if (playlistId === 'liked') {
       if (!getLikedVideosQuery.data) return
@@ -99,7 +97,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
     }
   }, [getLikedVideosQuery.data])
 
-  // Tổng số video có trong playlist
+  // Total liked videos
   const totalPlaylistVideo = useMemo(() => {
     if (playlistId === 'liked') {
       if (!getLikedVideosQuery.data) return 0
@@ -108,13 +106,13 @@ const WatchClient = ({ idName }: WatchClientProps) => {
     return 0
   }, [getLikedVideosQuery.data?.data.data.pagination.totalRows])
 
-  // Index video hiện tại
+  // Current playlist video index
   const currentPlaylistVideoIndex = useMemo(
     () => playlistVideos.findIndex((video) => video.idName === idName) + 1,
     [playlistVideos]
   )
 
-  // Chuyển đến video tiếp theo khi hết video hiện tại nếu đang có playlist
+  // Next video playlist
   const handleNextVideoInPlaylist = () => {
     if (!playlistId) return // Phát video riêng lẻ thì không next video
     let _playlistVideoIndexHistory = playlistVideoIndexHistory
@@ -133,7 +131,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
     setNextVideoIdName(playlistVideos[nextVideoIndex]?.idName)
   }
 
-  // Tự chuyển video khi kết thúc video hiện tại nếu có playlist
+  // Auto next video playlist
   useEffect(() => {
     if (!nextVideoIdName || !linkRef.current) return
     linkRef.current.click()
@@ -142,7 +140,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
   return (
     <div className='flex flex-wrap space-x-8'>
       <div className='flex-1'>
-        {/* Trình phát video */}
+        {/* Video player */}
         {videoInfo && !watchVideoQuery.isFetching ? (
           <MediaPlayer
             autoplay
@@ -156,16 +154,16 @@ const WatchClient = ({ idName }: WatchClientProps) => {
         ) : (
           <Skeleton className='rounded-lg h-[460px]' />
         )}
-        {/* Thông tin video */}
+        {/* Video info */}
         <div className='mt-4'>
-          {/* Tiêu đề */}
+          {/* Title */}
           {videoInfo && !watchVideoQuery.isFetching ? (
             <h1 className='font-bold text-xl tracking-tight'>{videoInfo.title}</h1>
           ) : (
             <Skeleton className='w-[440px] h-6' />
           )}
           <div className='flex justify-between items-center mt-4'>
-            {/* Thông tin kênh người đăng */}
+            {/* Channel info */}
             <div className='flex items-center space-x-6'>
               <div className='flex'>
                 {videoInfo && !watchVideoQuery.isFetching ? (
@@ -210,7 +208,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
                 <Skeleton className='w-[150px] h-9 rounded-full' />
               )}
             </div>
-            {/* Like, dislike, chia sẻ */}
+            {/* Like, dislike, share */}
             <div className='flex items-center space-x-4'>
               {videoInfo && !watchVideoQuery.isFetching ? (
                 <Reaction videoInfo={videoInfo} />
@@ -251,9 +249,9 @@ const WatchClient = ({ idName }: WatchClientProps) => {
         </div>
         <Separator className='my-3' />
         <div className='rounded-lg bg-muted/50 hover:bg-muted p-3 space-y-1 cursor-pointer'>
-          {/* Lượt xem, ngày đăng */}
+          {/* View, publish date */}
           {videoInfo && !watchVideoQuery.isFetching && (
-            <div className='flex items-center space-x-2 font-medium text-sm'>
+            <div className='flex items-center space-x-2 font-semibold text-sm'>
               <span>{videoInfo.viewCount} lượt xem</span>
               <span>
                 {!isShowMoreDescription
@@ -264,9 +262,9 @@ const WatchClient = ({ idName }: WatchClientProps) => {
               </span>
             </div>
           )}
-          {/* Mô tả */}
+          {/* Description */}
           {videoInfo && !watchVideoQuery.isFetching && (
-            <div className='text-sm text-muted-foreground'>
+            <div className='text-sm whitespace-pre-line'>
               {videoInfo.description.split(' ').length <= MAX_LENGTH_OF_DESCRIPTION
                 ? videoInfo.description
                 : isShowMoreDescription
@@ -280,7 +278,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
             </div>
           )}
         </div>
-        {/* Bình luận */}
+        {/* Comments */}
         {videoInfo && (
           <div className='my-6'>
             <Comment videoId={videoInfo._id} />
@@ -298,7 +296,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
               videos={playlistVideos}
               totalVideo={totalPlaylistVideo}
             />
-            {/* Chuyển đến video tiếp theo thông qua Link */}
+            {/* Next video in playlist by this Link */}
             <Link
               ref={linkRef}
               href={{

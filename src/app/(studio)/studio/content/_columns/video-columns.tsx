@@ -1,10 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ColumnDef } from '@tanstack/react-table'
-import { File, Globe2, Loader2, Lock, Pencil, Trash, Youtube } from 'lucide-react'
+import { Globe2, Loader2, Lock, Pencil, Trash, Youtube } from 'lucide-react'
 import moment from 'moment'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Fragment } from 'react'
+import toast from 'react-hot-toast'
 
 import videoApis from '@/apis/video.apis'
 import DataTableColumnHeader from '@/components/data-table-column-header'
@@ -62,6 +63,7 @@ export const columns: ColumnDef<VideoItemType>[] = [
         mutationKey: ['deleteVideos'],
         mutationFn: videoApis.deleteVideos,
         onSuccess: () => {
+          toast.success('Xóa video thành công')
           queryClient.invalidateQueries({ queryKey: ['getVideosOfMe'] })
         }
       })
@@ -89,15 +91,15 @@ export const columns: ColumnDef<VideoItemType>[] = [
                   className='w-[120px] h-[68px] rounded-[2px] object-cover'
                 />
               )}
-              {video.isDraft && (
+              {false && (
                 <div className='absolute inset-0 w-[120px] h-[68px] rounded-[2px] bg-white/60 dark:bg-black/60' />
               )}
             </div>
             <div className='flex-1 ml-4 flex flex-col'>
               <div className='text-[13px] line-clamp-1'>{video.title}</div>
               <div className='flex-1 relative'>
-                <div className='text-xs text-muted-foreground opacity-100 group-hover:opacity-0 pointer-events-auto group-hover:pointer-events-none'>
-                  Thêm nội dung mô tả
+                <div className='text-xs text-muted-foreground opacity-100 group-hover:opacity-0 pointer-events-auto group-hover:pointer-events-none line-clamp-1'>
+                  {!!video.description ? video.description : 'Thêm nội dung mô tả'}
                 </div>
                 <div className='absolute inset-0 flex items-center space-x-1 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto'>
                   <Tooltip>
@@ -128,22 +130,22 @@ export const columns: ColumnDef<VideoItemType>[] = [
                             <Trash size={16} strokeWidth={1.5} />
                           </Button>
                         </AlertDialogTrigger>
-                        <AlertDialogContent>
+                        <AlertDialogContent className='max-w-xs'>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Bạn có chắc muốn xóa video này?</AlertDialogTitle>
+                            <AlertDialogTitle>Xóa video này?</AlertDialogTitle>
                             <AlertDialogDescription>
                               Mọi thứ liên quan đến video như: bình luận, lượt thích sẽ bị xóa vĩnh viễn và không thể
                               khôi phục.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
+                            <AlertDialogCancel>Hủy</AlertDialogCancel>
                             <AlertDialogAction
                               disabled={deleteVideosMutation.isPending}
                               onClick={() => handleDeleteVideos([video._id])}
                             >
                               {deleteVideosMutation.isPending && <Loader2 className='w-3 h-3 mr-2 animate-spin' />}
-                              Chắc chắn
+                              Xóa
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
@@ -166,19 +168,13 @@ export const columns: ColumnDef<VideoItemType>[] = [
       const video = row.original
       return (
         <Fragment>
-          {video.isDraft && (
-            <div className='flex items-center space-x-2'>
-              <File strokeWidth={1.5} size={18} />
-              <span className='text-[13px]'>Bản nháp</span>
-            </div>
-          )}
-          {!video.isDraft && video.audience === VideoAudience.Everyone && (
+          {video.audience === VideoAudience.Everyone && (
             <div className='flex items-center space-x-2'>
               <Globe2 strokeWidth={1.5} size={18} className='stroke-green-600' />
               <span className='text-[13px]'>Công khai</span>
             </div>
           )}
-          {!video.isDraft && video.audience === VideoAudience.Onlyme && (
+          {video.audience === VideoAudience.Onlyme && (
             <div className='flex items-center space-x-2'>
               <Lock strokeWidth={1.5} size={18} />
               <span className='text-[13px]'>Riêng tư</span>
@@ -198,7 +194,7 @@ export const columns: ColumnDef<VideoItemType>[] = [
           <div className='text-[13px]'>
             {moment(video.createdAt).date()} thg {moment(video.createdAt).month() + 1}, {moment(video.createdAt).year()}
           </div>
-          <div className='text-xs text-muted-foreground'>{video.isDraft ? 'Ngày tải lên' : 'Ngày xuất bản'}</div>
+          <div className='text-xs text-muted-foreground'>{false ? 'Ngày tải lên' : 'Ngày xuất bản'}</div>
         </div>
       )
     }

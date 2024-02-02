@@ -1,13 +1,13 @@
 import type { Metadata } from 'next'
 import { Chivo as FontSans } from 'next/font/google'
 import NextTopLoader from 'nextjs-toploader'
+import { Toaster } from 'react-hot-toast'
 
-import { Toaster } from '@/components/ui/toaster'
 import AppProvider from '@/providers/app-provider'
 import TanstackProvider from '@/providers/tanstack-provider'
 import ThemeProvider from '@/providers/theme-provider'
-import './globals.css'
 import WatchProvider from '@/providers/watch-provider'
+import './globals.css'
 
 export const fontSans = FontSans({
   subsets: ['latin'],
@@ -34,7 +34,7 @@ const RootLayout = ({ children, uploadVideo }: RootLayoutProps) => {
               <WatchProvider>
                 {children}
                 {uploadVideo}
-                <Toaster />
+                <Toaster toastOptions={{ className: 'text-[15px]' }} />
                 <NextTopLoader color='red' height={2} showSpinner={false} shadow={false} />
               </WatchProvider>
             </ThemeProvider>
