@@ -51,13 +51,13 @@ export default function DataTablePagination<TData>({ table }: DataTablePaginatio
         {table.getSelectedRowModel().rows.length > 0 && (
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Button variant='secondary' size='sm' className='ml-4'>
+              <Button variant='secondary' className='ml-4'>
                 Xóa bản ghi đã chọn
               </Button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+            <AlertDialogContent className='max-w-xs'>
               <AlertDialogHeader>
-                <AlertDialogTitle>Bạn có chắc muốn xóa tất cả bản ghi đã chọn?</AlertDialogTitle>
+                <AlertDialogTitle>Xóa tất cả bản ghi đã chọn?</AlertDialogTitle>
                 <AlertDialogDescription>
                   Dữ liệu sẽ không được khôi phục sau khi thực hiện hành động này, bạn hãy cân nhắc trước khi thực hiện.
                 </AlertDialogDescription>

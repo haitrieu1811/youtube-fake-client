@@ -49,6 +49,7 @@ export const columns: ColumnDef<VideoItemType>[] = [
   },
   {
     accessorKey: 'title',
+    maxSize: 400,
     header: ({ column }) => (
       <div className='ml-4'>
         <DataTableColumnHeader column={column} title='Video' />
@@ -58,7 +59,7 @@ export const columns: ColumnDef<VideoItemType>[] = [
       const video = row.original
       const queryClient = useQueryClient()
 
-      // Mutation: Xóa video
+      // Mutation: Delete video
       const deleteVideosMutation = useMutation({
         mutationKey: ['deleteVideos'],
         mutationFn: videoApis.deleteVideos,
@@ -68,7 +69,7 @@ export const columns: ColumnDef<VideoItemType>[] = [
         }
       })
 
-      // Xóa video
+      // Handle delete video
       const handleDeleteVideos = (videoIds: string[]) => {
         deleteVideosMutation.mutate(videoIds)
       }
