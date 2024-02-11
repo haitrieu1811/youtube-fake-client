@@ -1,6 +1,6 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
 
 import videoApis from '@/apis/video.apis'
@@ -9,14 +9,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { columns as videoColumns } from '../_columns/video-columns'
 
 const ContentClient = () => {
-  // Query: Lấy danh sách video
+  const queryClient = useQueryClient()
+
+  // Query: Get videos
   const getVideosQuery = useQuery({
     queryKey: ['getVideosOfMe'],
     queryFn: () => videoApis.getVideosOfMe()
   })
 
-  // Danh sách video
+  // Videos
   const videos = useMemo(() => getVideosQuery.data?.data.data.videos || [], [getVideosQuery.data?.data.data.videos])
+
+  // Mutation: Delete videos
+  const deleteVideosMutation = useMutation({
+    mutationKey: ['deleteVideos'],
+    mutationFn: videoApis.deleteVideos,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['getVideosOfMe'] })
+    }
+  })
 
   return (
     <div className='p-6'>
@@ -29,7 +40,12 @@ const ContentClient = () => {
             <TabsTrigger value='playlist'>Danh sách phát</TabsTrigger>
           </TabsList>
           <TabsContent value='video' className='py-6'>
-            <DataTable columns={videoColumns} data={videos} searchField='title' />
+            <DataTable
+              columns={videoColumns}
+              data={videos}
+              searchField='title'
+              onDeleteMany={(checkedIds) => deleteVideosMutation.mutate(checkedIds)}
+            />
           </TabsContent>
           <TabsContent value='post'>Change your password here.</TabsContent>
           <TabsContent value='playlist'>Change your password here.</TabsContent>

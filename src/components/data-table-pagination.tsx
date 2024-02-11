@@ -1,20 +1,6 @@
 import { ChevronLeftIcon, ChevronRightIcon, DoubleArrowLeftIcon, DoubleArrowRightIcon } from '@radix-ui/react-icons'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Table } from '@tanstack/react-table'
-import { Loader2 } from 'lucide-react'
 
-import videoApis from '@/apis/video.apis'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger
-} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
@@ -23,24 +9,6 @@ interface DataTablePaginationProps<TData> {
 }
 
 export default function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
-  const queryClient = useQueryClient()
-
-  // Mutation: Xóa video
-  const deleteVideosMutation = useMutation({
-    mutationKey: ['deleteVideos'],
-    mutationFn: videoApis.deleteVideos,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['getVideosOfMe'] })
-    }
-  })
-
-  // Xóa video
-  const handleDeleteVideos = () => {
-    if (table.getCoreRowModel().rows.length === 0) return
-    const videoIds = table.getSelectedRowModel().rows.map((item) => (item.original as any)._id)
-    deleteVideosMutation.mutate(videoIds)
-  }
-
   return (
     <div className='flex items-center justify-between px-2'>
       <div className='flex-1 flex items-center'>
@@ -48,30 +16,6 @@ export default function DataTablePagination<TData>({ table }: DataTablePaginatio
           {table.getFilteredSelectedRowModel().rows.length} trên {table.getFilteredRowModel().rows.length} bản ghi đã
           chọn.
         </div>
-        {table.getSelectedRowModel().rows.length > 0 && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button variant='secondary' className='ml-4'>
-                Xóa bản ghi đã chọn
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent className='max-w-xs'>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Xóa tất cả bản ghi đã chọn?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  Dữ liệu sẽ không được khôi phục sau khi thực hiện hành động này, bạn hãy cân nhắc trước khi thực hiện.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteVideos}>
-                  {deleteVideosMutation.isPending && <Loader2 className='w-3 h-3 mr-2 animate-spin' />}
-                  Tiếp tục
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
       </div>
       <div className='flex items-center space-x-6 lg:space-x-8'>
         <div className='flex items-center space-x-2'>

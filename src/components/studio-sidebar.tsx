@@ -49,7 +49,7 @@ const StudioSidebar = () => {
   const isClientWithAccount = !!(account && isClient)
 
   return (
-    <aside className='w-[256px] sticky top-14 left-0 bottom-0 bg-background max-h-[calc(100vh-56px)] overflow-y-auto transition-all'>
+    <aside className='w-[256px] sticky top-14 left-0 bottom-0 bg-background max-h-[calc(100vh-56px)] overflow-y-auto'>
       <div className='flex justify-center items-center flex-col p-6 space-y-6'>
         <TooltipProvider>
           <Tooltip>

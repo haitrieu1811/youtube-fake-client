@@ -14,11 +14,24 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import * as React from 'react'
+import { useState } from 'react'
 
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import DataTablePagination from './data-table-pagination'
 import DataTableToolbar, { FacetedFilterType } from './data-table-toolbar'
+import { Button } from './ui/button'
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
@@ -26,6 +39,7 @@ interface DataTableProps<TData, TValue> {
   searchField?: string
   searchFieldPlaceholder?: string
   facetedFilter?: FacetedFilterType[]
+  onDeleteMany?: (checkedIds: string[]) => void
 }
 
 export default function DataTable<TData, TValue>({
@@ -33,12 +47,13 @@ export default function DataTable<TData, TValue>({
   data,
   searchField,
   searchFieldPlaceholder,
-  facetedFilter
+  facetedFilter,
+  onDeleteMany
 }: DataTableProps<TData, TValue>) {
-  const [rowSelection, setRowSelection] = React.useState({})
-  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
-  const [sorting, setSorting] = React.useState<SortingState>([])
+  const [rowSelection, setRowSelection] = useState({})
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const table = useReactTable({
     data,
@@ -62,8 +77,34 @@ export default function DataTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues()
   })
 
+  // Handle delete many
+  const handleDeleteMany = () => {
+    const checkedIds = table.getSelectedRowModel().rows.map((item) => (item.original as any)._id)
+    onDeleteMany && onDeleteMany(checkedIds)
+    table.resetRowSelection()
+  }
+
   return (
     <div className='space-y-4'>
+      {table.getSelectedRowModel().rows.length > 0 && (
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant='secondary'>Xóa bản ghi đã chọn</Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent className='max-w-xs'>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Xóa tất cả bản ghi đã chọn?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Dữ liệu sẽ không được khôi phục sau khi thực hiện hành động này.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeleteMany}>Tiếp tục</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      )}
       <DataTableToolbar
         table={table}
         searchField={searchField}
