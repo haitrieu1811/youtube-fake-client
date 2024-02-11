@@ -15,7 +15,6 @@ import { AppContext } from '@/providers/app-provider'
 import { AccountType } from '@/types/account.types'
 import { Button, buttonVariants } from './ui/button'
 import { Separator } from './ui/separator'
-import classNames from 'classnames'
 
 type AccountDropdownProps = {
   accountData: AccountType

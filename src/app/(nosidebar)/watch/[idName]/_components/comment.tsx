@@ -1,9 +1,9 @@
 'use client'
 
-import { useInfiniteQuery, useMutation } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import classNames from 'classnames'
 import { BarChart, Loader2 } from 'lucide-react'
-import { Dispatch, SetStateAction, createContext, useContext, useEffect, useState } from 'react'
+import { Dispatch, SetStateAction, createContext, useContext, useState } from 'react'
 
 import commentApis from '@/apis/comment.apis'
 import CommentInput from '@/components/comment-input'
@@ -12,6 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { CommentType } from '@/constants/enum'
+import useComments from '@/hooks/useComments'
 import { AppContext } from '@/providers/app-provider'
 import { CommentItemType } from '@/types/comment.types'
 
@@ -35,36 +36,13 @@ type SortBy = 'createdAt' | 'likeCount'
 
 const Comment = ({ videoId }: CommentProps) => {
   const { account } = useContext(AppContext)
-  const [comments, setComments] = useState<CommentItemType[]>([])
-  const [commentCount, setCommentCount] = useState<number>(0)
   const [sortBy, setSortBy] = useState<SortBy>('likeCount')
-
-  // Query: Lấy danh sách comment
-  const getCommentsQuery = useInfiniteQuery({
-    queryKey: ['getComments', videoId],
-    queryFn: ({ pageParam }) =>
-      commentApis.getComments({
-        contentId: videoId,
-        params: {
-          page: String(pageParam),
-          limit: '10'
-        }
-      }),
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) =>
-      lastPage.data.data.pagination.page < lastPage.data.data.pagination.totalPages
-        ? lastPage.data.data.pagination.page + 1
-        : undefined
+  const { getCommentsQuery, comments, commentCount, setComments, setCommentCount } = useComments({
+    contentId: videoId,
+    limit: 5
   })
 
-  // Cập nhật lại danh sách comment
-  useEffect(() => {
-    if (!getCommentsQuery.data) return
-    setComments(getCommentsQuery.data.pages.flatMap((page) => page.data.data.comments))
-    setCommentCount(getCommentsQuery.data.pages[0].data.data.pagination.totalRowsWithReplies)
-  }, [getCommentsQuery.data])
-
-  // Mutation: Thêm bình luận
+  // Mutation: Create comment
   const createCommentMutation = useMutation({
     mutationKey: ['createComment'],
     mutationFn: commentApis.createComment,
@@ -75,7 +53,7 @@ const Comment = ({ videoId }: CommentProps) => {
     }
   })
 
-  // Thêm bình luận
+  // Create comment
   const handleCreateComment = (content: string) => {
     createCommentMutation.mutate({
       contentId: videoId,
@@ -84,7 +62,7 @@ const Comment = ({ videoId }: CommentProps) => {
     })
   }
 
-  // Sắp xếp bình luận
+  // Sort comment
   const handleSort = (value: SortBy) => {
     setSortBy(value)
   }
@@ -129,7 +107,7 @@ const Comment = ({ videoId }: CommentProps) => {
           </PopoverContent>
         </Popover>
       </div>
-      {/* Nhập bình luận */}
+      {/* Type comment */}
       <div className='flex items-start space-x-4'>
         <Avatar>
           <AvatarImage src={account?.avatar} alt={account?.channelName} />
@@ -143,7 +121,7 @@ const Comment = ({ videoId }: CommentProps) => {
           />
         </div>
       </div>
-      {/* Danh sách bình luận */}
+      {/* Comments */}
       <div className='mt-6 relative'>
         <CommentList
           comments={comments}

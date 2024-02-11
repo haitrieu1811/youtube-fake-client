@@ -5,6 +5,7 @@ import { Loader2 } from 'lucide-react'
 import { ChangeEvent, FormEvent, useState } from 'react'
 
 import { Button } from './ui/button'
+import { Input } from './ui/input'
 
 type CommentInputProps = {
   autoFocus?: boolean
@@ -32,19 +33,19 @@ const CommentInput = ({
   const [content, setContent] = useState<string>(value)
   const [isCommenting, setIsCommenting] = useState<boolean>(false)
 
-  // Bắt đầu bình luận
+  // Start comment
   const startComment = () => {
     setIsCommenting(true)
   }
 
-  // Dừng bình luận
+  // Stop comment
   const stopComment = () => {
     setIsCommenting(false)
     setContent('')
     onCancel && onCancel()
   }
 
-  // Thay đổi nội dung bình luận khi nhập
+  // Change comment
   const handleChangeContent = (e: ChangeEvent<HTMLInputElement>) => {
     setContent(e.target.value)
   }
@@ -59,28 +60,23 @@ const CommentInput = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      <input
+      <Input
         type='text'
         autoFocus={autoFocus}
         placeholder={placeholderText}
         value={content}
         className={classNames({
-          'outline-none w-full placeholder:text-muted-foreground border-b border-b-border bg-transparent': true,
           [classNameInput]: !!classNameInput
         })}
         onChange={handleChangeContent}
         onFocus={startComment}
       />
       {isCommenting && (
-        <div className='flex justify-end items-center space-x-3 mt-2'>
-          <Button type='button' variant='ghost' className='rounded-full' onClick={stopComment}>
+        <div className='flex justify-end items-center space-x-3 mt-3'>
+          <Button type='button' variant='ghost' onClick={stopComment}>
             {cancelText}
           </Button>
-          <Button
-            type='submit'
-            disabled={!content || isPending}
-            className='rounded-full bg-blue-700 hover:bg-blue-800 text-white'
-          >
+          <Button type='submit' disabled={!content || isPending}>
             {isPending && <Loader2 className='w-4 h-4 mr-3 animate-spin' />}
             {actionText}
           </Button>

@@ -1,7 +1,8 @@
 import { Metadata } from 'next'
 
-import UpdateVideoForm from '@/components/update-video-form'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import UpdateVideoForm from '@/components/update-video-form'
+import Comments from './_components/comments'
 
 export const metadata: Metadata = {
   title: 'Chi tiết video - YouTube Studio',
@@ -16,7 +17,6 @@ type VideoDetailProps = {
 
 const VideoDetail = ({ params }: VideoDetailProps) => {
   const { id } = params
-
   return (
     <div className='p-6'>
       <h1 className='text-[25px] tracking-tight font-medium mb-4'>Chi tiết video</h1>
@@ -24,13 +24,13 @@ const VideoDetail = ({ params }: VideoDetailProps) => {
         <TabsList>
           <TabsTrigger value='detail'>Chi tiết</TabsTrigger>
           <TabsTrigger value='comments'>Bình luận</TabsTrigger>
-          <TabsTrigger value='analytics'>Số liệu phân tích</TabsTrigger>
         </TabsList>
         <TabsContent value='detail'>
           <UpdateVideoForm videoId={id} />
         </TabsContent>
-        <TabsContent value='comments'>Comments your password here.</TabsContent>
-        <TabsContent value='analytics'>Analytics your password here.</TabsContent>
+        <TabsContent value='comments'>
+          <Comments videoId={id} />
+        </TabsContent>
       </Tabs>
     </div>
   )

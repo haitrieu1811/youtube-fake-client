@@ -21,7 +21,7 @@ const CommentItem = ({ commentData }: CommentItemProps) => {
   const [replyCount, setReplyCount] = useState<number>(0)
   const [isShowReplies, setIsShowReplies] = useState<boolean>(false)
 
-  // Query: Lấy danh sách trả lời bình luận
+  // Query: Get comment replies
   const getRepliesCommentQuery = useInfiniteQuery({
     queryKey: ['getRepliesComment', commentData._id],
     queryFn: ({ pageParam }) =>
@@ -40,25 +40,25 @@ const CommentItem = ({ commentData }: CommentItemProps) => {
     enabled: isShowReplies
   })
 
-  // Đặt giá trị cho mảng replies
+  // Set comment replies
   useEffect(() => {
     if (!getRepliesCommentQuery.data) return
     setReplies(getRepliesCommentQuery.data.pages.map((page) => page.data.data.comments).flat())
   }, [getRepliesCommentQuery.data])
 
-  // Đặt giá trị cho reply count
+  // Set reply count
   useEffect(() => {
     setReplyCount(commentData.replyCount)
   }, [commentData])
 
-  // Ẩn hiện phần phản hồi bình luận
+  // Toggle reply
   const toggleReplies = () => {
     setIsShowReplies((prev) => !prev)
   }
 
   return (
     <div>
-      {/* Bình luận gốc */}
+      {/* Root comment */}
       <CommentRow
         commentData={commentData}
         commentRootId={commentData._id}
@@ -67,7 +67,7 @@ const CommentItem = ({ commentData }: CommentItemProps) => {
         setReplies={setReplies}
         setReplyCount={setReplyCount}
       />
-      {/* Nút show danh sách phản hồi bình luận */}
+      {/* Show comments button */}
       {replyCount > 0 && (
         <div className='pl-11 py-2'>
           <Button

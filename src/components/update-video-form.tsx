@@ -9,6 +9,10 @@ import { useRouter } from 'next/navigation'
 import { Fragment, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import { MediaPlayer, MediaProvider } from '@vidstack/react'
+import { DefaultVideoLayout, defaultLayoutIcons } from '@vidstack/react/player/layouts/default'
+import '@vidstack/react/player/styles/default/layouts/video.css'
+import '@vidstack/react/player/styles/default/theme.css'
 
 import mediaApis from '@/apis/media.apis'
 import videoApis from '@/apis/video.apis'
@@ -20,7 +24,7 @@ import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { EncodingStatus, VideoAudience } from '@/constants/enum'
+import { EncodingStatus, VideoAudience, VideoStatus } from '@/constants/enum'
 import useVideoCategories from '@/hooks/useVideoCategories'
 import useVideoStatus from '@/hooks/useVideoStatus'
 import { cn } from '@/lib/utils'
@@ -144,7 +148,7 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
 
   return (
     <div className='flex space-x-10 py-6'>
-      <div className='space-y-4'>
+      <div className='space-y-4 w-[300px]'>
         <h3 className='font-medium text-sm leading-none'>Hình thu nhỏ</h3>
         <div className='relative'>
           {/* Thumbnail */}
@@ -154,18 +158,18 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
               height={200}
               src={thumbnailPreview ? thumbnailPreview : videoInfo.thumbnail}
               alt={videoInfo.title}
-              className='w-[300px] h-[170px] rounded-lg object-cover'
+              className='w-full h-[170px] rounded-lg object-cover'
             />
           )}
           {/* Thumbnail fallback */}
           {videoInfo && !getVideoDetailQuery.isLoading && !thumbnailPreview && !videoInfo.thumbnail && (
-            <div className='w-[300px] h-[170px] rounded-lg bg-secondary flex justify-center items-center flex-col space-y-2'>
+            <div className='w-full h-[170px] rounded-lg bg-secondary flex justify-center items-center flex-col space-y-2'>
               <ImagePlus strokeWidth={1.5} />
               <span className='text-muted-foreground text-sm'>Chưa tải hình thu nhỏ</span>
             </div>
           )}
           {/* Thumbnail fetching */}
-          {getVideoDetailQuery.isLoading && <Skeleton className='w-[300px] h-[170px] rounded-lg' />}
+          {getVideoDetailQuery.isLoading && <Skeleton className='w-full h-[170px] rounded-lg' />}
           <div className='absolute bottom-0 left-0 right-0 px-4 py-2 bg-secondary/20 rounded-b-lg flex justify-end space-x-2'>
             {!thumbnailFile && (
               <InputFile onChange={(files) => handleChangeThumbnailFile(files)}>
@@ -187,6 +191,13 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
             )}
           </div>
         </div>
+        {/* Media player */}
+        {videoInfo && videoStatus?.status === EncodingStatus.Succeed && (
+          <MediaPlayer src={`http://localhost:4000/static/video-hls/${videoInfo.idName}/master.m3u8`} className='z-0 '>
+            <MediaProvider />
+            <DefaultVideoLayout thumbnails={videoInfo.thumbnail} icons={defaultLayoutIcons} />
+          </MediaPlayer>
+        )}
         {/* Encoding video */}
         {!isUploadSucceed && (
           <div className='flex items-center space-x-4'>

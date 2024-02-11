@@ -63,20 +63,20 @@ const CommentRow = ({
     setIsSeeMoreContent((prevState) => !prevState)
   }
 
-  // Query: Lấy thông tin bình luận
+  // Query: Get comment detail
   const getCommentDetailQuery = useQuery({
     queryKey: ['getCommentDetail', commentData._id],
     queryFn: () => commentApis.getCommentDetail(commentData._id),
     enabled: isEditing
   })
 
-  // Thông tin bình luận
+  // Comment detail
   const commentDetail = useMemo(
     () => getCommentDetailQuery.data?.data.data.comment,
     [getCommentDetailQuery.data?.data.data.comment]
   )
 
-  // Mutation: Trả lời bình luận
+  // Mutation: Reply comment
   const replyCommentMutation = useMutation({
     mutationKey: ['replyComment'],
     mutationFn: commentApis.replyComment,
@@ -88,7 +88,7 @@ const CommentRow = ({
     }
   })
 
-  // Trả lời bình luận
+  // Reply comment
   const handleReplyComment = (content: string) => {
     if (!commentRootId) return
     replyCommentMutation.mutate({
@@ -100,7 +100,7 @@ const CommentRow = ({
     })
   }
 
-  // Mutation: Cập nhật bình luận
+  // Mutation: Update comment
   const updateCommentMutation = useMutation({
     mutationKey: ['updateComment'],
     mutationFn: commentApis.updateComment,
@@ -122,7 +122,7 @@ const CommentRow = ({
     }
   })
 
-  // Cập nhật bình luận
+  // Update comment
   const handleUpdateComment = (content: string) => {
     updateCommentMutation.mutate({
       commentId: commentData._id,
@@ -130,13 +130,13 @@ const CommentRow = ({
     })
   }
 
-  // Mutation: Xóa bình luận
+  // Mutation: Delete comment
   const deleteCommentMutation = useMutation({
     mutationKey: ['deleteComment'],
     mutationFn: commentApis.deleteComment
   })
 
-  // Xóa bình luận
+  // Delete comment
   const handleDeleteComment = (commentId: string) => {
     deleteCommentMutation.mutate(commentId, {
       onSuccess: () => {
@@ -154,7 +154,7 @@ const CommentRow = ({
     })
   }
 
-  // Like/dislike bình luận
+  // Like/dislike comment
   const { handleReaction } = useReaction({
     onCreateSuccess(data) {
       const { reaction } = data.data.data
@@ -255,8 +255,8 @@ const CommentRow = ({
           </AvatarFallback>
         </Avatar>
       </Link>
-      <div className='flex-1 space-y-1'>
-        {/* Khi không chỉnh sửa thì hiển thị thông tin bình luận */}
+      <div className='flex-1 space-y-2'>
+        {/* Comment info */}
         {!isEditing && (
           <Fragment>
             <div className='flex items-center space-x-3'>
@@ -346,7 +346,7 @@ const CommentRow = ({
             </div>
           </Fragment>
         )}
-        {/* Chỉnh sửa */}
+        {/* Edit comment */}
         {isEditing && commentDetail && (
           <CommentInput
             autoFocus
@@ -362,7 +362,7 @@ const CommentRow = ({
             onSubmit={(content) => handleUpdateComment(content)}
           />
         )}
-        {/* Nhập phản hồi */}
+        {/* Type reply */}
         {account && isShowReplyInput && !isEditing && (
           <div className='flex items-start space-x-4'>
             <Avatar className='flex-shrink-0 w-6 h-6'>
