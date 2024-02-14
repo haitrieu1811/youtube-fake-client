@@ -60,12 +60,13 @@ const CommentInput = ({
 
   return (
     <form onSubmit={handleSubmit}>
-      <Input
+      <input
         type='text'
         autoFocus={autoFocus}
         placeholder={placeholderText}
         value={content}
         className={classNames({
+          'outline-none border-b border-b-border w-full bg-transparent': true,
           [classNameInput]: !!classNameInput
         })}
         onChange={handleChangeContent}
@@ -73,10 +74,10 @@ const CommentInput = ({
       />
       {isCommenting && (
         <div className='flex justify-end items-center space-x-3 mt-3'>
-          <Button type='button' variant='ghost' onClick={stopComment}>
+          <Button type='button' variant='ghost' className='rounded-full' onClick={stopComment}>
             {cancelText}
           </Button>
-          <Button type='submit' disabled={!content || isPending}>
+          <Button type='submit' disabled={!content || isPending} className='rounded-full bg-blue-500 hover:bg-blue-600'>
             {isPending && <Loader2 className='w-4 h-4 mr-3 animate-spin' />}
             {actionText}
           </Button>

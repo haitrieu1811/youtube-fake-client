@@ -16,7 +16,7 @@ const StudioVideoComments = ({ videoId }: StudioVideoCommentsProps) => {
   return (
     <Fragment>
       {/* Comments */}
-      {commentCount > 0 && (
+      {commentCount > 0 && !getCommentsQuery.isLoading && (
         <CommentList
           comments={comments}
           setComments={setComments}
@@ -25,7 +25,7 @@ const StudioVideoComments = ({ videoId }: StudioVideoCommentsProps) => {
         />
       )}
       {/* Empty */}
-      {commentCount === 0 && (
+      {commentCount === 0 && !getCommentsQuery.isLoading && (
         <div className='flex items-center justify-center flex-col space-y-2 py-10'>
           <Image width={180} height={180} src={commentEmpty} alt='' />
           <div className='text-[15px] text-muted-foreground text-center'>

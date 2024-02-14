@@ -26,16 +26,14 @@ const StudioHeader = () => {
         <Youtube size={30} strokeWidth={1} />
         <span className='font-bold text-2xl'>Studio</span>
       </Link>
-
       {/* Search */}
       <StudioHeaderSearch />
-
       <div className='flex items-center'>
-        {/* Nút tạo */}
+        {/* Create button */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant='outline' className='mr-5 space-x-3 rounded-sm'>
-              <PlusSquare size={20} className='stroke-red-500' />
+              <PlusSquare size={20} className='stroke-red-500 dark:stroke-red-400' />
               <span className='uppercase'>Tạo</span>
             </Button>
           </DropdownMenuTrigger>
