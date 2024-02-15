@@ -1,4 +1,5 @@
 import { Metadata } from 'next'
+
 import ChannelClient from '../channel/_components/channel-client'
 
 export const metadata: Metadata = {

@@ -15,6 +15,7 @@ import {
   TrendingUp,
   UsersRound
 } from 'lucide-react'
+import moment from 'moment'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useContext, useEffect, useMemo, useState } from 'react'
@@ -43,7 +44,7 @@ import PATH from '@/constants/path'
 import { formatViews } from '@/lib/utils'
 import { AppContext } from '@/providers/app-provider'
 import { VideoItemType } from '@/types/video.types'
-import moment from 'moment'
+import CreatePost from './create-post'
 
 type ChannelClientProps = {
   username?: string
@@ -61,27 +62,24 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
   const coverReview = useMemo(() => (coverFile ? URL.createObjectURL(coverFile) : null), [coverFile])
   const avatarReview = useMemo(() => (avatarFile ? URL.createObjectURL(avatarFile) : null), [avatarFile])
 
-  // Query: Thông tin kênh của tôi
+  // Query: My channel
   const getMeQuery = useQuery({
     queryKey: ['getMe'],
     queryFn: () => accountApis.getMe(),
     enabled: isMyChannel
   })
 
-  // Query: Thông tin kênh của tôi
+  // Query: Get channel by username
   const getChannelByUsernameQuery = useQuery({
     queryKey: ['getChannelByUsername', username],
     queryFn: () => accountApis.getChannelByUsername(username as string),
     enabled: !isMyChannel
   })
 
-  // Thông tin kênh
+  // Channel info (my channel or other channel)
   const channel = useMemo(() => {
-    if (isMyChannel) {
-      return getMeQuery.data?.data.data.me
-    } else {
-      return getChannelByUsernameQuery.data?.data.data.account
-    }
+    if (isMyChannel) return getMeQuery.data?.data.data.me
+    else return getChannelByUsernameQuery.data?.data.data.account
   }, [getMeQuery.data?.data.data.me, getChannelByUsernameQuery.data?.data.data.account])
 
   // Query config
@@ -95,20 +93,20 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
     isNull
   )
 
-  // Query: Danh sách video của tôi
+  // Query: My videos
   const getVideosOfMeQuery = useQuery({
     queryKey: ['getVideosOfMe', queryConfig],
     queryFn: () => videoApis.getVideosOfMe(queryConfig)
   })
 
-  // Query: Danh sách video theo username
+  // Query: Get videos by username
   const getVideosByUsername = useQuery({
     queryKey: ['getVideosByUsername', queryConfig],
     queryFn: () => videoApis.getVideosByUsername({ params: queryConfig, username: username as string }),
     enabled: !isMyChannel
   })
 
-  // Cập nhật danh sách video
+  // Update videos
   useEffect(() => {
     if (isMyChannel) {
       if (!getVideosOfMeQuery.data) return
@@ -119,7 +117,7 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
     }
   }, [getVideosOfMeQuery.data, getVideosByUsername.data])
 
-  // Cập nhật isSubscribed
+  // Update isSubscribed
   useEffect(() => {
     if (isMyChannel) {
       if (!getMeQuery.data) return
@@ -130,13 +128,13 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
     }
   }, [getMeQuery.data, getChannelByUsernameQuery.data])
 
-  // Mutation: Upload ảnh
+  // Mutation: Upload image
   const uploadImagesMutation = useMutation({
     mutationKey: ['uploadImages'],
     mutationFn: mediaApis.uploadImage
   })
 
-  // Mutation: Cập nhật kênh
+  // Mutation: Update channel
   const updateMeMutation = useMutation({
     mutationKey: ['updateChannel'],
     mutationFn: accountApis.updateMe
@@ -144,29 +142,29 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
 
   const isUpdating = uploadImagesMutation.isPending || updateMeMutation.isPending
 
-  // Thay đổi file ảnh bìa
+  // Change cover file
   const handleChangeCoverFile = (files?: File[]) => {
     if (!files) return
     setCoverFile(files[0])
   }
 
-  // Thay đổi file ảnh đại diện
+  // Change avatar file
   const handleChangeAvatarFile = (files?: File[]) => {
     if (!files) return
     setAvatarFile(files[0])
   }
 
-  // Hủy cập nhật ảnh bìa
+  // Cancel update cover
   const handleCancelCoverFile = () => {
     setCoverFile(null)
   }
 
-  // Hủy cập nhật ảnh đại diện
+  // Cancel update avatar
   const handleCancelAvatarFile = () => {
     setAvatarFile(null)
   }
 
-  // Xử lử cập nhật ảnh bìa
+  // Handle update cover
   const handleSaveImage = async ({ file, field }: { file: File; field: 'avatar' | 'cover' }) => {
     try {
       const formData = new FormData()
@@ -188,7 +186,7 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
     }
   }
 
-  // Thông tin chi tiết kênh
+  // Info channel detail
   const channelDetailArr = useMemo(() => {
     if (!channel) return []
     return [
@@ -217,11 +215,21 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
     ]
   }, [channel])
 
+  // Default tab value
+  const tab = useMemo(() => {
+    switch (searchParams.get('tab')) {
+      case 'community':
+        return 'community'
+      default:
+        return 'home'
+    }
+  }, [searchParams.get('tab')])
+
   return (
     <TooltipProvider>
       {channel && (
         <div className='px-24 pb-10'>
-          {/* Ảnh bìa */}
+          {/* Cover */}
           <div
             className={classNames({
               'relative h-[170px] bg-muted bg-center bg-cover mt-2 rounded-lg group': true,
@@ -263,7 +271,7 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
             )}
           </div>
           <div className='mt-4 flex space-x-6 pr-[360px]'>
-            {/* Ảnh đại diện */}
+            {/* Avatar */}
             <div
               className={classNames({
                 'relative group': true,
@@ -303,7 +311,7 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
                 </div>
               )}
             </div>
-            {/* Thông tin */}
+            {/* Info */}
             <div className='flex-1 space-y-3'>
               <div className='flex items-center space-x-4'>
                 <h2 className='font-bold text-4xl'>{channel.channelName}</h2>
@@ -371,7 +379,7 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
             </div>
           </div>
           <div className='mt-10'>
-            <Tabs defaultValue='home'>
+            <Tabs defaultValue={tab}>
               <TabsList>
                 <TabsTrigger value='home'>Trang chủ</TabsTrigger>
                 <TabsTrigger value='video'>Video</TabsTrigger>
@@ -442,7 +450,9 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
                 </div>
               </TabsContent>
               <TabsContent value='playlist'>Change your password here.</TabsContent>
-              <TabsContent value='community'>Change your password here.</TabsContent>
+              <TabsContent value='community'>
+                <CreatePost channelData={channel} />
+              </TabsContent>
             </Tabs>
           </div>
         </div>

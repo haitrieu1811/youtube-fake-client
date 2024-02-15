@@ -9,14 +9,13 @@ import useIsClient from '@/hooks/useIsClient'
 import { AppContext } from '@/providers/app-provider'
 import AccountDropdown from './account-dropdown'
 import MainHeaderSearch from './main-header-search'
+import { Badge } from './ui/badge'
 import { Button } from './ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
-import { Badge } from './ui/badge'
 
 const MainHeader = () => {
   const { isAuthenticated, account, setIsShowSidebar } = useContext(AppContext)
   const { isClient } = useIsClient()
-
   return (
     <header className='bg-background border-b border-b-border h-14 flex items-center justify-between px-6 sticky top-0 left-0 right-0 z-[9] transition-all'>
       <div className='flex items-center space-x-4'>
@@ -29,11 +28,10 @@ const MainHeader = () => {
           <span className='font-bold text-lg'>YouTube</span>
         </Link>
       </div>
-
-      {/* Tìm kiếm */}
+      {/* Search */}
       <MainHeaderSearch />
       <div className='flex items-center'>
-        {/* Nút tạo */}
+        {/* Create button */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant='ghost' size='icon' className='rounded-full mr-4 w-10 h-10'>
@@ -47,9 +45,16 @@ const MainHeader = () => {
                 <span>Tải video lên</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem className='space-x-3 pr-10 pl-5 py-2 cursor-pointer'>
-              <PenSquare size={20} strokeWidth={1.5} />
-              <span>Tạo bài viết</span>
+            <DropdownMenuItem className='space-x-3 pr-10 pl-5 py-2 cursor-pointer' asChild>
+              <Link
+                href={{
+                  pathname: PATH.CHANNEL,
+                  query: { tab: 'community' }
+                }}
+              >
+                <PenSquare size={20} strokeWidth={1.5} />
+                <span>Tạo bài viết</span>
+              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem className='space-x-3 pr-10 pl-5 py-2 cursor-pointer'>
               <ListPlus size={20} strokeWidth={1.5} />
@@ -57,7 +62,7 @@ const MainHeader = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        {/* Thông báo */}
+        {/* Notification */}
         <div className='mr-4 relative'>
           <Button variant='ghost' size='icon' className='rounded-full w-10 h-10'>
             <Bell size={20} />
@@ -66,7 +71,7 @@ const MainHeader = () => {
             9+
           </Badge>
         </div>
-        {/*  Hiển thị nút đăng nhập khi chưa đăng nhập */}
+        {/* Show login button when not logged */}
         {!isAuthenticated && isClient && (
           <Button variant='outline' className='rounded-full hover:bg-blue-300/10 space-x-2' asChild>
             <Link href={PATH.LOGIN}>
@@ -75,7 +80,7 @@ const MainHeader = () => {
             </Link>
           </Button>
         )}
-        {/* Hiển thị account dropdown khi đã đăng nhập */}
+        {/* Show account dropdown when logged */}
         {isAuthenticated && account && isClient && <AccountDropdown accountData={account} />}
       </div>
     </header>
