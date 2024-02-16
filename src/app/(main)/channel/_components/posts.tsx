@@ -2,12 +2,14 @@
 
 import { useInfiniteQuery } from '@tanstack/react-query'
 import { useContext, useEffect, useState } from 'react'
+import InfiniteScroll from 'react-infinite-scroll-component'
 
 import postApis from '@/apis/post.apis'
 import PostItem from '@/components/post-item'
 import { PostItemType } from '@/types/post.types'
 import { ChannelClientContext } from './channel-client'
 import CreatePost from './create-post'
+import PostItemSkeleton from '@/components/post-item-skeleton'
 
 const ChannelPosts = () => {
   const { isMyChannel, username } = useContext(ChannelClientContext)
@@ -18,7 +20,7 @@ const ChannelPosts = () => {
     queryKey: ['getPostsByUsername'],
     initialPageParam: 1,
     queryFn: ({ pageParam }) =>
-      postApis.getPostsByUsername({ username: username as string, params: { page: String(pageParam), limit: '10' } }),
+      postApis.getPostsByUsername({ username: username as string, params: { page: String(pageParam), limit: '5' } }),
     getNextPageParam: (lastPage) =>
       lastPage.data.data.pagination.page < lastPage.data.data.pagination.totalPages
         ? lastPage.data.data.pagination.page + 1
@@ -30,7 +32,7 @@ const ChannelPosts = () => {
   const getMyPostsQuery = useInfiniteQuery({
     queryKey: ['getMyPosts'],
     initialPageParam: 1,
-    queryFn: ({ pageParam }) => postApis.getMyPosts({ page: String(pageParam), limit: '10' }),
+    queryFn: ({ pageParam }) => postApis.getMyPosts({ page: String(pageParam), limit: '5' }),
     getNextPageParam: (lastPage) =>
       lastPage.data.data.pagination.page < lastPage.data.data.pagination.totalPages
         ? lastPage.data.data.pagination.page + 1
@@ -55,10 +57,19 @@ const ChannelPosts = () => {
       {/* Create a new post */}
       {isMyChannel && <CreatePost />}
       {/* Posts */}
-      <div className='space-y-5 mt-5 w-3/4'>
-        {posts.map((post) => (
-          <PostItem key={post._id} postData={post} />
-        ))}
+      <div className='mt-5 w-3/4'>
+        <InfiniteScroll
+          dataLength={posts.length}
+          scrollThreshold={1}
+          hasMore={isMyChannel ? getMyPostsQuery.hasNextPage : getPostsByAccountIdQuery.hasNextPage}
+          next={isMyChannel ? getMyPostsQuery.fetchNextPage : getPostsByAccountIdQuery.fetchNextPage}
+          loader={<PostItemSkeleton />}
+          className='space-y-5'
+        >
+          {posts.map((post) => (
+            <PostItem key={post._id} postData={post} />
+          ))}
+        </InfiniteScroll>
       </div>
     </div>
   )
