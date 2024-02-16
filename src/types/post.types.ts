@@ -1,5 +1,5 @@
 import { PostAudience } from '@/constants/enum'
-import { SuccessResponse } from './utils.types'
+import { PaginationType, SuccessResponse } from './utils.types'
 
 // Original post
 export type OriginalPostType = {
@@ -8,6 +8,29 @@ export type OriginalPostType = {
   content: string
   images: string[]
   audience: PostAudience
+  createdAt: string
+  updatedAt: string
+}
+
+// Post item
+export type PostItemType = {
+  _id: string
+  author: {
+    _id: string
+    username: string
+    channelName: string
+    avatar: string
+    tick: boolean
+    createdAt: string
+    updatedAt: string
+  }
+  images: string[]
+  content: string
+  audience: PostAudience
+  likeCount: number
+  dislikeCount: number
+  isLiked: boolean
+  isDisliked: boolean
   createdAt: string
   updatedAt: string
 }
@@ -22,4 +45,10 @@ export type CreatePostReqBody = {
 // Response: Create a new post
 export type CreatePostReponse = SuccessResponse<{
   post: OriginalPostType
+}>
+
+// Response: Get posts by account id
+export type GetPostsResponse = SuccessResponse<{
+  posts: PostItemType[]
+  pagination: PaginationType
 }>

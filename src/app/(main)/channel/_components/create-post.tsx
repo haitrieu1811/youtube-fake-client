@@ -1,10 +1,10 @@
 'use client'
 
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CopyPlus, Eye, Image as ImageIcon, Loader2, Trash, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ChangeEvent, Fragment, useMemo, useState } from 'react'
+import { ChangeEvent, Fragment, useContext, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import mediaApis from '@/apis/media.apis'
@@ -15,15 +15,13 @@ import { Button } from '@/components/ui/button'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { PostAudience } from '@/constants/enum'
-import { ProfileType } from '@/types/account.types'
-
-type CreatePostProps = {
-  channelData: ProfileType
-}
+import { ChannelClientContext } from './channel-client'
 
 const MAX_IMAGES_PER_POST = 5
 
-const CreatePost = ({ channelData }: CreatePostProps) => {
+const CreatePost = () => {
+  const queryClient = useQueryClient()
+  const { channelData } = useContext(ChannelClientContext)
   const [isImageMode, setIsImageMode] = useState<boolean>(false)
   const [imageFiles, setImageFiles] = useState<File[]>([])
   const [content, setContent] = useState<string>('')
@@ -87,6 +85,7 @@ const CreatePost = ({ channelData }: CreatePostProps) => {
     onSuccess: () => {
       handleCancel()
       toast.success('Đã tạo bài đăng')
+      queryClient.invalidateQueries({ queryKey: ['getMyPosts'] })
     }
   })
 
@@ -117,10 +116,10 @@ const CreatePost = ({ channelData }: CreatePostProps) => {
       <div className='flex items-center justify-between'>
         <div className='flex items-center space-x-3 flex-shrink-0'>
           <Avatar className='w-8 h-8'>
-            <AvatarImage src={channelData.avatar} alt={channelData.channelName} />
-            <AvatarFallback>{channelData.channelName[0].toUpperCase()}</AvatarFallback>
+            <AvatarImage src={channelData?.avatar} alt={channelData?.channelName} />
+            <AvatarFallback>{channelData?.channelName[0].toUpperCase()}</AvatarFallback>
           </Avatar>
-          <span className='font-medium text-sm'>{channelData.channelName}</span>
+          <span className='font-medium text-sm'>{channelData?.channelName}</span>
         </div>
         <div className='flex items-center space-x-2'>
           <span className='text-muted-foreground text-sm whitespace-nowrap'>Trạng thái hiển thị:</span>
