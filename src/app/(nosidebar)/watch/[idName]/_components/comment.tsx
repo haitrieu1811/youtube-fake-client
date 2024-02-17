@@ -42,7 +42,7 @@ const Comment = ({ videoId }: CommentProps) => {
     limit: 5
   })
 
-  // Mutation: Create comment
+  // Mutation: Add a comment
   const createCommentMutation = useMutation({
     mutationKey: ['createComment'],
     mutationFn: commentApis.createComment,
@@ -53,7 +53,7 @@ const Comment = ({ videoId }: CommentProps) => {
     }
   })
 
-  // Create comment
+  // Add a comment
   const handleCreateComment = (content: string) => {
     createCommentMutation.mutate({
       contentId: videoId,

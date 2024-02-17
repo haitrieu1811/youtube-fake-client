@@ -59,6 +59,8 @@ export const ChannelClientContext = createContext<ChannelClientContextType>({
   channelData: undefined
 })
 
+type TabType = 'home' | 'video' | 'playlist' | 'community'
+
 type ChannelClientProps = {
   username?: string
 }
@@ -72,6 +74,7 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
   const [avatarFile, setAvatarFile] = useState<File | null>(null)
   const [myVideos, setMyVideos] = useState<VideoItemType[]>([])
   const [subscribeCount, setSubscribeCount] = useState<number>(0)
+  const [tab, setTab] = useState<TabType>('home')
   const coverReview = useMemo(() => (coverFile ? URL.createObjectURL(coverFile) : null), [coverFile])
   const avatarReview = useMemo(() => (avatarFile ? URL.createObjectURL(avatarFile) : null), [avatarFile])
 
@@ -228,13 +231,20 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
     ]
   }, [channel])
 
-  // Default tab value
-  const tab = useMemo(() => {
+  // Set tab value
+  useEffect(() => {
     switch (searchParams.get('tab')) {
       case 'community':
-        return 'community'
+        setTab('community')
+        break
+      case 'video':
+        setTab('video')
+        break
+      case 'playlist':
+        setTab('playlist')
       default:
-        return 'home'
+        setTab('home')
+        break
     }
   }, [searchParams.get('tab')])
 

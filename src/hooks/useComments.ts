@@ -14,16 +14,19 @@ type UseCommentsProps = {
 const useComments = ({ contentId, limit = 10 }: UseCommentsProps) => {
   const [commentCount, setCommentCount] = useState<number>(0)
   const [comments, setComments] = useState<CommentItemType[]>([])
+  const [sortBy, setSortBy] = useState<'createdAt' | 'likeCount'>('createdAt')
 
   // Query: Get comments
   const getCommentsQuery = useInfiniteQuery({
-    queryKey: ['getComments', contentId],
+    queryKey: ['getComments', contentId, sortBy],
     queryFn: ({ pageParam }) =>
       commentApis.getComments({
         contentId,
         params: {
           page: String(pageParam),
-          limit: String(limit)
+          limit: String(limit),
+          sortBy,
+          orderBy: 'desc'
         }
       }),
     initialPageParam: 1,
@@ -45,7 +48,8 @@ const useComments = ({ contentId, limit = 10 }: UseCommentsProps) => {
     comments,
     setComments,
     commentCount,
-    setCommentCount
+    setCommentCount,
+    setSortBy
   }
 }
 

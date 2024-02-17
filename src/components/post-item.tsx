@@ -4,6 +4,7 @@ import moment from 'moment'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Dispatch, Fragment, SetStateAction, useContext, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
@@ -21,9 +22,11 @@ const MAX_LENGTH_OF_CONTENT = 50
 type PostItemProps = {
   postData: PostItemType
   setPosts?: Dispatch<SetStateAction<PostItemType[]>>
+  isDetailMode?: boolean
 }
 
-const PostItem = ({ postData, setPosts }: PostItemProps) => {
+const PostItem = ({ postData, setPosts, isDetailMode = false }: PostItemProps) => {
+  const queryClient = useQueryClient()
   const { account } = useContext(AppContext)
   const [isExpandContent, setIsExpandContent] = useState<boolean>(false)
 
@@ -52,6 +55,7 @@ const PostItem = ({ postData, setPosts }: PostItemProps) => {
             return post
           })
         )
+      isDetailMode && queryClient.invalidateQueries({ queryKey: ['getPostDetail', postData._id] })
     },
     onUpdateSuccess(data) {
       const { reaction } = data.data.data
@@ -80,6 +84,7 @@ const PostItem = ({ postData, setPosts }: PostItemProps) => {
             return post
           })
         )
+      isDetailMode && queryClient.invalidateQueries({ queryKey: ['getPostDetail', postData._id] })
     },
     onDeleteSuccess(data) {
       const { reaction } = data.data.data
@@ -104,6 +109,7 @@ const PostItem = ({ postData, setPosts }: PostItemProps) => {
             return post
           })
         )
+      isDetailMode && queryClient.invalidateQueries({ queryKey: ['getPostDetail', postData._id] })
     }
   })
 
@@ -224,12 +230,16 @@ const PostItem = ({ postData, setPosts }: PostItemProps) => {
               </div>
             </div>
             {/* Comments */}
-            <div className='flex items-center space-x-0.5'>
-              <Button size='icon' variant='ghost' className='rounded-full'>
-                <MessageSquareText strokeWidth={1.5} size={16} />
-              </Button>
-              <span className='text-muted-foreground text-sm'>{postData.commentCount}</span>
-            </div>
+            {!isDetailMode && (
+              <div className='flex items-center space-x-0.5'>
+                <Button size='icon' variant='ghost' className='rounded-full' asChild>
+                  <Link href={PATH.POST_DETAIL(postData._id)}>
+                    <MessageSquareText strokeWidth={1.5} size={16} />
+                  </Link>
+                </Button>
+                <span className='text-muted-foreground text-sm'>{postData.commentCount}</span>
+              </div>
+            )}
           </div>
         </div>
       </div>

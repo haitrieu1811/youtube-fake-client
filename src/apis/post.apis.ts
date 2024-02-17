@@ -1,5 +1,5 @@
 import http from '@/lib/http'
-import { CreatePostReponse, CreatePostReqBody, GetPostsResponse } from '@/types/post.types'
+import { CreatePostReponse, CreatePostReqBody, GetPostDetailResponse, GetPostsResponse } from '@/types/post.types'
 import { PaginationReqQuery } from '@/types/utils.types'
 
 const postApis = {
@@ -16,6 +16,11 @@ const postApis = {
   // Get my posts
   getMyPosts(params?: PaginationReqQuery) {
     return http.get<GetPostsResponse>('/posts/my', { params })
+  },
+
+  // Get post detail
+  getPostDetail(postId: string) {
+    return http.get<GetPostDetailResponse>(`/posts/${postId}`)
   }
 }
 

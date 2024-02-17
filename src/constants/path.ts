@@ -11,6 +11,7 @@ const PATH = {
   LIKED: '/liked',
   PROFILE: (username: string) => `/@${username}`,
   WATCH: (idName: string) => `/watch/${idName}`,
+  POST_DETAIL: (postId: string) => `/post/${postId}`,
 
   STUDIO: '/studio',
   STUDIO_CONTENT: '/studio/content',

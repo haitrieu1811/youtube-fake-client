@@ -53,3 +53,8 @@ export type GetPostsResponse = SuccessResponse<{
   posts: PostItemType[]
   pagination: PaginationType
 }>
+
+// Response: Get post detail
+export type GetPostDetailResponse = SuccessResponse<{
+  post: PostItemType
+}>
