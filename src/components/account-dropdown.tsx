@@ -129,7 +129,7 @@ const AccountDropdown = ({ accountData }: AccountDropdownProps) => {
                 <div className='flex-1'>
                   <h2 className='font-medium text-accent-foreground text-[15px]'>{accountData.channelName}</h2>
                   <div className='text-muted-foreground text-sm'>@{accountData.username}</div>
-                  <Link href={PATH.CHANNEL} className='text-sm text-blue-600 mt-2 inline-block'>
+                  <Link href={PATH.CHANNEL} className='text-sm text-blue-500 mt-2 inline-block'>
                     Xem kênh của bạn
                   </Link>
                 </div>

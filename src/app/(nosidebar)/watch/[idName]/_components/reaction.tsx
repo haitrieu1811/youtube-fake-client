@@ -61,7 +61,7 @@ const Reaction = ({ videoInfo }: ReactionProps) => {
     }
   })
 
-  // Cập nhật thông tin video
+  // Update video info
   useEffect(() => {
     if (!videoInfo) return
     setIsLiked(videoInfo.isLiked)

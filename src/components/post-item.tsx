@@ -1,29 +1,127 @@
-import Tippy from '@tippyjs/react/headless'
-import { MessageSquareText, MoreVertical, Pencil, ThumbsDown, ThumbsUp, Trash } from 'lucide-react'
+import classNames from 'classnames'
+import { Flag, MessageSquareText, MoreVertical, Pencil, ThumbsDown, ThumbsUp, Trash } from 'lucide-react'
 import moment from 'moment'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Dispatch, Fragment, SetStateAction, useContext, useState } from 'react'
 
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { ReactionContentType, ReactionType } from '@/constants/enum'
 import PATH from '@/constants/path'
+import useReaction from '@/hooks/useReaction'
 import { convertMomentToVietnamese } from '@/lib/utils'
+import { AppContext } from '@/providers/app-provider'
 import { PostItemType } from '@/types/post.types'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
 
+const MAX_LENGTH_OF_CONTENT = 50
+
 type PostItemProps = {
   postData: PostItemType
+  setPosts?: Dispatch<SetStateAction<PostItemType[]>>
 }
 
-const PostItem = ({ postData }: PostItemProps) => {
+const PostItem = ({ postData, setPosts }: PostItemProps) => {
+  const { account } = useContext(AppContext)
+  const [isExpandContent, setIsExpandContent] = useState<boolean>(false)
+
+  // Handle reaction
+  const { handleReaction } = useReaction({
+    onCreateSuccess(data) {
+      const { reaction } = data.data.data
+      setPosts &&
+        setPosts((prevState) =>
+          prevState.map((post) => {
+            if (post._id === reaction.contentId) {
+              if (reaction.type === ReactionType.Like) {
+                return {
+                  ...post,
+                  likeCount: post.likeCount + 1,
+                  isLiked: true
+                }
+              } else {
+                return {
+                  ...post,
+                  dislikeCount: post.dislikeCount + 1,
+                  isDisliked: true
+                }
+              }
+            }
+            return post
+          })
+        )
+    },
+    onUpdateSuccess(data) {
+      const { reaction } = data.data.data
+      setPosts &&
+        setPosts((prevState) =>
+          prevState.map((post) => {
+            if (post._id === reaction.contentId) {
+              if (reaction.type === ReactionType.Like) {
+                return {
+                  ...post,
+                  likeCount: post.likeCount + 1,
+                  dislikeCount: post.dislikeCount - 1,
+                  isLiked: true,
+                  isDisliked: false
+                }
+              } else {
+                return {
+                  ...post,
+                  likeCount: post.likeCount - 1,
+                  dislikeCount: post.dislikeCount + 1,
+                  isLiked: false,
+                  isDisliked: true
+                }
+              }
+            }
+            return post
+          })
+        )
+    },
+    onDeleteSuccess(data) {
+      const { reaction } = data.data.data
+      setPosts &&
+        setPosts((prevState) =>
+          prevState.map((post) => {
+            if (post._id === reaction.contentId) {
+              if (reaction.type === ReactionType.Like) {
+                return {
+                  ...post,
+                  likeCount: post.likeCount - 1,
+                  isLiked: false
+                }
+              } else {
+                return {
+                  ...post,
+                  dislikeCount: post.dislikeCount - 1,
+                  isDisliked: false
+                }
+              }
+            }
+            return post
+          })
+        )
+    }
+  })
+
+  // Toggle expand content
+  const handleToggleExpandContent = () => {
+    setIsExpandContent((prevState) => !prevState)
+  }
+
   return (
-    <div className='flex space-x-5 border border-border rounded-xl p-5 group'>
+    <div className='flex space-x-5 border border-border rounded-xl p-5'>
       <div className='flex-shrink-0'>
         {/* Avatar */}
-        <Avatar>
-          <AvatarImage src={postData.author.avatar} alt={postData.author.channelName} />
-          <AvatarFallback>{postData.author.channelName[0].toUpperCase()}</AvatarFallback>
-        </Avatar>
+        <Link href={PATH.PROFILE(postData.author.username)}>
+          <Avatar>
+            <AvatarImage src={postData.author.avatar} alt={postData.author.channelName} />
+            <AvatarFallback>{postData.author.channelName[0].toUpperCase()}</AvatarFallback>
+          </Avatar>
+        </Link>
       </div>
       <div className='flex-1 space-y-2'>
         <div className='flex items-center space-x-2'>
@@ -38,7 +136,20 @@ const PostItem = ({ postData }: PostItemProps) => {
         </div>
         {/* Content */}
         <div className='space-y-2'>
-          <div className='whitespace-pre-line text-sm'>{postData.content}</div>
+          <div className='space-y-3'>
+            <div className='whitespace-pre-line text-sm'>
+              {postData.content.split(' ').length <= MAX_LENGTH_OF_CONTENT
+                ? postData.content
+                : !isExpandContent
+                ? postData.content.split(' ').slice(0, MAX_LENGTH_OF_CONTENT).join(' ') + '...'
+                : postData.content}
+            </div>
+            {postData.content.split(' ').length > MAX_LENGTH_OF_CONTENT && (
+              <Button variant='link' className='p-0 h-auto text-blue-500' onClick={handleToggleExpandContent}>
+                {!isExpandContent ? 'Đọc thêm' : 'Ẩn bớt'}
+              </Button>
+            )}
+          </div>
           {postData.images.length > 0 && (
             <Carousel className='w-[638px]'>
               <CarouselContent>
@@ -58,54 +169,98 @@ const PostItem = ({ postData }: PostItemProps) => {
               <CarouselNext className='-right-5 w-10 h-10' />
             </Carousel>
           )}
-          <div className='flex items-center space-x-4'>
+          <div className='flex items-center space-x-6'>
             {/* Likes and dislikes */}
             <div className='flex items-center space-x-3 -ml-2.5'>
               <div className='flex items-center space-x-0.5'>
-                <Button size='icon' variant='ghost' className='rounded-full'>
-                  <ThumbsUp strokeWidth={1.5} size={16} />
+                <Button
+                  size='icon'
+                  variant='ghost'
+                  className='rounded-full'
+                  onClick={() =>
+                    handleReaction({
+                      contentId: postData._id,
+                      contentType: ReactionContentType.Post,
+                      type: ReactionType.Like,
+                      isLiked: postData.isLiked,
+                      isDisliked: postData.isDisliked
+                    })
+                  }
+                >
+                  <ThumbsUp
+                    strokeWidth={1.5}
+                    size={16}
+                    className={classNames({
+                      'fill-black dark:fill-white': postData.isLiked
+                    })}
+                  />
                 </Button>
                 <span className='text-muted-foreground text-sm'>{postData.likeCount}</span>
               </div>
               <div className='flex items-center space-x-0.5'>
-                <Button size='icon' variant='ghost' className='rounded-full'>
-                  <ThumbsDown strokeWidth={1.5} size={16} />
+                <Button
+                  size='icon'
+                  variant='ghost'
+                  className='rounded-full'
+                  onClick={() =>
+                    handleReaction({
+                      contentId: postData._id,
+                      contentType: ReactionContentType.Post,
+                      type: ReactionType.Dislike,
+                      isLiked: postData.isLiked,
+                      isDisliked: postData.isDisliked
+                    })
+                  }
+                >
+                  <ThumbsDown
+                    strokeWidth={1.5}
+                    size={16}
+                    className={classNames({
+                      'fill-black dark:fill-white': postData.isDisliked
+                    })}
+                  />
                 </Button>
                 <span className='text-muted-foreground text-sm'>{postData.dislikeCount}</span>
               </div>
             </div>
             {/* Comments */}
-            <Button size='icon' variant='ghost' className='rounded-full'>
-              <MessageSquareText strokeWidth={1.5} size={16} />
-            </Button>
+            <div className='flex items-center space-x-0.5'>
+              <Button size='icon' variant='ghost' className='rounded-full'>
+                <MessageSquareText strokeWidth={1.5} size={16} />
+              </Button>
+              <span className='text-muted-foreground text-sm'>{postData.commentCount}</span>
+            </div>
           </div>
         </div>
       </div>
       {/* Actions */}
-      <div>
-        <Tippy
-          interactive
-          placement='bottom-start'
-          trigger='click'
-          offset={[0, 10]}
-          render={() => (
-            <div className='bg-background rounded-xl py-2 border border-border overflow-hidden shadow-lg'>
-              <Button variant='ghost' className='flex justify-start space-x-3 rounded-none w-full'>
+      <Popover>
+        <PopoverTrigger asChild>
+          <Button size='icon' variant='ghost' className='rounded-full'>
+            <MoreVertical strokeWidth={1.5} size={18} />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align='start' className='px-0 py-2 w-auto rounded-xl'>
+          {account?._id === postData.author._id && (
+            <Fragment>
+              <Button variant='ghost' className='flex justify-start space-x-3 rounded-none w-full pr-10'>
                 <Pencil strokeWidth={1.5} size={18} />
                 <span>Chỉnh sửa</span>
               </Button>
-              <Button variant='ghost' className='flex justify-start space-x-3 rounded-none w-full'>
+              <Button variant='ghost' className='flex justify-start space-x-3 rounded-none w-full pr-10'>
                 <Trash strokeWidth={1.5} size={18} />
                 <span>Xóa</span>
               </Button>
-            </div>
+            </Fragment>
           )}
-        >
-          <Button size='icon' variant='ghost' className='rounded-full opacity-0 group-hover:opacity-100'>
-            <MoreVertical strokeWidth={1.5} size={18} />
-          </Button>
-        </Tippy>
-      </div>
+          {account?._id !== postData.author._id && (
+            <Button variant='ghost' className='flex justify-start space-x-3 rounded-none w-full pr-10'>
+              <Flag strokeWidth={1.5} size={18} />
+              <span>Báo vi phạm</span>
+            </Button>
+          )}
+        </PopoverContent>
+      </Popover>
     </div>
   )
 }

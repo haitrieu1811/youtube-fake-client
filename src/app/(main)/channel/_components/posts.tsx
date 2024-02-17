@@ -1,7 +1,7 @@
 'use client'
 
 import { useInfiniteQuery } from '@tanstack/react-query'
-import { useContext, useEffect, useState } from 'react'
+import { Fragment, useContext, useEffect, useState } from 'react'
 import InfiniteScroll from 'react-infinite-scroll-component'
 
 import postApis from '@/apis/post.apis'
@@ -53,7 +53,7 @@ const ChannelPosts = () => {
   }, [getPostsByAccountIdQuery.data, getMyPostsQuery.data])
 
   return (
-    <div>
+    <Fragment>
       {/* Create a new post */}
       {isMyChannel && <CreatePost />}
       {/* Posts */}
@@ -67,11 +67,11 @@ const ChannelPosts = () => {
           className='space-y-5'
         >
           {posts.map((post) => (
-            <PostItem key={post._id} postData={post} />
+            <PostItem key={post._id} postData={post} setPosts={setPosts} />
           ))}
         </InfiniteScroll>
       </div>
-    </div>
+    </Fragment>
   )
 }
 

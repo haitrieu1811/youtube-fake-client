@@ -31,6 +31,7 @@ export type PostItemType = {
   dislikeCount: number
   isLiked: boolean
   isDisliked: boolean
+  commentCount: number
   createdAt: string
   updatedAt: string
 }

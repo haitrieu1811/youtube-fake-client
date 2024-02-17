@@ -95,7 +95,7 @@ const MainSidebar = () => {
                 asChild
               >
                 <Link href={item.href}>
-                  <item.icon size={16} strokeWidth={1.5} />
+                  <item.icon size={18} strokeWidth={1.5} />
                   <span>{item.text}</span>
                 </Link>
               </Button>
@@ -119,7 +119,7 @@ const MainSidebar = () => {
                   asChild
                 >
                   <Link href={item.href}>
-                    <item.icon size={16} strokeWidth={1.5} />
+                    <item.icon size={18} strokeWidth={1.5} />
                     <span>{item.text}</span>
                   </Link>
                 </Button>
