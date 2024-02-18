@@ -67,7 +67,7 @@ const MainHeader = () => {
           <Button variant='ghost' size='icon' className='rounded-full w-10 h-10'>
             <Bell size={20} />
           </Button>
-          <Badge className='p-0 h-5 px-0.5 rounded-sm flex items-center justify-center absolute top-0 right-0 bg-red-500 hover:bg-red-500 text-white'>
+          <Badge className='p-0 h-5 px-0.5 rounded-full flex items-center justify-center absolute top-0 right-0 bg-red-500 hover:bg-red-500 text-white'>
             9+
           </Badge>
         </div>

@@ -43,6 +43,12 @@ export type CreatePostReqBody = {
   images?: string[]
 }
 
+// Request: Update a post
+export type UpdatePostReqBody = {
+  content?: string
+  audience?: PostAudience
+}
+
 // Response: Create a new post
 export type CreatePostReponse = SuccessResponse<{
   post: OriginalPostType
