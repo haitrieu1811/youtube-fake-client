@@ -7,6 +7,8 @@ import videoApis from '@/apis/video.apis'
 import DataTable from '@/components/data-table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { columns as videoColumns } from '../_columns/video-columns'
+import { columns as postColumns } from '../_columns/post-columns'
+import postApis from '@/apis/post.apis'
 
 const ContentClient = () => {
   const queryClient = useQueryClient()
@@ -19,6 +21,15 @@ const ContentClient = () => {
 
   // Videos
   const videos = useMemo(() => getVideosQuery.data?.data.data.videos || [], [getVideosQuery.data?.data.data.videos])
+
+  // Query: Get posts
+  const getMyPostsQuery = useQuery({
+    queryKey: ['getMyPosts'],
+    queryFn: () => postApis.getMyPosts()
+  })
+
+  // posts
+  const posts = useMemo(() => getMyPostsQuery.data?.data.data.posts || [], [getMyPostsQuery.data?.data.data.posts])
 
   // Mutation: Delete videos
   const deleteVideosMutation = useMutation({
@@ -47,7 +58,9 @@ const ContentClient = () => {
               onDeleteMany={(checkedIds) => deleteVideosMutation.mutate(checkedIds)}
             />
           </TabsContent>
-          <TabsContent value='post'>Change your password here.</TabsContent>
+          <TabsContent value='post' className='py-6'>
+            <DataTable columns={postColumns} data={posts} searchField='content' />
+          </TabsContent>
           <TabsContent value='playlist'>Change your password here.</TabsContent>
         </Tabs>
       </div>
