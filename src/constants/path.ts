@@ -6,6 +6,7 @@ const PATH = {
   COMMUNITY: '/community',
   SUBSCRIPTIONS: '/subscriptions',
   UPLOAD_VIDEO: '/upload-video',
+  CREATE_PLAYLIST: '/create-playlist',
   RESULTS: '/results',
   HISTORY: '/history',
   LIKED: '/liked',

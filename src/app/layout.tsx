@@ -22,9 +22,10 @@ export const metadata: Metadata = {
 type RootLayoutProps = {
   children: React.ReactNode
   uploadVideo: React.ReactNode
+  createPlaylist: React.ReactNode
 }
 
-const RootLayout = ({ children, uploadVideo }: RootLayoutProps) => {
+const RootLayout = ({ children, uploadVideo, createPlaylist }: RootLayoutProps) => {
   return (
     <html lang='en' suppressHydrationWarning>
       <body className={fontSans.className}>
@@ -34,6 +35,7 @@ const RootLayout = ({ children, uploadVideo }: RootLayoutProps) => {
               <WatchProvider>
                 {children}
                 {uploadVideo}
+                {createPlaylist}
                 <Toaster toastOptions={{ className: 'text-[15px]' }} />
                 <NextTopLoader color='red' height={2} showSpinner={false} shadow={false} />
               </WatchProvider>
