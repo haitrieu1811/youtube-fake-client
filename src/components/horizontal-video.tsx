@@ -59,7 +59,7 @@ const HorizontalVideo = ({
                   <AvatarFallback>{videoData.author.channelName[0].toUpperCase()}</AvatarFallback>
                 </Avatar>
                 <span className='text-xs text-muted-foreground'>{videoData.author.channelName}</span>
-                <CheckCircle2 className='w-[14px] h-[14px] fill-blue-500 stroke-background' />
+                <CheckCircle2 className='w-4 h-4 fill-muted-foreground stroke-background' />
               </Link>
               <div className='text-xs text-muted-foreground line-clamp-2'>{videoData.description}</div>
             </div>

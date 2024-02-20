@@ -72,7 +72,7 @@ const UploadVideo = () => {
               </div>
             </div>
             <InputFile maxFileSize={50 * 1024 * 1024} accept='.mp4' onChange={(files) => handleChangeVideoFile(files)}>
-              <Button className='uppercase'>Chọn tệp</Button>
+              <Button className='uppercase rounded-sm bg-blue-500 hover:bg-blue-600'>Chọn tệp</Button>
             </InputFile>
           </div>
         )}

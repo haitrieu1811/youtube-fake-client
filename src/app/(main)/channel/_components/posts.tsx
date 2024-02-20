@@ -32,7 +32,7 @@ const ChannelPosts = () => {
   const getMyPostsQuery = useInfiniteQuery({
     queryKey: ['getMyPosts'],
     initialPageParam: 1,
-    queryFn: ({ pageParam }) => postApis.getMyPosts({ page: String(pageParam), limit: '5' }),
+    queryFn: ({ pageParam }) => postApis.getMyPosts({ page: String(pageParam), limit: '10' }),
     getNextPageParam: (lastPage) =>
       lastPage.data.data.pagination.page < lastPage.data.data.pagination.totalPages
         ? lastPage.data.data.pagination.page + 1
@@ -51,6 +51,8 @@ const ChannelPosts = () => {
     }
     setPosts(fetchedPosts)
   }, [getPostsByAccountIdQuery.data, getMyPostsQuery.data])
+
+  console.log('>>> posts', posts)
 
   return (
     <Fragment>

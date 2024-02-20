@@ -30,7 +30,7 @@ const Playlist = ({ playlistId, videos, totalVideo, currentIdName, currentVideoI
   const { isClient } = useIsClient()
   const listVideosRef = useRef<HTMLDivElement>(null)
 
-  // Ẩn hiện playlist
+  // Handle toggle playlist
   const handleToggle = () => {
     setIsOpenPlaylist((prevState) => !prevState)
   }
@@ -123,7 +123,7 @@ const Playlist = ({ playlistId, videos, totalVideo, currentIdName, currentVideoI
               <X strokeWidth={1.5} />
             </Button>
           </div>
-          {/* Danh sách video */}
+          {/* Videos */}
           <div className='max-h-[400px] overflow-y-auto'>
             {videos.map((video, index) => {
               const isActive = video.idName === currentIdName
@@ -170,7 +170,11 @@ const Playlist = ({ playlistId, videos, totalVideo, currentIdName, currentVideoI
                           {video.author.channelName}
                         </Link>
                         {video.author.tick && (
-                          <CheckCircle2 size={12} strokeWidth={1.5} className='fill-blue-500 stroke-background' />
+                          <CheckCircle2
+                            size={12}
+                            strokeWidth={1.5}
+                            className='fill-muted-foreground stroke-background'
+                          />
                         )}
                       </div>
                     </div>

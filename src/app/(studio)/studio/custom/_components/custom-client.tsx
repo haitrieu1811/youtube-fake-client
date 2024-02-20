@@ -34,16 +34,16 @@ const CustomClient = () => {
     }
   })
 
-  // Query: Thông tin kênh của tôi
+  // Query: Get channel info
   const getMeQuery = useQuery({
     queryKey: ['getMe'],
     queryFn: () => accountApis.getMe()
   })
 
-  // Thông tin kênh của tôi
+  // Channel info
   const me = useMemo(() => getMeQuery.data?.data.data.me, [getMeQuery.data?.data.data.me])
 
-  // Mutation: Cập nhật thông tin kênh
+  // Mutation: Update channel
   const updateMeMutation = useMutation({
     mutationKey: ['updateMe'],
     mutationFn: accountApis.updateMe,
@@ -68,7 +68,7 @@ const CustomClient = () => {
     }
   })
 
-  // Đặt giá trị cho form khi có thông tin kênh
+  // Set form
   useEffect(() => {
     if (!me) return
     form.setValue('channelName', me.channelName)
@@ -81,10 +81,7 @@ const CustomClient = () => {
     if (!me) return
     const omitFields: string[] = []
     Object.keys(data).forEach((key) => {
-      // Nếu giá trị của form hiện tại không thay đổi so với giá trị cũ thì không gửi lên server
-      if (data[key as keyof UpdateMeSchema] === me[key as keyof UpdateMeSchema]) {
-        omitFields.push(key)
-      }
+      if (data[key as keyof UpdateMeSchema] === me[key as keyof UpdateMeSchema]) omitFields.push(key)
     })
     updateMeMutation.mutate(omit(data, omitFields))
   })
@@ -100,10 +97,10 @@ const CustomClient = () => {
   return (
     <div className='p-6'>
       <h1 className='text-[25px] font-medium tracking-tight mb-6'>Tùy chỉnh kênh</h1>
-      <Tabs defaultValue='basicInfo'>
+      <Tabs defaultValue='branding'>
         <TabsList>
-          <TabsTrigger value='basicInfo'>Thông tin cơ bản</TabsTrigger>
           <TabsTrigger value='branding'>Xây dựng thương hiệu</TabsTrigger>
+          <TabsTrigger value='basicInfo'>Thông tin cơ bản</TabsTrigger>
         </TabsList>
         <TabsContent value='basicInfo' className='w-2/3 py-6'>
           {me && (
@@ -166,10 +163,14 @@ const CustomClient = () => {
                 />
                 {/* Submit */}
                 <div className='flex items-center space-x-2'>
-                  <Button type='button' variant='outline' onClick={handleCancel}>
+                  <Button type='button' variant='ghost' className='uppercase' onClick={handleCancel}>
                     Hủy bỏ
                   </Button>
-                  <Button type='submit' disabled={updateMeMutation.isPending}>
+                  <Button
+                    type='submit'
+                    disabled={updateMeMutation.isPending}
+                    className='rounded-sm bg-blue-500 hover:bg-blue-600 uppercase'
+                  >
                     {updateMeMutation.isPending && <Loader2 className='w-4 h-4 mr-3 animate-spin' />}
                     Xuất bản
                   </Button>

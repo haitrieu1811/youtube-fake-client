@@ -68,3 +68,8 @@ export const randomIntegerExcludingArray = (n: number, excludedArray: number[]) 
   } while (excludedArray.includes(randomNum))
   return randomNum
 }
+
+// Number enum to array
+export const numberEnumToArray = (numberEnum: { [key: string]: string | number }) => {
+  return Object.values(numberEnum).filter((item) => typeof item === 'number') as number[]
+}

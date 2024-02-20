@@ -1,17 +1,16 @@
 'use client'
 
-import { ListPlus, PenSquare, PlaySquare, PlusSquare, Youtube } from 'lucide-react'
+import { PlusSquare, Youtube } from 'lucide-react'
 import Link from 'next/link'
 import { useContext } from 'react'
 
 import PATH from '@/constants/path'
+import useIsClient from '@/hooks/useIsClient'
 import { AppContext } from '@/providers/app-provider'
-import { AccountType } from '@/types/account.types'
 import AccountDropdown from './account-dropdown'
+import CreateContent from './create-content'
 import StudioHeaderSearch from './studio-header-search'
 import { Button } from './ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
-import useIsClient from '@/hooks/useIsClient'
 import { Skeleton } from './ui/skeleton'
 
 const StudioHeader = () => {
@@ -30,30 +29,12 @@ const StudioHeader = () => {
       <StudioHeaderSearch />
       <div className='flex items-center'>
         {/* Create button */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='outline' className='mr-5 space-x-3 rounded-sm'>
-              <PlusSquare size={20} className='stroke-red-500 dark:stroke-red-400' />
-              <span className='uppercase'>Tạo</span>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end' className='px-0 py-2'>
-            <DropdownMenuItem className='space-x-3 pr-10 pl-5 py-2 cursor-pointer' asChild>
-              <Link href={PATH.UPLOAD_VIDEO}>
-                <PlaySquare size={20} strokeWidth={1.5} />
-                <span>Tải video lên</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem className='space-x-3 pr-10 pl-5 py-2 cursor-pointer'>
-              <PenSquare size={20} strokeWidth={1.5} />
-              <span>Tạo bài viết</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem className='space-x-3 pr-10 pl-5 py-2 cursor-pointer'>
-              <ListPlus size={20} strokeWidth={1.5} />
-              <span>Danh sách phát mới</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <CreateContent>
+          <Button variant='outline' className='mr-5 space-x-3 rounded-sm'>
+            <PlusSquare size={20} className='stroke-red-500 dark:stroke-red-400' />
+            <span className='uppercase'>Tạo</span>
+          </Button>
+        </CreateContent>
         {/* Hiển thị account dropdown khi đã đăng nhập */}
         {isClientWithAccount && <AccountDropdown accountData={account} />}
         {!isClientWithAccount && <Skeleton className='w-8 h-8 rounded-full' />}

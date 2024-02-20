@@ -1,6 +1,6 @@
 'use client'
 
-import { Bell, ListPlus, Menu, PenSquare, PlaySquare, PlusSquare, UserCircle, Youtube } from 'lucide-react'
+import { Bell, Menu, PlusSquare, UserCircle, Youtube } from 'lucide-react'
 import Link from 'next/link'
 import { useContext } from 'react'
 
@@ -8,10 +8,10 @@ import PATH from '@/constants/path'
 import useIsClient from '@/hooks/useIsClient'
 import { AppContext } from '@/providers/app-provider'
 import AccountDropdown from './account-dropdown'
+import CreateContent from './create-content'
 import MainHeaderSearch from './main-header-search'
 import { Badge } from './ui/badge'
 import { Button } from './ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from './ui/dropdown-menu'
 
 const MainHeader = () => {
   const { isAuthenticated, account, setIsShowSidebar } = useContext(AppContext)
@@ -32,36 +32,11 @@ const MainHeader = () => {
       <MainHeaderSearch />
       <div className='flex items-center'>
         {/* Create button */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='ghost' size='icon' className='rounded-full mr-4 w-10 h-10'>
-              <PlusSquare size={20} />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end' className='px-0 py-2'>
-            <DropdownMenuItem className='space-x-3 pr-10 pl-5 py-2 cursor-pointer' asChild>
-              <Link href={PATH.UPLOAD_VIDEO}>
-                <PlaySquare size={20} strokeWidth={1.5} />
-                <span>Tải video lên</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem className='space-x-3 pr-10 pl-5 py-2 cursor-pointer' asChild>
-              <Link
-                href={{
-                  pathname: PATH.CHANNEL,
-                  query: { tab: 'community' }
-                }}
-              >
-                <PenSquare size={20} strokeWidth={1.5} />
-                <span>Tạo bài viết</span>
-              </Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem className='space-x-3 pr-10 pl-5 py-2 cursor-pointer'>
-              <ListPlus size={20} strokeWidth={1.5} />
-              <span>Danh sách phát mới</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <CreateContent>
+          <Button variant='ghost' size='icon' className='rounded-full mr-4 w-10 h-10'>
+            <PlusSquare size={20} />
+          </Button>
+        </CreateContent>
         {/* Notification */}
         <div className='mr-4 relative'>
           <Button variant='ghost' size='icon' className='rounded-full w-10 h-10'>

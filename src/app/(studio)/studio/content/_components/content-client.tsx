@@ -2,13 +2,14 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo } from 'react'
+import toast from 'react-hot-toast'
 
+import postApis from '@/apis/post.apis'
 import videoApis from '@/apis/video.apis'
 import DataTable from '@/components/data-table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { columns as videoColumns } from '../_columns/video-columns'
 import { columns as postColumns } from '../_columns/post-columns'
-import postApis from '@/apis/post.apis'
+import { columns as videoColumns } from '../_columns/video-columns'
 
 const ContentClient = () => {
   const queryClient = useQueryClient()
@@ -40,6 +41,16 @@ const ContentClient = () => {
     }
   })
 
+  // Mutation: Delete posts
+  const deletePostsMutation = useMutation({
+    mutationKey: ['deletePosts'],
+    mutationFn: postApis.delete,
+    onSuccess: () => {
+      toast.success('Xóa bài viết thành công')
+      queryClient.invalidateQueries({ queryKey: ['getMyPosts'] })
+    }
+  })
+
   return (
     <div className='p-6'>
       <h1 className='text-[25px] tracking-tight font-medium mb-10'>Nội dung của kênh</h1>
@@ -59,7 +70,12 @@ const ContentClient = () => {
             />
           </TabsContent>
           <TabsContent value='post' className='py-6'>
-            <DataTable columns={postColumns} data={posts} searchField='content' />
+            <DataTable
+              columns={postColumns}
+              data={posts}
+              searchField='content'
+              onDeleteMany={(checkedIds) => deletePostsMutation.mutate(checkedIds)}
+            />
           </TabsContent>
           <TabsContent value='playlist'>Change your password here.</TabsContent>
         </Tabs>

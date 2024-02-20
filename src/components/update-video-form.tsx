@@ -3,16 +3,15 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { CaretSortIcon, CheckIcon } from '@radix-ui/react-icons'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CheckCircle2, Globe2, ImagePlus, Loader2, Lock } from 'lucide-react'
-import Image from 'next/image'
-import { useRouter } from 'next/navigation'
-import { Fragment, useEffect, useMemo, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import toast from 'react-hot-toast'
 import { MediaPlayer, MediaProvider } from '@vidstack/react'
 import { DefaultVideoLayout, defaultLayoutIcons } from '@vidstack/react/player/layouts/default'
 import '@vidstack/react/player/styles/default/layouts/video.css'
 import '@vidstack/react/player/styles/default/theme.css'
+import { CheckCircle2, Globe2, ImagePlus, Loader2, Lock } from 'lucide-react'
+import Image from 'next/image'
+import { Fragment, useEffect, useMemo, useState } from 'react'
+import { useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 
 import mediaApis from '@/apis/media.apis'
 import videoApis from '@/apis/video.apis'
@@ -24,7 +23,7 @@ import { Input } from '@/components/ui/input'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { EncodingStatus, VideoAudience, VideoStatus } from '@/constants/enum'
+import { EncodingStatus, VideoAudience } from '@/constants/enum'
 import useVideoCategories from '@/hooks/useVideoCategories'
 import useVideoStatus from '@/hooks/useVideoStatus'
 import { cn } from '@/lib/utils'
@@ -37,7 +36,6 @@ type UpdateVideoFormProps = {
 
 const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
   const queryClient = useQueryClient()
-  const router = useRouter()
   const [isUploadSucceed, setIsUploadSucceed] = useState<boolean>(false)
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
   const thumbnailPreview = useMemo(() => (thumbnailFile ? URL.createObjectURL(thumbnailFile) : ''), [thumbnailFile])
@@ -154,8 +152,8 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
           {/* Thumbnail */}
           {videoInfo && !getVideoDetailQuery.isLoading && (thumbnailPreview || videoInfo.thumbnail) && (
             <Image
-              width={200}
-              height={200}
+              width={1000}
+              height={1000}
               src={thumbnailPreview ? thumbnailPreview : videoInfo.thumbnail}
               alt={videoInfo.title}
               className='w-full h-[170px] rounded-lg object-cover'
@@ -170,20 +168,21 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
           )}
           {/* Thumbnail fetching */}
           {getVideoDetailQuery.isLoading && <Skeleton className='w-full h-[170px] rounded-lg' />}
+          {/* Thumbnail actions */}
           <div className='absolute bottom-0 left-0 right-0 px-4 py-2 bg-secondary/20 rounded-b-lg flex justify-end space-x-2'>
             {!thumbnailFile && (
               <InputFile onChange={(files) => handleChangeThumbnailFile(files)}>
-                <Button size='sm' onClick={handleResetThumbnailFile}>
+                <Button size='sm' className='rounded-full' onClick={handleResetThumbnailFile}>
                   Thay đổi
                 </Button>
               </InputFile>
             )}
             {thumbnailFile && (
               <Fragment>
-                <Button size='sm' variant='outline' onClick={handleResetThumbnailFile}>
+                <Button size='sm' variant='outline' className='rounded-full' onClick={handleResetThumbnailFile}>
                   Hủy bỏ
                 </Button>
-                <Button size='sm' disabled={isUpdating} onClick={handleSaveThumbnailImage}>
+                <Button size='sm' disabled={isUpdating} className='rounded-full' onClick={handleSaveThumbnailImage}>
                   {isUpdating && <Loader2 className='w-3 h-3 mr-2 animate-spin' />}
                   Lưu lại
                 </Button>
@@ -318,7 +317,7 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Người xem</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger className='w-[200px] text-muted-foreground'>
                         <SelectValue placeholder='Chọn người xem' />
@@ -345,7 +344,7 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
               )}
             />
             {/* Submit */}
-            <Button disabled={isUpdating}>
+            <Button disabled={isUpdating} className='rounded-sm uppercase bg-blue-500 hover:bg-blue-600'>
               {isUpdating && <Loader2 className='w-4 h-4 mr-3 animate-spin' />}
               Lưu lại
             </Button>

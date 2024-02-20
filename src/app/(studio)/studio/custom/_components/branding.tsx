@@ -29,43 +29,44 @@ const Branding = ({ infoMe }: BradingProps) => {
   const avatarPreview = useMemo(() => (avatarFile ? URL.createObjectURL(avatarFile) : null), [avatarFile])
   const coverPreview = useMemo(() => (coverFile ? URL.createObjectURL(coverFile) : null), [coverFile])
 
-  // Mutation: Upload ảnh
+  // Mutation: Upload images
   const uploadImagesMutation = useMutation({
     mutationKey: ['uploadImages'],
     mutationFn: mediaApis.uploadImage
   })
 
-  // Mutation: Cập nhật tài khoản
+  // Mutation: Update info me
   const updateMeMutation = useMutation({
     mutationKey: ['updateMe'],
     mutationFn: accountApis.updateMe
   })
 
+  // Is updating
   const isUpdating = uploadImagesMutation.isPending || updateMeMutation.isPending
 
-  // Thay đổi avatar
+  // Change avatar
   const handleChangeAvatarFile = (files: File[] | undefined) => {
     if (!files) return
     setAvatarFile(files[0])
   }
 
-  // Hủy avatar
+  // Cancel avatar
   const handleCancelAvatarFile = () => {
     setAvatarFile(null)
   }
 
-  // Thay đổi ảnh bìa
+  // Change cover image
   const handleChangeCoverFile = (files: File[] | undefined) => {
     if (!files) return
     setCoverFile(files[0])
   }
 
-  // Hủy ảnh bìa
+  // Cancel cover image
   const handleCancelCoverFile = () => {
     setCoverFile(null)
   }
 
-  // Lưu avatar, ảnh bìa
+  // Save avatar, cover image
   const handleSaveImage = async ({ file, field }: { file: File; field: 'avatar' | 'cover' }) => {
     try {
       const form = new FormData()
@@ -89,7 +90,7 @@ const Branding = ({ infoMe }: BradingProps) => {
     }
   }
 
-  // Xóa avatar, ảnh bìa
+  // Delete avatar, cover image
   const handleDeleteImage = (field: 'avatar' | 'cover') => {
     updateMeMutation.mutate(
       {
@@ -108,7 +109,7 @@ const Branding = ({ infoMe }: BradingProps) => {
 
   return (
     <Fragment>
-      {/* Ảnh đại diện */}
+      {/* Avatar */}
       <div className='space-y-1'>
         <h4 className='text-[15px] font-medium'>Ảnh</h4>
         <div className='text-[13px] text-muted-foreground'>
@@ -165,7 +166,7 @@ const Branding = ({ infoMe }: BradingProps) => {
           </div>
         )}
       </div>
-      {/* Ảnh bìa */}
+      {/* Cover image */}
       <div className='space-y-1'>
         <h4 className='text-[15px] font-medium'>Hình ảnh biểu ngữ</h4>
         <div className='text-[13px] text-muted-foreground'>Hình ảnh này sẽ xuất hiện ở phần đầu kênh của bạn</div>
@@ -174,8 +175,8 @@ const Branding = ({ infoMe }: BradingProps) => {
             <div className='flex-shrink-0 w-[290px] h-[160px] rounded-sm bg-border flex justify-center items-center relative'>
               {(coverPreview || !!infoMe.cover) && (
                 <Image
-                  width={140}
-                  height={140}
+                  width={1000}
+                  height={1000}
                   src={coverPreview || infoMe.cover}
                   alt={infoMe.channelName}
                   className='w-full h-2/3 object-cover'

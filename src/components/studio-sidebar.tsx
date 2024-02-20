@@ -101,13 +101,13 @@ const StudioSidebar = () => {
                 <link.icon
                   size={20}
                   className={classNames({
-                    'stroke-red-600': isActive
+                    'stroke-red-500': isActive
                   })}
                 />
                 <span
                   className={classNames({
                     'text-[13px]': true,
-                    'text-red-600 font-semibold': isActive
+                    'text-red-500 font-semibold': isActive
                   })}
                 >
                   {link.text}

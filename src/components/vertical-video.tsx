@@ -42,12 +42,12 @@ const VerticalVideo = ({ videoData }: VerticalVideoProps) => {
               <Link href={PATH.WATCH(videoData.idName)} className='font-medium line-clamp-2'>
                 {videoData.title}
               </Link>
-              <div className='flex items-center space-x-2'>
+              <div className='flex items-center space-x-1.5'>
                 <Link href={PATH.PROFILE(videoData.author.username)} className='text-sm text-muted-foreground'>
                   {videoData.author.channelName}
                 </Link>
                 {videoData.author.tick && (
-                  <CheckCircle2 className='w-[14px] h-[14px] fill-blue-500 stroke-white dark:stroke-black' />
+                  <CheckCircle2 className='w-4 h-4 fill-muted-foreground stroke-white dark:stroke-black' />
                 )}
               </div>
             </div>

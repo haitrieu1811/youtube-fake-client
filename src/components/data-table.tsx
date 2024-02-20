@@ -99,8 +99,10 @@ export default function DataTable<TData, TValue>({
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Hủy bỏ</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDeleteMany}>Tiếp tục</AlertDialogAction>
+              <AlertDialogCancel className='rounded-full'>Hủy bỏ</AlertDialogCancel>
+              <AlertDialogAction className='rounded-full' onClick={handleDeleteMany}>
+                Tiếp tục
+              </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>

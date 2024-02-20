@@ -21,7 +21,6 @@ const LIMIT_CHANNELS_SUBSCRIBED_FOR_ME = 3
 const StudioClient = () => {
   const { accountsSubscribedToMe, accountsSubscribedToMeCount, getAccountsSubscribedToMeQuery } =
     useAccountsSubscribedToMe()
-
   return (
     <div className='bg-muted'>
       <div className='p-6'>
@@ -34,7 +33,7 @@ const StudioClient = () => {
                 <div>Bạn có muốn xem các chỉ số cho video gần đây của mình không?</div>
                 <div>Hãy đăng tải và xuất bản một video để bắt đầu.</div>
               </div>
-              <Button className='uppercase' asChild>
+              <Button className='uppercase rounded-sm bg-blue-500 hover:bg-blue-600' asChild>
                 <Link href={PATH.UPLOAD_VIDEO}>Tải video lên</Link>
               </Button>
             </div>
@@ -66,7 +65,10 @@ const StudioClient = () => {
                     .map((_, index) => <Skeleton key={index} className='w-3/4 h-10' />)}
               </div>
               {accountsSubscribedToMeCount < LIMIT_CHANNELS_SUBSCRIBED_FOR_ME && (
-                <Link href={PATH.STUDIO_SUBSCRIPTIONS} className='uppercase font-medium text-sm inline-block'>
+                <Link
+                  href={PATH.STUDIO_SUBSCRIPTIONS}
+                  className='uppercase font-medium text-sm inline-block text-blue-500 hover:text-blue-600'
+                >
                   Xem tất cả
                 </Link>
               )}

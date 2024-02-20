@@ -1,11 +1,25 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ColumnDef } from '@tanstack/react-table'
 import { Globe2, Lock, Pencil, Trash } from 'lucide-react'
 import moment from 'moment'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Fragment } from 'react'
+import toast from 'react-hot-toast'
 
+import postApis from '@/apis/post.apis'
 import DataTableColumnHeader from '@/components/data-table-column-header'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { PostAudience } from '@/constants/enum'
@@ -42,15 +56,41 @@ export const columns: ColumnDef<PostItemType>[] = [
     ),
     cell: ({ row }) => {
       const post = row.original
+      const queryClient = useQueryClient()
+
+      // Mutation: Delete posts
+      const deletePostsMutation = useMutation({
+        mutationKey: ['deletePosts'],
+        mutationFn: postApis.delete,
+        onSuccess: () => {
+          toast.success('Xóa bài viết thành công')
+          queryClient.invalidateQueries({ queryKey: ['getMyPosts'] })
+        }
+      })
+
+      // Handle delete posts
+      const handleDelete = () => {
+        deletePostsMutation.mutate([post._id])
+      }
+
       return (
         <div className='flex items-start space-x-4 group'>
-          <Image
-            width={200}
-            height={200}
-            src={post.images[0]}
-            alt={post.content}
-            className='w-[120px] h-[68px] rounded-[2px] object-cover flex-shrink-0'
-          />
+          {/* Thumbnail */}
+          {post.images.length > 0 && (
+            <Image
+              width={200}
+              height={200}
+              src={post.images[0]}
+              alt={post.content}
+              className='w-[120px] h-[68px] rounded-[2px] object-cover flex-shrink-0'
+            />
+          )}
+          {/* Thumbnail fallback */}
+          {post.images.length === 0 && (
+            <div className='w-[120px] h-[68px] rounded-[2px] flex-shrink-0 bg-muted text-xl font-medium flex justify-center items-center'>
+              Aa
+            </div>
+          )}
           <div className='space-y-1'>
             <span className='line-clamp-1'>{post.content}</span>
             <div className='flex items-center space-x-1 opacity-0 group-hover:opacity-100'>
@@ -59,9 +99,27 @@ export const columns: ColumnDef<PostItemType>[] = [
                   <Pencil size={16} strokeWidth={1.5} className='text-muted-foreground' />
                 </Link>
               </Button>
-              <Button variant='ghost' size='icon' className='rounded-full'>
-                <Trash size={16} strokeWidth={1.5} className='text-muted-foreground' />
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant='ghost' size='icon' className='rounded-full'>
+                    <Trash size={16} strokeWidth={1.5} className='text-muted-foreground' />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Bạn muốn xóa bài đăng này vĩnh viễn?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Bài đăng sẽ bị xóa vĩnh viễn và không thể khôi phục.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel className='rounded-full'>Hủy</AlertDialogCancel>
+                    <AlertDialogAction className='rounded-full' onClick={handleDelete}>
+                      Xóa vĩnh viễn
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         </div>
