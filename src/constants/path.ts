@@ -20,7 +20,8 @@ const PATH = {
   STUDIO_CUSTOM: '/studio/custom',
   STUDIO_SUBSCRIPTIONS: '/studio/subscription',
   STUDIO_CONTENT_VIDEO: (videoId: string) => `/studio/content/video/${videoId}`,
-  STUDIO_CONTENT_POST: (postId: string) => `/studio/content/post/${postId}`
+  STUDIO_CONTENT_POST: (postId: string) => `/studio/content/post/${postId}`,
+  STUDIO_CONTENT_PLAYLIST: (playlistId: string) => `/studio/content/playlist/${playlistId}`
 } as const
 
 export default PATH

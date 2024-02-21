@@ -78,11 +78,13 @@ export const columns: ColumnDef<VideoItemType>[] = [
         <TooltipProvider>
           <div className='flex ml-4 group'>
             <div className='flex-shrink-0 relative'>
+              {/* Thumbnail fallback */}
               {!video.thumbnail && (
                 <div className='flex justify-center items-center flex-col w-[120px] h-[68px] rounded-[2px] bg-muted'>
                   <span className='text-xs text-muted-foreground text-center px-4'>Chưa tải hình thu nhỏ</span>
                 </div>
               )}
+              {/* Thumbnail */}
               {!!video.thumbnail && (
                 <Image
                   width={200}

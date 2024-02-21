@@ -8,10 +8,10 @@ import toast from 'react-hot-toast'
 
 import mediaApis from '@/apis/media.apis'
 import videoApis from '@/apis/video.apis'
+import CreateVideoForm from '@/components/create-video-form'
 import InputFile from '@/components/input-file'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import UpdateVideoForm from '@/components/update-video-form'
 
 const UploadVideo = () => {
   const router = useRouter()
@@ -77,7 +77,7 @@ const UploadVideo = () => {
           </div>
         )}
         {/* Update video form */}
-        {createdVideoId && <UpdateVideoForm videoId={createdVideoId} />}
+        {createdVideoId && <CreateVideoForm videoId={createdVideoId} />}
       </DialogContent>
     </Dialog>
   )

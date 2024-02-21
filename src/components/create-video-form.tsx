@@ -34,7 +34,7 @@ type UpdateVideoFormProps = {
   videoId: string
 }
 
-const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
+const CreateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
   const queryClient = useQueryClient()
   const [isUploadSucceed, setIsUploadSucceed] = useState<boolean>(false)
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
@@ -355,4 +355,4 @@ const UpdateVideoForm = ({ videoId }: UpdateVideoFormProps) => {
   )
 }
 
-export default UpdateVideoForm
+export default CreateVideoForm

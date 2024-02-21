@@ -1,7 +1,7 @@
 import { Metadata } from 'next'
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import UpdateVideoForm from '@/components/update-video-form'
+import CreateVideoForm from '@/components/create-video-form'
 import Comments from './_components/comments'
 
 export const metadata: Metadata = {
@@ -26,7 +26,7 @@ const StudioVideo = ({ params }: VideoDetailProps) => {
           <TabsTrigger value='comments'>Bình luận</TabsTrigger>
         </TabsList>
         <TabsContent value='detail'>
-          <UpdateVideoForm videoId={id} />
+          <CreateVideoForm videoId={id} />
         </TabsContent>
         <TabsContent value='comments'>
           <Comments videoId={id} />
