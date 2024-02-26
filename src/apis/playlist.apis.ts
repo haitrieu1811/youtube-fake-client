@@ -8,7 +8,7 @@ import {
   UpdatePlaylistReqBody,
   UpdatePlaylistResponse
 } from '@/types/playlist.types'
-import { PaginationReqQuery } from '@/types/utils.types'
+import { OnlyMessageResponse, PaginationReqQuery } from '@/types/utils.types'
 
 const playlistApis = {
   // Create new playlist
@@ -34,6 +34,16 @@ const playlistApis = {
   // Get videos from playlist
   getVideosFromPlaylist(playlistId: string) {
     return http.get<GetVideosFromPlaylistResponse>(`/playlists/${playlistId}/videos`)
+  },
+
+  // Delete playlist
+  deletePlaylist(playlistId: string) {
+    return http.delete<OnlyMessageResponse>(`/playlists/${playlistId}`)
+  },
+
+  // Remove video from playlist
+  removeVideoFromPlaylist({ playlistId, videoId }: { playlistId: string; videoId: string }) {
+    return http.delete<OnlyMessageResponse>(`/playlists/${playlistId}/remove-from-playlist/video/${videoId}`)
   }
 }
 

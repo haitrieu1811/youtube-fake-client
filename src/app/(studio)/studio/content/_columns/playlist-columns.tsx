@@ -1,10 +1,13 @@
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Globe2, ListVideo, Lock, Pencil, Trash, VideoOff } from 'lucide-react'
 import moment from 'moment'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Fragment } from 'react'
+import toast from 'react-hot-toast'
 
+import playlistApis from '@/apis/playlist.apis'
 import DataTableColumnHeader from '@/components/data-table-column-header'
 import {
   AlertDialog,
@@ -27,7 +30,19 @@ export const columns: ColumnDef<PlaylistItemType>[] = [
     accessorKey: 'name',
     header: ({ column }) => <DataTableColumnHeader column={column} title='Danh sách phát' />,
     cell: ({ row }) => {
+      const queryClient = useQueryClient()
       const playlist = row.original
+
+      // Mutation: Delete playlist
+      const deletePlaylistMutation = useMutation({
+        mutationKey: ['deletePlaylist'],
+        mutationFn: playlistApis.deletePlaylist,
+        onSuccess: () => {
+          toast.success(`Đã xóa ${playlist.name}`)
+          queryClient.invalidateQueries({ queryKey: ['getMyPlaylists'] })
+        }
+      })
+
       return (
         <div className='flex items-start space-x-4'>
           <div className='flex-shrink-0 relative'>
@@ -58,6 +73,7 @@ export const columns: ColumnDef<PlaylistItemType>[] = [
             <div className='text-muted-foreground text-xs mt-0.5 block group-hover:hidden'>
               {!!playlist.description ? playlist.description : 'Thêm nội dung mô tả'}
             </div>
+            {/* Actions */}
             <div className='hidden group-hover:flex items-center mt-1.5'>
               <Button size='icon' variant='ghost' className='rounded-full' asChild>
                 <Link href={PATH.STUDIO_CONTENT_PLAYLIST(playlist._id)}>
@@ -85,7 +101,12 @@ export const columns: ColumnDef<PlaylistItemType>[] = [
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel className='rounded-full'>Hủy</AlertDialogCancel>
-                    <AlertDialogAction className='rounded-full'>Xóa</AlertDialogAction>
+                    <AlertDialogAction
+                      className='rounded-full'
+                      onClick={() => deletePlaylistMutation.mutate(playlist._id)}
+                    >
+                      Xóa
+                    </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>

@@ -26,6 +26,7 @@ export type PlaylistItemType = {
 // Playlist video type
 export type PlaylistVideoItemType = {
   _id: string
+  playlistId: string
   author: {
     _id: string
     username: string

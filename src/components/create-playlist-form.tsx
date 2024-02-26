@@ -1,7 +1,7 @@
 'use client'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useEffect, useMemo } from 'react'
@@ -23,6 +23,7 @@ type CreatePlaylistFormProps = {
 
 const CreatePlaylistForm = ({ playlistId }: CreatePlaylistFormProps) => {
   const router = useRouter()
+  const queryClient = useQueryClient()
 
   // Form
   const form = useForm<CreatePlaylistSchema>({
@@ -64,6 +65,7 @@ const CreatePlaylistForm = ({ playlistId }: CreatePlaylistFormProps) => {
     onSuccess: () => {
       router.back()
       toast.success('Đã tạo danh sách phát')
+      queryClient.invalidateQueries({ queryKey: ['getMyPlaylists'] })
     }
   })
 
