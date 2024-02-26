@@ -12,7 +12,7 @@ type UseReactionProps = {
 }
 
 const useReaction = ({ onCreateSuccess, onUpdateSuccess, onDeleteSuccess }: UseReactionProps) => {
-  // Mutation: Thêm reaction
+  // Mutation: Create reaction
   const createReactionMutation = useMutation({
     mutationKey: ['createReaction'],
     mutationFn: reactionApis.createReaction,
@@ -21,7 +21,7 @@ const useReaction = ({ onCreateSuccess, onUpdateSuccess, onDeleteSuccess }: UseR
     }
   })
 
-  // Mutation: Cập nhật reaction
+  // Mutation: Update reaction
   const updateReactionMutation = useMutation({
     mutationKey: ['updateReaction'],
     mutationFn: reactionApis.updateReaction,
@@ -30,7 +30,7 @@ const useReaction = ({ onCreateSuccess, onUpdateSuccess, onDeleteSuccess }: UseR
     }
   })
 
-  // Mutation: Xóa reaction
+  // Mutation: Delete reaction
   const deleteReactionMutation = useMutation({
     mutationKey: ['deleteReaction'],
     mutationFn: reactionApis.deleteReaction,

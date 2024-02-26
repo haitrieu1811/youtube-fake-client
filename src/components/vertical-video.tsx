@@ -29,7 +29,7 @@ const VerticalVideo = ({ videoData }: VerticalVideoProps) => {
         )}
         {!videoData.thumbnail && <VideoThumbnailFallback wrapperClassName='h-[180px] rounded-lg' />}
       </Link>
-      <div className='flex space-x-3 group'>
+      <div className='flex space-x-3'>
         <Link href={PATH.PROFILE(videoData.author.username)} className='flex-shrink-0'>
           <Avatar className='w-9 h-9'>
             <AvatarImage src={videoData.author.avatar} className='object-cover' />
@@ -51,7 +51,7 @@ const VerticalVideo = ({ videoData }: VerticalVideoProps) => {
                 )}
               </div>
             </div>
-            <VideoActions className='opacity-0 group-hover:opacity-100' />
+            <VideoActions />
           </div>
           <div className='text-sm text-muted-foreground flex items-center space-x-2'>
             <div>{formatViews(videoData.viewCount)} lượt xem</div>

@@ -41,6 +41,11 @@ const postApis = {
         postIds
       }
     })
+  },
+
+  // Get suggested posts
+  getSuggestedPosts(params?: PaginationReqQuery) {
+    return http.get<GetPostsResponse>('/posts/suggested', { params })
   }
 }
 
