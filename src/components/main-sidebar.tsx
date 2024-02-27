@@ -125,32 +125,36 @@ const MainSidebar = () => {
                 </Button>
               ))}
             </div>
-            <Separator />
-            <div className='space-y-1'>
-              <h2 className='font-semibold px-4 mb-4'>Kênh đăng ký</h2>
-              {mySubscribedAccounts.slice(0, SUBSCRIBED_ACOUNTS_LIMIT).map((account) => (
-                <Button
-                  key={account._id}
-                  variant='ghost'
-                  className='w-full flex justify-start space-x-5 font-normal'
-                  asChild
-                >
-                  <Link href={PATH.PROFILE(account.username)}>
-                    <Avatar className='w-6 h-6'>
-                      <AvatarImage src={account.avatar} className='object-cover' />
-                      <AvatarFallback className='text-xs'>{account.channelName[0].toUpperCase()} </AvatarFallback>
-                    </Avatar>
-                    <span>{account.channelName}</span>
-                  </Link>
-                </Button>
-              ))}
-              {mySubscribedAccounts.length > SUBSCRIBED_ACOUNTS_LIMIT && (
-                <Button variant='ghost' className='w-full flex justify-start space-x-5 font-normal'>
-                  <ChevronDown strokeWidth={1.5} size={18} />
-                  <span className='line-clamp-1'>Hiển thị thêm</span>
-                </Button>
-              )}
-            </div>
+            {mySubscribedAccounts.length > 0 && (
+              <Fragment>
+                <Separator />
+                <div className='space-y-1'>
+                  <h2 className='font-semibold px-4 mb-4'>Kênh đăng ký</h2>
+                  {mySubscribedAccounts.slice(0, SUBSCRIBED_ACOUNTS_LIMIT).map((account) => (
+                    <Button
+                      key={account._id}
+                      variant='ghost'
+                      className='w-full flex justify-start space-x-5 font-normal'
+                      asChild
+                    >
+                      <Link href={PATH.PROFILE(account.username)}>
+                        <Avatar className='w-6 h-6'>
+                          <AvatarImage src={account.avatar} className='object-cover' />
+                          <AvatarFallback className='text-xs'>{account.channelName[0].toUpperCase()} </AvatarFallback>
+                        </Avatar>
+                        <span>{account.channelName}</span>
+                      </Link>
+                    </Button>
+                  ))}
+                  {mySubscribedAccounts.length > SUBSCRIBED_ACOUNTS_LIMIT && (
+                    <Button variant='ghost' className='w-full flex justify-start space-x-5 font-normal'>
+                      <ChevronDown strokeWidth={1.5} size={18} />
+                      <span className='line-clamp-1'>Hiển thị thêm</span>
+                    </Button>
+                  )}
+                </div>
+              </Fragment>
+            )}
           </Fragment>
         )}
         {!isAuthenticated && isClient && (

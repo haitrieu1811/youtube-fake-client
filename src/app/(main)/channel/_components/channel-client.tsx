@@ -18,7 +18,7 @@ import {
 import moment from 'moment'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { Fragment, createContext, useContext, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import accountApis from '@/apis/account.apis'
@@ -377,10 +377,10 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
                       <ChevronRight size={20} strokeWidth={1.5} className='flex-shrink-0 stroke-muted-foreground' />
                     </div>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className='max-h-[90vh] overflow-y-auto'>
                     <DialogHeader>
                       <DialogTitle>Giới thiệu</DialogTitle>
-                      <DialogDescription>{channel.bio}</DialogDescription>
+                      <DialogDescription className='whitespace-pre-line'>{channel.bio}</DialogDescription>
                     </DialogHeader>
                     <h3 className='font-semibold text-xl tracking-tight'>Chi tiết kênh</h3>
                     <div className='space-y-5'>
@@ -423,67 +423,75 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
                   <TabsTrigger value='community'>Cộng đồng</TabsTrigger>
                 </TabsList>
                 <TabsContent value='home'>
-                  <h2 className='font-semibold text-xl my-6'>Video nổi bật</h2>
-                  <div className='grid grid-cols-12 gap-5'>
-                    {myVideos.map((video) => (
-                      <div key={video._id} className='col-span-12 md:col-span-6 lg:col-span-3'>
-                        <ProfileVideo videoData={video} />
+                  {myVideos.length > 0 && (
+                    <Fragment>
+                      <h2 className='font-semibold text-xl my-6'>Video nổi bật</h2>
+                      <div className='grid grid-cols-12 gap-5'>
+                        {myVideos.map((video) => (
+                          <div key={video._id} className='col-span-12 md:col-span-6 lg:col-span-3'>
+                            <ProfileVideo videoData={video} />
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </Fragment>
+                  )}
                 </TabsContent>
                 <TabsContent value='video'>
-                  <ToggleGroup type='single' defaultValue='latest' className='justify-normal my-6 gap-3'>
-                    <ToggleGroupItem value='latest' aria-label='Toggle latest' asChild>
-                      <Link
-                        href={{
-                          pathname,
-                          query: {
-                            ...queryConfig,
-                            sortBy: 'createdAt',
-                            orderBy: 'desc'
-                          }
-                        }}
-                      >
-                        Mới nhất
-                      </Link>
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value='popular' aria-label='Toggle popular' asChild>
-                      <Link
-                        href={{
-                          pathname,
-                          query: {
-                            ...queryConfig,
-                            sortBy: 'viewCount',
-                            orderBy: 'desc'
-                          }
-                        }}
-                      >
-                        Phổ biến
-                      </Link>
-                    </ToggleGroupItem>
-                    <ToggleGroupItem value='oldest' aria-label='Toggle oldest' asChild>
-                      <Link
-                        href={{
-                          pathname,
-                          query: {
-                            ...queryConfig,
-                            sortBy: 'createdAt',
-                            orderBy: 'asc'
-                          }
-                        }}
-                      >
-                        Cũ nhất
-                      </Link>
-                    </ToggleGroupItem>
-                  </ToggleGroup>
-                  <div className='grid grid-cols-12 gap-5'>
-                    {myVideos.map((video) => (
-                      <div key={video._id} className='col-span-12 md:col-span-6 lg:col-span-3'>
-                        <ProfileVideo videoData={video} />
+                  {myVideos.length > 0 && (
+                    <Fragment>
+                      <ToggleGroup type='single' defaultValue='latest' className='justify-normal my-6 gap-3'>
+                        <ToggleGroupItem value='latest' aria-label='Toggle latest' asChild>
+                          <Link
+                            href={{
+                              pathname,
+                              query: {
+                                ...queryConfig,
+                                sortBy: 'createdAt',
+                                orderBy: 'desc'
+                              }
+                            }}
+                          >
+                            Mới nhất
+                          </Link>
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value='popular' aria-label='Toggle popular' asChild>
+                          <Link
+                            href={{
+                              pathname,
+                              query: {
+                                ...queryConfig,
+                                sortBy: 'viewCount',
+                                orderBy: 'desc'
+                              }
+                            }}
+                          >
+                            Phổ biến
+                          </Link>
+                        </ToggleGroupItem>
+                        <ToggleGroupItem value='oldest' aria-label='Toggle oldest' asChild>
+                          <Link
+                            href={{
+                              pathname,
+                              query: {
+                                ...queryConfig,
+                                sortBy: 'createdAt',
+                                orderBy: 'asc'
+                              }
+                            }}
+                          >
+                            Cũ nhất
+                          </Link>
+                        </ToggleGroupItem>
+                      </ToggleGroup>
+                      <div className='grid grid-cols-12 gap-5'>
+                        {myVideos.map((video) => (
+                          <div key={video._id} className='col-span-12 md:col-span-6 lg:col-span-3'>
+                            <ProfileVideo videoData={video} />
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
+                    </Fragment>
+                  )}
                 </TabsContent>
                 <TabsContent value='playlist'>Change your password here.</TabsContent>
                 <TabsContent value='community'>

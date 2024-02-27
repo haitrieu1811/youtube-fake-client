@@ -1,9 +1,11 @@
-import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios'
+import axios, { AxiosInstance, HttpStatusCode, InternalAxiosRequestConfig } from 'axios'
 import Cookies from 'js-cookie'
+import toast from 'react-hot-toast'
 
 import { URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN, URL_REGISTER, URL_UPDATE_ME } from '@/apis/account.apis'
 import { AccountType } from '@/types/account.types'
 import { AuthResponse, RefreshTokenResponse } from '@/types/auth.types'
+import { ErrorResponse } from '@/types/utils.types'
 import {
   getAccessTokenFromLS,
   getAccountFromLS,
@@ -14,7 +16,6 @@ import {
   setRefreshTokenToLS
 } from './auth'
 import { isExpiredTokenError, isUnauthorizedError } from './utils'
-import { ErrorResponse } from '@/types/utils.types'
 
 class Http {
   instance: AxiosInstance
@@ -82,6 +83,14 @@ class Http {
         return response
       },
       async (error) => {
+        // Thông báo lỗi nếu không phải lỗi 422 (Lỗi validate) hoặc 401 (Sai, thiếu hoặc hết hạn access token)
+        if (
+          ![HttpStatusCode.UnprocessableEntity, HttpStatusCode.Unauthorized].includes(error.response?.status as number)
+        ) {
+          const data: any | undefined = error.response?.data
+          const message = data?.message || error.message
+          toast.error(message)
+        }
         // Xử lý lỗi 401 (Sai, thiếu hoặc hết hạn access token)
         if (isUnauthorizedError<ErrorResponse<{ name: string; message: string }>>(error)) {
           const config = error.response?.config || ({ headers: {} } as InternalAxiosRequestConfig)

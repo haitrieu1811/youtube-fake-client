@@ -112,8 +112,8 @@ const StudioPostDetail = ({ postId }: StudioPostDetailProps) => {
                         </CarouselItem>
                       ))}
                     </CarouselContent>
-                    <CarouselPrevious className='-left-5 w-10 h-10' />
-                    <CarouselNext className='-right-5 w-10 h-10' />
+                    <CarouselPrevious type='button' className='-left-5 w-10 h-10' />
+                    <CarouselNext type='button' className='-right-5 w-10 h-10' />
                   </Carousel>
                 </div>
               </div>

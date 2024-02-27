@@ -39,7 +39,7 @@ const VerticalVideo = ({ videoData }: VerticalVideoProps) => {
         <div className='flex-1'>
           <div className='flex items-start space-x-4'>
             <div className='flex-1'>
-              <Link href={PATH.WATCH(videoData.idName)} className='font-medium line-clamp-2'>
+              <Link href={PATH.WATCH(videoData.idName)} className='font-medium line-clamp-1'>
                 {videoData.title}
               </Link>
               <div className='flex items-center space-x-1.5'>

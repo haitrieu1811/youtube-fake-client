@@ -179,7 +179,7 @@ const CreatePost = () => {
             </Fragment>
           )}
           {imageFiles.length > 0 && (
-            <div className='space-y-4 px-6 mt-5'>
+            <div className='w-full space-y-4 px-6 mt-5'>
               <div className='grid grid-cols-10 gap-6'>
                 {/* Images of post */}
                 {previewImages.map((image) => (

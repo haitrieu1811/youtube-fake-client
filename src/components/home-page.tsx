@@ -20,7 +20,7 @@ const HomePage = () => {
   return (
     <div className='px-10 py-4'>
       {videos.length > 0 && !getSuggestedVideosQuery.isLoading && (
-        <div className='grid grid-cols-12 gap-4'>
+        <div className='grid grid-cols-12 gap-5'>
           {videos.map((video) => (
             <div key={video._id} className='col-span-12 md:col-span-4 lg:col-span-3'>
               <VerticalVideo videoData={video} />
@@ -29,7 +29,7 @@ const HomePage = () => {
         </div>
       )}
       {getSuggestedVideosQuery.isLoading && (
-        <div className='grid grid-cols-12 gap-4'>
+        <div className='grid grid-cols-12 gap-5'>
           {Array(12)
             .fill(0)
             .map((_, index) => (
