@@ -8,7 +8,7 @@ import overviewImage from '@/assets/images/overview.svg'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import useAccountsSubscribedToMe from '@/components/useAccountsSubscribedToMe'
+import useAccountsSubscribedToMe from '@/hooks/useAccountsSubscribedToMe'
 import PATH from '@/constants/path'
 
 export const metadata: Metadata = {

@@ -3,22 +3,42 @@
 import { useEffect, useState } from 'react'
 
 import useSuggestedVideos from '@/hooks/useSuggestedVideos'
+import useVideoCategories from '@/hooks/useVideoCategories'
 import { VideoItemType } from '@/types/video.types'
 import VerticalVideo from './vertical-video'
 import VerticalVideoSkeleton from './vertical-video-skeleton'
+import VideoCategoriesSlider from './video-categories-slider'
 
 const HomePage = () => {
   const [videos, setVideos] = useState<VideoItemType[]>([])
-  const { getSuggestedVideosQuery } = useSuggestedVideos({})
+  const [currentVideoCategoryId, setCurrentVideoCategoryId] = useState<string>('')
+  const { getSuggestedVideosQuery } = useSuggestedVideos({ categoryId: currentVideoCategoryId })
+  const { videoCategories, getVideoCategoriesQuery } = useVideoCategories()
 
-  // Đặt giá trị cho videos
+  // Set videos
   useEffect(() => {
     if (!getSuggestedVideosQuery.data) return
     setVideos(getSuggestedVideosQuery.data.pages.flatMap((page) => page.data.data.videos))
   }, [getSuggestedVideosQuery.data])
 
   return (
-    <div className='px-10 py-4'>
+    <div className='px-10 pb-4 relative'>
+      {getSuggestedVideosQuery.isFetching && <div className='absolute inset-0 z-[1] bg-background/50' />}
+      {/* Video categories slider */}
+      {!getVideoCategoriesQuery.isLoading && (
+        <div className='sticky top-14 z-[1] py-4 bg-background'>
+          <VideoCategoriesSlider
+            videoCategories={[{ value: 'all', label: 'Tất cả' }].concat(
+              videoCategories.map((videoCategory) => ({
+                value: videoCategory._id,
+                label: videoCategory.name
+              }))
+            )}
+            onChange={(videoCategoryId) => setCurrentVideoCategoryId(videoCategoryId)}
+          />
+        </div>
+      )}
+      {/* Suggested videos */}
       {videos.length > 0 && !getSuggestedVideosQuery.isLoading && (
         <div className='grid grid-cols-12 gap-5'>
           {videos.map((video) => (
@@ -28,6 +48,7 @@ const HomePage = () => {
           ))}
         </div>
       )}
+      {/* Videos skeleton */}
       {getSuggestedVideosQuery.isLoading && (
         <div className='grid grid-cols-12 gap-5'>
           {Array(12)

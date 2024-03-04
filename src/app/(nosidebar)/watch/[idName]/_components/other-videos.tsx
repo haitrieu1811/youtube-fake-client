@@ -10,13 +10,13 @@ import useSuggestedVideos from '@/hooks/useSuggestedVideos'
 import { VideoItemType } from '@/types/video.types'
 
 type OtherVideos = {
-  categoryId: string | null
+  categoryId: string
   currentIdName: string
 }
 
 const OtherVideos = ({ categoryId, currentIdName }: OtherVideos) => {
   const [videos, setVideos] = useState<VideoItemType[]>([])
-  const { getSuggestedVideosQuery } = useSuggestedVideos({ categoryId: categoryId || undefined })
+  const { getSuggestedVideosQuery } = useSuggestedVideos({ categoryId })
 
   // Set videos
   useEffect(() => {

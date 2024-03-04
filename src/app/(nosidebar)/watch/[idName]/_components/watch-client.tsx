@@ -28,6 +28,8 @@ import Comment from './comment'
 import OtherVideos from './other-videos'
 import Playlist from './playlist'
 import Reaction from './reaction'
+import VideoCategoriesSlider from '@/components/video-categories-slider'
+import useVideoCategories from '@/hooks/useVideoCategories'
 
 type WatchClientProps = {
   idName: string
@@ -38,11 +40,17 @@ const MAX_LENGTH_OF_DESCRIPTION = 50
 const WatchClient = ({ idName }: WatchClientProps) => {
   const searchParams = useSearchParams()
   const playlistId = searchParams.get('list')
+
   const { isShuffle, isRepeat, playlistVideoIndexHistory, setPlaylistVideoIndexHistory } = useContext(WatchContext)
+
   const [isShowMoreDescription, setIsShowMoreDescription] = useState<boolean>(false)
   const [subscribeCount, setSubscribeCount] = useState<number>(0)
   const [playlistVideos, setPlaylistVideos] = useState<VideoItemType[]>([])
   const [nextVideoIdName, setNextVideoIdName] = useState<string>('')
+  const [currentVideoCategoryId, setCurrentVideoCategoryId] = useState<string>('')
+
+  const { videoCategories } = useVideoCategories()
+
   const linkRef = useRef<HTMLAnchorElement>(null)
 
   // Query: Get video info
@@ -306,9 +314,21 @@ const WatchClient = ({ idName }: WatchClientProps) => {
             />
           </div>
         )}
+        <div className='mb-4'>
+          <VideoCategoriesSlider
+            step={150}
+            videoCategories={[{ value: 'all', label: 'Tất cả' }].concat(
+              videoCategories.map((videoCategory) => ({
+                value: videoCategory._id,
+                label: videoCategory.name
+              }))
+            )}
+            onChange={(categoryId) => setCurrentVideoCategoryId(categoryId)}
+          />
+        </div>
         {videoInfo && (
           <div className='space-y-2'>
-            <OtherVideos categoryId={videoInfo.category?._id || null} currentIdName={idName} />
+            <OtherVideos categoryId={currentVideoCategoryId} currentIdName={idName} />
           </div>
         )}
       </div>
