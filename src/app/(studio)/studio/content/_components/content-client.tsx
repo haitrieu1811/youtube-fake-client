@@ -8,13 +8,14 @@ import postApis from '@/apis/post.apis'
 import videoApis from '@/apis/video.apis'
 import DataTable from '@/components/data-table'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import usePlaylists from '@/hooks/usePlaylists'
+import { columns as playlistColumns } from '../_columns/playlist-columns'
 import { columns as postColumns } from '../_columns/post-columns'
 import { columns as videoColumns } from '../_columns/video-columns'
-import { columns as playlistColumns } from '../_columns/playlist-columns'
-import playlistApis from '@/apis/playlist.apis'
 
 const ContentClient = () => {
   const queryClient = useQueryClient()
+  const { playlists } = usePlaylists()
 
   // Query: Get videos
   const getVideosQuery = useQuery({
@@ -52,18 +53,6 @@ const ContentClient = () => {
       queryClient.invalidateQueries({ queryKey: ['getMyPosts'] })
     }
   })
-
-  // Query: Get playlists
-  const getMyPlaylistsQuery = useQuery({
-    queryKey: ['getMyPlaylists'],
-    queryFn: () => playlistApis.getMyPlaylists()
-  })
-
-  // Playlists
-  const playlists = useMemo(
-    () => getMyPlaylistsQuery.data?.data.data.playlists || [],
-    [getMyPlaylistsQuery.data?.data.data.playlists]
-  )
 
   return (
     <div className='p-6'>
