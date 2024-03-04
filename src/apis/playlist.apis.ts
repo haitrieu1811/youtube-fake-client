@@ -21,6 +21,11 @@ const playlistApis = {
     return http.get<GetMyPlaylistsResponse>('/playlists/me', { params })
   },
 
+  // Get playlists by username
+  getPlaylistsByUsername({ params, username }: { params?: PaginationReqQuery; username: string }) {
+    return http.get<GetMyPlaylistsResponse>(`/playlists/user/${username}`, { params })
+  },
+
   // Get playlist by id
   getPlaylistById(playlistId: string) {
     return http.get<GetPlaylistByIdResponse>(`/playlists/${playlistId}`)

@@ -15,7 +15,7 @@ import { columns as videoColumns } from '../_columns/video-columns'
 
 const ContentClient = () => {
   const queryClient = useQueryClient()
-  const { playlists } = usePlaylists()
+  const { playlists } = usePlaylists({})
 
   // Query: Get videos
   const getVideosQuery = useQuery({

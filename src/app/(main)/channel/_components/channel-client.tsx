@@ -46,6 +46,7 @@ import { AppContext } from '@/providers/app-provider'
 import { ProfileType } from '@/types/account.types'
 import { VideoItemType } from '@/types/video.types'
 import ChannelPosts from './posts'
+import ChannelPlaylists from './playlists'
 
 type ChannelClientContextType = {
   isMyChannel: boolean
@@ -493,7 +494,9 @@ const ChannelClient = ({ username }: ChannelClientProps) => {
                     </Fragment>
                   )}
                 </TabsContent>
-                <TabsContent value='playlist'>Change your password here.</TabsContent>
+                <TabsContent value='playlist'>
+                  <ChannelPlaylists username={username} />
+                </TabsContent>
                 <TabsContent value='community'>
                   <ChannelPosts />
                 </TabsContent>

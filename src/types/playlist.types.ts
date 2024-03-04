@@ -14,6 +14,7 @@ export type OriginalPlaylist = {
 // Playlist item type
 export type PlaylistItemType = {
   _id: string
+  firstVideoIdName: string
   name: string
   thumbnail: string
   description: string
