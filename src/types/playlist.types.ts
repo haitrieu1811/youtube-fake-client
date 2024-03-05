@@ -84,6 +84,7 @@ export type UpdatePlaylistResponse = SuccessResponse<{
 
 // Response: Get videos from playlist
 export type GetVideosFromPlaylistResponse = SuccessResponse<{
+  playlistName: string
   videos: PlaylistVideoItemType[]
   pagination: PaginationType
 }>

@@ -22,7 +22,7 @@ const HomePage = () => {
   }, [getSuggestedVideosQuery.data])
 
   return (
-    <div className='px-10 pb-4 relative'>
+    <div className='pl-8 pr-10 pb-4 relative'>
       {getSuggestedVideosQuery.isFetching && <div className='absolute inset-0 z-[1] bg-background/50' />}
       {/* Video categories slider */}
       {!getVideoCategoriesQuery.isLoading && (

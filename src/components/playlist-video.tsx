@@ -4,13 +4,14 @@ import Link from 'next/link'
 
 import PATH from '@/constants/path'
 import { convertMomentToVietnamese, formatViews } from '@/lib/utils'
+import { PlaylistVideoItemType } from '@/types/playlist.types'
 import { VideoItemType } from '@/types/video.types'
 import { CheckCircle2 } from 'lucide-react'
 import VideoActions from './video-actions'
 
 type PlaylistVideoProps = {
   index: number
-  videoData: VideoItemType
+  videoData: VideoItemType | PlaylistVideoItemType
   playlistId: string
 }
 

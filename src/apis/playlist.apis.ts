@@ -37,7 +37,7 @@ const playlistApis = {
   },
 
   // Get videos from playlist
-  getVideosFromPlaylist(playlistId: string) {
+  getVideosFromPlaylist({ playlistId, params }: { playlistId: string; params?: PaginationReqQuery }) {
     return http.get<GetVideosFromPlaylistResponse>(`/playlists/${playlistId}/videos`)
   },
 

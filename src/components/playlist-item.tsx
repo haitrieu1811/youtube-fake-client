@@ -47,7 +47,7 @@ const PlaylistItem = ({ playlistData }: PlaylistItemProps) => {
             <span className='text-xs'>Riêng tư</span>
           </div>
         )}
-        <Link href={PATH.HOME} className='text-muted-foreground text-xs block'>
+        <Link href={PATH.PLAYLIST_DETAIL(playlistData._id)} className='text-muted-foreground text-xs block'>
           Xem toàn bộ danh sách
         </Link>
       </div>

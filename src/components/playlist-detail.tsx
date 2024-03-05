@@ -1,57 +1,97 @@
 'use client'
 
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { Play, Shuffle } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useContext, useEffect, useMemo, useState } from 'react'
 
+import playlistApis from '@/apis/playlist.apis'
 import videoApis from '@/apis/video.apis'
-import PlaylistVideo from '@/components/playlist-video'
-import PlaylistVideoSkeleton from '@/components/playlist-video-skeleton'
-import { Button } from '@/components/ui/button'
-import { Skeleton } from '@/components/ui/skeleton'
 import PATH from '@/constants/path'
 import useIsClient from '@/hooks/useIsClient'
 import { getRandomInt } from '@/lib/utils'
 import { AppContext } from '@/providers/app-provider'
 import { WatchContext } from '@/providers/watch-provider'
+import { PlaylistVideoItemType } from '@/types/playlist.types'
 import { VideoItemType } from '@/types/video.types'
+import PlaylistVideo from './playlist-video'
+import PlaylistVideoSkeleton from './playlist-video-skeleton'
+import { Button } from './ui/button'
+import { Skeleton } from './ui/skeleton'
 
-const LikedClient = () => {
+type PlaylistDetailProps = {
+  playlistId: string
+}
+
+const PlaylistDetail = ({ playlistId }: PlaylistDetailProps) => {
   const { account } = useContext(AppContext)
-  const { setIsShuffle } = useContext(WatchContext)
   const { isClient } = useIsClient()
-  const [videos, setVideos] = useState<VideoItemType[]>([])
+  const { setIsShuffle } = useContext(WatchContext)
 
-  // Query: Lấy danh sách video đã thích
-  const getLikedVideosQuery = useQuery({
+  const [videos, setVideos] = useState<VideoItemType[] | PlaylistVideoItemType[]>([])
+
+  const getLikedVideosQuery = useInfiniteQuery({
     queryKey: ['getLikedVideos'],
-    queryFn: () => videoApis.getLikedVideos()
+    queryFn: ({ pageParam }) => videoApis.getLikedVideos({ page: String(pageParam), limit: '10' }),
+    enabled: playlistId === 'LL',
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.data.data.pagination.page < lastPage.data.data.pagination.totalPages
+        ? lastPage.data.data.pagination.page + 1
+        : undefined
   })
 
-  // Đặt giá trị cho videos
+  const getVideosFromPlaylistQuery = useInfiniteQuery({
+    queryKey: ['getVideosFromPlaylist'],
+    queryFn: ({ pageParam }) =>
+      playlistApis.getVideosFromPlaylist({ playlistId, params: { page: String(pageParam), limit: '10' } }),
+    enabled: playlistId !== 'LL' && playlistId !== 'WL',
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.data.data.pagination.page < lastPage.data.data.pagination.totalPages
+        ? lastPage.data.data.pagination.page + 1
+        : undefined
+  })
+
+  // Set videos
   useEffect(() => {
-    if (!getLikedVideosQuery.data) return
-    setVideos(getLikedVideosQuery.data.data.data.videos)
-  }, [getLikedVideosQuery.data])
+    switch (playlistId) {
+      case 'LL':
+        if (!getLikedVideosQuery.data) return
+        return setVideos(getLikedVideosQuery.data.pages.map((page) => page.data.data.videos).flat())
+      default:
+        if (!getVideosFromPlaylistQuery.data) return
+        return setVideos(getVideosFromPlaylistQuery.data.pages.map((page) => page.data.data.videos).flat())
+    }
+  }, [getLikedVideosQuery.data, getVideosFromPlaylistQuery.data])
 
-  // Tổng số video
-  const totalVideos = useMemo(
-    () => getLikedVideosQuery.data?.data.data.pagination.totalRows || 0,
-    [getLikedVideosQuery.data?.data.data.pagination.totalRows]
-  )
-
-  // Video mới nhất
-  const latestVideo = useMemo(
-    () => getLikedVideosQuery.data?.data.data.videos[0] || null,
-    [getLikedVideosQuery.data?.data.data.videos[0]]
-  )
+  const latestVideo = useMemo(() => videos[0], [videos])
+  const totalVideos = useMemo(() => {
+    switch (playlistId) {
+      case 'LL':
+        if (!getLikedVideosQuery.data) return 0
+        return getLikedVideosQuery.data.pages[0].data.data.pagination.totalRows
+      default:
+        if (!getVideosFromPlaylistQuery.data) return 0
+        return getVideosFromPlaylistQuery.data.pages[0].data.data.pagination.totalRows
+    }
+  }, [getLikedVideosQuery.data, getVideosFromPlaylistQuery.data])
+  const playlistName = useMemo(() => {
+    switch (playlistId) {
+      case 'LL':
+        return 'Video đã thích'
+      default:
+        if (!getVideosFromPlaylistQuery.data) return ''
+        return getVideosFromPlaylistQuery.data.pages[0].data.data.playlistName
+    }
+  }, [getLikedVideosQuery.data, getVideosFromPlaylistQuery.data])
 
   return (
     <div className='flex items-start space-x-6 p-6'>
       <div className='w-[360px] p-6 rounded-2xl space-y-6 sticky top-[80px] bg-muted'>
-        {latestVideo ? (
+        {/* Show latest video */}
+        {latestVideo && (
           <div className='relative group'>
             <Link
               href={{
@@ -74,22 +114,20 @@ const LikedClient = () => {
               </span>
             </div>
           </div>
-        ) : (
-          <Skeleton className='h-[180px] rounded-2xl' />
         )}
+        {!latestVideo && <Skeleton className='h-[180px] rounded-2xl' />}
         <div>
-          <h1 className='text-[28px] font-semibold tracking-tight mb-5'>Video đã thích</h1>
-          {account && isClient ? (
+          <h1 className='text-[28px] font-semibold tracking-tight mb-5'>{playlistName}</h1>
+          {account && isClient && (
             <Link href={PATH.CHANNEL} className='text-sm font-medium'>
               {account.channelName}
             </Link>
-          ) : (
-            <Skeleton className='w-[100px] h-3 rounded-sm mb-1.5' />
           )}
+          {!(account && isClient) && <Skeleton className='w-[100px] h-3 rounded-sm mb-1.5' />}
           <div className='text-xs text-muted-foreground'>{totalVideos} video</div>
         </div>
         <div className='flex flex-auto items-center space-x-2'>
-          {latestVideo ? (
+          {latestVideo && (
             <Button className='rounded-full basis-1/2' asChild>
               <Link
                 onClick={() => setIsShuffle(false)}
@@ -102,10 +140,9 @@ const LikedClient = () => {
                 Phát tất cả
               </Link>
             </Button>
-          ) : (
-            <Skeleton className='basis-1/2 h-9 rounded-full' />
           )}
-          {videos.length > 0 ? (
+          {!latestVideo && <Skeleton className='basis-1/2 h-9 rounded-full' />}
+          {videos.length > 0 && (
             <Button variant='outline' className='rounded-full basis-1/2' asChild>
               <Link
                 onClick={() => setIsShuffle(true)}
@@ -119,9 +156,8 @@ const LikedClient = () => {
                 Trộn bài
               </Link>
             </Button>
-          ) : (
-            <Skeleton className='basis-1/2 h-9 rounded-full' />
           )}
+          {videos.length === 0 && <Skeleton className='basis-1/2 h-9 rounded-full' />}
         </div>
       </div>
       <div className='flex-1'>
@@ -140,4 +176,4 @@ const LikedClient = () => {
   )
 }
 
-export default LikedClient
+export default PlaylistDetail

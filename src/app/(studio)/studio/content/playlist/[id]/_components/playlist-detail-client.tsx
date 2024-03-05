@@ -17,7 +17,7 @@ const PlaylistDetailClient = ({ playlistId }: PlaylistDetailClientProps) => {
   // Query: Get videos from playlist
   const getVideosFromPlaylist = useQuery({
     queryKey: ['getVideosFromPlaylist'],
-    queryFn: () => playlistApis.getVideosFromPlaylist(playlistId)
+    queryFn: () => playlistApis.getVideosFromPlaylist({ playlistId })
   })
 
   // Videos in playlist
