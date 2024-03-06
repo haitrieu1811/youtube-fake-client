@@ -34,7 +34,7 @@ const ProfileVideo = ({ videoData }: ProfileVideoProps) => {
             <span>{convertMomentToVietnamese(moment(videoData.createdAt).fromNow())}</span>
           </div>
         </div>
-        <VideoActions className='opacity-0 group-hover:opacity-100' />
+        <VideoActions videoId={videoData._id} />
       </div>
     </div>
   )

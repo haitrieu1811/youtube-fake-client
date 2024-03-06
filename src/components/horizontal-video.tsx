@@ -78,7 +78,7 @@ const HorizontalVideo = ({
                   ))}
                 </div>
               )}
-              <VideoActions />
+              <VideoActions videoId={videoData._id} />
             </div>
           </div>
         </div>

@@ -52,7 +52,7 @@ const ME_LINKS = [
   {
     icon: Clock,
     text: 'Xem sau',
-    href: PATH.SUBSCRIPTIONS
+    href: PATH.PLAYLIST_DETAIL('WL')
   }
 ]
 

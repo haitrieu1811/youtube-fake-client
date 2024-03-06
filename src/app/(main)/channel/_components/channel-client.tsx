@@ -45,8 +45,8 @@ import { formatViews } from '@/lib/utils'
 import { AppContext } from '@/providers/app-provider'
 import { ProfileType } from '@/types/account.types'
 import { VideoItemType } from '@/types/video.types'
-import ChannelPosts from './posts'
 import ChannelPlaylists from './playlists'
+import ChannelPosts from './posts'
 
 type ChannelClientContextType = {
   isMyChannel: boolean

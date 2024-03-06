@@ -6,6 +6,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useContext, useEffect, useMemo, useState } from 'react'
 
+import bookmarkApis from '@/apis/bookmark.apis'
 import playlistApis from '@/apis/playlist.apis'
 import videoApis from '@/apis/video.apis'
 import PATH from '@/constants/path'
@@ -42,6 +43,17 @@ const PlaylistDetail = ({ playlistId }: PlaylistDetailProps) => {
         : undefined
   })
 
+  const getBookmarkVideosQuery = useInfiniteQuery({
+    queryKey: ['getBookmarkVideos'],
+    queryFn: ({ pageParam }) => bookmarkApis.getBookmarkVideos({ page: String(pageParam), limit: '10' }),
+    enabled: playlistId === 'WL',
+    initialPageParam: 1,
+    getNextPageParam: (lastPage) =>
+      lastPage.data.data.pagination.page < lastPage.data.data.pagination.totalPages
+        ? lastPage.data.data.pagination.page + 1
+        : undefined
+  })
+
   const getVideosFromPlaylistQuery = useInfiniteQuery({
     queryKey: ['getVideosFromPlaylist'],
     queryFn: ({ pageParam }) =>
@@ -60,11 +72,14 @@ const PlaylistDetail = ({ playlistId }: PlaylistDetailProps) => {
       case 'LL':
         if (!getLikedVideosQuery.data) return
         return setVideos(getLikedVideosQuery.data.pages.map((page) => page.data.data.videos).flat())
+      case 'WL':
+        if (!getBookmarkVideosQuery.data) return
+        return setVideos(getBookmarkVideosQuery.data.pages.map((page) => page.data.data.videos).flat())
       default:
         if (!getVideosFromPlaylistQuery.data) return
         return setVideos(getVideosFromPlaylistQuery.data.pages.map((page) => page.data.data.videos).flat())
     }
-  }, [getLikedVideosQuery.data, getVideosFromPlaylistQuery.data])
+  }, [getLikedVideosQuery.data, getBookmarkVideosQuery.data, getVideosFromPlaylistQuery.data])
 
   const latestVideo = useMemo(() => videos[0], [videos])
   const totalVideos = useMemo(() => {
@@ -72,20 +87,25 @@ const PlaylistDetail = ({ playlistId }: PlaylistDetailProps) => {
       case 'LL':
         if (!getLikedVideosQuery.data) return 0
         return getLikedVideosQuery.data.pages[0].data.data.pagination.totalRows
+      case 'WL':
+        if (!getBookmarkVideosQuery.data) return 0
+        return getBookmarkVideosQuery.data.pages[0].data.data.pagination.totalRows
       default:
         if (!getVideosFromPlaylistQuery.data) return 0
         return getVideosFromPlaylistQuery.data.pages[0].data.data.pagination.totalRows
     }
-  }, [getLikedVideosQuery.data, getVideosFromPlaylistQuery.data])
+  }, [getLikedVideosQuery.data, getBookmarkVideosQuery.data, getVideosFromPlaylistQuery.data])
   const playlistName = useMemo(() => {
     switch (playlistId) {
       case 'LL':
         return 'Video đã thích'
+      case 'WL':
+        return 'Xem sau'
       default:
         if (!getVideosFromPlaylistQuery.data) return ''
         return getVideosFromPlaylistQuery.data.pages[0].data.data.playlistName
     }
-  }, [getLikedVideosQuery.data, getVideosFromPlaylistQuery.data])
+  }, [getLikedVideosQuery.data, getBookmarkVideosQuery.data, getVideosFromPlaylistQuery.data])
 
   return (
     <div className='flex items-start space-x-6 p-6'>
