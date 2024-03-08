@@ -88,3 +88,20 @@ export type GetVideosFromPlaylistResponse = SuccessResponse<{
   videos: PlaylistVideoItemType[]
   pagination: PaginationType
 }>
+
+// Response: Get playlists containing video
+export type GetPlaylistsContainingVideoResponse = SuccessResponse<{
+  playlists: string[]
+}>
+
+// Response: Get playlists containing video
+export type AddVideoToPlaylistResponse = SuccessResponse<{
+  playlistVideo: {
+    _id: string
+    accountId: string
+    playlistId: string
+    videoId: string
+    createdAt: string
+    updatedAt: string
+  }
+}>

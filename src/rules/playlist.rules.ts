@@ -3,7 +3,7 @@ import z from 'zod'
 // Playlist schema
 const playlistSchema = z.object({
   name: z.string().min(6, 'Tên playlist dài tối thiểu 6 ký tự').max(255, 'Tên playlist dài tối đa 255 ký tự'),
-  description: z.string(),
+  description: z.string().optional(),
   audience: z.string()
 })
 

@@ -1,9 +1,11 @@
 import http from '@/lib/http'
 import {
+  AddVideoToPlaylistResponse,
   CreatePlaylistReqBody,
   CreatePlaylistResponse,
   GetMyPlaylistsResponse,
   GetPlaylistByIdResponse,
+  GetPlaylistsContainingVideoResponse,
   GetVideosFromPlaylistResponse,
   UpdatePlaylistReqBody,
   UpdatePlaylistResponse
@@ -44,6 +46,16 @@ const playlistApis = {
   // Delete playlist
   deletePlaylist(playlistId: string) {
     return http.delete<OnlyMessageResponse>(`/playlists/${playlistId}`)
+  },
+
+  // Get playlists containing video
+  getPlaylistsContainingVideo(videoId: string) {
+    return http.get<GetPlaylistsContainingVideoResponse>(`/playlists/containing/video/${videoId}`)
+  },
+
+  // Add video to playlist
+  addVideoToPlaylist({ playlistId, videoId }: { playlistId: string; videoId: string }) {
+    return http.post<AddVideoToPlaylistResponse>(`/playlists/${playlistId}/add-to-playlist/video/${videoId}`)
   },
 
   // Remove video from playlist
