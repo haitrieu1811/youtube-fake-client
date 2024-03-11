@@ -2,7 +2,18 @@
 
 import { useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
-import { CalendarPlus, ChevronDown, Clock, History, Home, ThumbsUp, User, UserCircle, UsersRound } from 'lucide-react'
+import {
+  CalendarPlus,
+  ChevronDown,
+  Clock,
+  History,
+  Home,
+  ListVideo,
+  ThumbsUp,
+  User,
+  UserCircle,
+  UsersRound
+} from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Fragment, useContext, useMemo } from 'react'
@@ -10,6 +21,7 @@ import { Fragment, useContext, useMemo } from 'react'
 import subscriptionApis from '@/apis/subscription.apis'
 import PATH from '@/constants/path'
 import useIsClient from '@/hooks/useIsClient'
+import usePlaylists from '@/hooks/usePlaylists'
 import { AppContext } from '@/providers/app-provider'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
@@ -47,12 +59,12 @@ const ME_LINKS = [
   {
     icon: ThumbsUp,
     text: 'Video đã thích',
-    href: PATH.PLAYLIST_DETAIL('LL')
+    href: PATH.LIKED
   },
   {
     icon: Clock,
     text: 'Xem sau',
-    href: PATH.PLAYLIST_DETAIL('WL')
+    href: PATH.WATCH_LATER
   }
 ]
 
@@ -63,6 +75,7 @@ const MainSidebar = () => {
   const { isAuthenticated } = useContext(AppContext)
   const { isClient } = useIsClient()
   const isClientWithAuthenticated = isAuthenticated && isClient
+  const { playlists, getMyPlaylistsQuery } = usePlaylists({})
 
   // Query: Get my subscribed accounts
   const getMySubscribedAccountsQuery = useQuery({
@@ -102,9 +115,9 @@ const MainSidebar = () => {
             )
           })}
         </div>
-        <Separator />
         {isClientWithAuthenticated && (
           <Fragment>
+            <Separator />
             <div className='space-y-1'>
               <h2 className='font-semibold px-4 mb-4'>Bạn</h2>
               {ME_LINKS.map((item) => (
@@ -119,8 +132,8 @@ const MainSidebar = () => {
                   asChild
                 >
                   <Link href={item.href}>
-                    <item.icon size={18} strokeWidth={1.5} />
-                    <span>{item.text}</span>
+                    <item.icon size={18} strokeWidth={1.5} className='flex-shrink-0' />
+                    <span className='line-clamp-1'>{item.text}</span>
                   </Link>
                 </Button>
               ))}
@@ -155,6 +168,43 @@ const MainSidebar = () => {
                 </div>
               </Fragment>
             )}
+          </Fragment>
+        )}
+        {playlists.length > 0 && !getMyPlaylistsQuery.isLoading && (
+          <Fragment>
+            <Separator />
+            <div className='space-y-1'>
+              <h2 className='font-semibold px-4 mb-4'>Danh sách phát</h2>
+              {playlists
+                .filter((playlist) => playlist.videoCount > 0)
+                .map((playlist) => (
+                  <Button
+                    key={playlist._id}
+                    variant='ghost'
+                    disabled={PATH.PLAYLIST_DETAIL(playlist._id) === pathname}
+                    className={classNames({
+                      'w-full flex justify-start space-x-5 font-normal': true,
+                      'bg-accent font-medium': PATH.PLAYLIST_DETAIL(playlist._id) === pathname
+                    })}
+                    asChild
+                  >
+                    <Link href={PATH.PLAYLIST_DETAIL(playlist._id)}>
+                      <ListVideo size={18} strokeWidth={1.5} className='flex-shrink-0' />
+                      <span className='line-clamp-1'>{playlist.name}</span>
+                    </Link>
+                  </Button>
+                ))}
+              {getMyPlaylistsQuery.hasNextPage && (
+                <Button
+                  variant='ghost'
+                  className='w-full justify-start'
+                  onClick={() => getMyPlaylistsQuery.fetchNextPage()}
+                >
+                  <ChevronDown size={20} strokeWidth={1.5} className='mr-2' />
+                  Hiển thị thêm
+                </Button>
+              )}
+            </div>
           </Fragment>
         )}
         {!isAuthenticated && isClient && (

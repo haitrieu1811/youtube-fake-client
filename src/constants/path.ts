@@ -9,6 +9,8 @@ const PATH = {
   CREATE_PLAYLIST: '/create-playlist',
   RESULTS: '/results',
   HISTORY: '/history',
+  LIKED: '/liked',
+  WATCH_LATER: '/watch-later',
   PROFILE: (username: string) => `/@${username}`,
   WATCH: (idName: string) => `/watch/${idName}`,
   POST_DETAIL: (postId: string) => `/post/${postId}`,

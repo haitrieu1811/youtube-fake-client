@@ -7,11 +7,11 @@ import PATH from '@/constants/path'
 import { convertMomentToVietnamese, formatViews } from '@/lib/utils'
 import { SearchResultItem } from '@/types/search.types'
 import { VideoItemType } from '@/types/video.types'
+import { WatchHistoryItemType } from '@/types/watchHistory.types'
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar'
 import { Button } from './ui/button'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui/tooltip'
 import VideoActions from './video-actions'
-import { WatchHistoryItemType } from '@/types/watchHistory.types'
 
 type VideoAction = {
   icon: LucideIcon
@@ -42,7 +42,7 @@ const HorizontalVideo = ({
             className={classNameThumbnail}
           />
         </Link>
-        <div className='flex-1 group'>
+        <div className='flex-1'>
           <div className='flex space-x-4'>
             <div className='flex-1'>
               <Link href={PATH.WATCH(videoData.idName)} className='text-lg tracking-tight'>
@@ -63,7 +63,7 @@ const HorizontalVideo = ({
               </Link>
               <div className='text-xs text-muted-foreground line-clamp-2'>{videoData.description}</div>
             </div>
-            <div className='flex space-x-3 opacity-0 group-hover:opacity-100'>
+            <div className='flex space-x-3'>
               {videoActions && (
                 <div>
                   {videoActions.map((item, index) => (
@@ -78,7 +78,7 @@ const HorizontalVideo = ({
                   ))}
                 </div>
               )}
-              <VideoActions videoId={videoData._id} />
+              <VideoActions videoData={videoData} />
             </div>
           </div>
         </div>

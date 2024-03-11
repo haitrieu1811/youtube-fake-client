@@ -1,22 +1,22 @@
 'use client'
 
-import { useInfiniteQuery } from '@tanstack/react-query'
-import { Play, Shuffle } from 'lucide-react'
+import { useInfiniteQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { CheckCircle2, Play, Shuffle, Trash2 } from 'lucide-react'
+import moment from 'moment'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useContext, useEffect, useMemo, useState } from 'react'
+import toast from 'react-hot-toast'
 
-import bookmarkApis from '@/apis/bookmark.apis'
 import playlistApis from '@/apis/playlist.apis'
-import videoApis from '@/apis/video.apis'
+import VideoActions from '@/components/video-actions'
 import PATH from '@/constants/path'
 import useIsClient from '@/hooks/useIsClient'
-import { getRandomInt } from '@/lib/utils'
+import { convertMomentToVietnamese, formatViews, getRandomInt } from '@/lib/utils'
 import { AppContext } from '@/providers/app-provider'
 import { WatchContext } from '@/providers/watch-provider'
 import { PlaylistVideoItemType } from '@/types/playlist.types'
 import { VideoItemType } from '@/types/video.types'
-import PlaylistVideo from './playlist-video'
 import PlaylistVideoSkeleton from './playlist-video-skeleton'
 import { Button } from './ui/button'
 import { Skeleton } from './ui/skeleton'
@@ -26,36 +26,15 @@ type PlaylistDetailProps = {
 }
 
 const PlaylistDetail = ({ playlistId }: PlaylistDetailProps) => {
+  const queryClient = useQueryClient()
   const { account } = useContext(AppContext)
   const { isClient } = useIsClient()
   const { setIsShuffle } = useContext(WatchContext)
 
   const [videos, setVideos] = useState<VideoItemType[] | PlaylistVideoItemType[]>([])
 
-  const getLikedVideosQuery = useInfiniteQuery({
-    queryKey: ['getLikedVideos'],
-    queryFn: ({ pageParam }) => videoApis.getLikedVideos({ page: String(pageParam), limit: '10' }),
-    enabled: playlistId === 'LL',
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) =>
-      lastPage.data.data.pagination.page < lastPage.data.data.pagination.totalPages
-        ? lastPage.data.data.pagination.page + 1
-        : undefined
-  })
-
-  const getBookmarkVideosQuery = useInfiniteQuery({
-    queryKey: ['getBookmarkVideos'],
-    queryFn: ({ pageParam }) => bookmarkApis.getBookmarkVideos({ page: String(pageParam), limit: '10' }),
-    enabled: playlistId === 'WL',
-    initialPageParam: 1,
-    getNextPageParam: (lastPage) =>
-      lastPage.data.data.pagination.page < lastPage.data.data.pagination.totalPages
-        ? lastPage.data.data.pagination.page + 1
-        : undefined
-  })
-
   const getVideosFromPlaylistQuery = useInfiniteQuery({
-    queryKey: ['getVideosFromPlaylist'],
+    queryKey: ['getVideosFromPlaylist', playlistId],
     queryFn: ({ pageParam }) =>
       playlistApis.getVideosFromPlaylist({ playlistId, params: { page: String(pageParam), limit: '10' } }),
     enabled: playlistId !== 'LL' && playlistId !== 'WL',
@@ -66,46 +45,32 @@ const PlaylistDetail = ({ playlistId }: PlaylistDetailProps) => {
         : undefined
   })
 
-  // Set videos
   useEffect(() => {
-    switch (playlistId) {
-      case 'LL':
-        if (!getLikedVideosQuery.data) return
-        return setVideos(getLikedVideosQuery.data.pages.map((page) => page.data.data.videos).flat())
-      case 'WL':
-        if (!getBookmarkVideosQuery.data) return
-        return setVideos(getBookmarkVideosQuery.data.pages.map((page) => page.data.data.videos).flat())
-      default:
-        if (!getVideosFromPlaylistQuery.data) return
-        return setVideos(getVideosFromPlaylistQuery.data.pages.map((page) => page.data.data.videos).flat())
-    }
-  }, [getLikedVideosQuery.data, getBookmarkVideosQuery.data, getVideosFromPlaylistQuery.data])
+    if (!getVideosFromPlaylistQuery.data) return
+    const responseVideos = getVideosFromPlaylistQuery.data.pages.flatMap((page) => page.data.data.videos)
+    return setVideos(responseVideos)
+  }, [getVideosFromPlaylistQuery.data])
 
   const latestVideo = useMemo(() => videos[0], [videos])
+
   const totalVideos = useMemo(() => {
-    switch (playlistId) {
-      case 'LL':
-        if (!getLikedVideosQuery.data) return 0
-        return getLikedVideosQuery.data.pages[0].data.data.pagination.totalRows
-      case 'WL':
-        if (!getBookmarkVideosQuery.data) return 0
-        return getBookmarkVideosQuery.data.pages[0].data.data.pagination.totalRows
-      default:
-        if (!getVideosFromPlaylistQuery.data) return 0
-        return getVideosFromPlaylistQuery.data.pages[0].data.data.pagination.totalRows
-    }
-  }, [getLikedVideosQuery.data, getBookmarkVideosQuery.data, getVideosFromPlaylistQuery.data])
+    if (!getVideosFromPlaylistQuery.data) return 0
+    return getVideosFromPlaylistQuery.data.pages[0].data.data.pagination.totalRows
+  }, [getVideosFromPlaylistQuery.data])
+
   const playlistName = useMemo(() => {
-    switch (playlistId) {
-      case 'LL':
-        return 'Video đã thích'
-      case 'WL':
-        return 'Xem sau'
-      default:
-        if (!getVideosFromPlaylistQuery.data) return ''
-        return getVideosFromPlaylistQuery.data.pages[0].data.data.playlistName
+    if (!getVideosFromPlaylistQuery.data) return ''
+    return getVideosFromPlaylistQuery.data.pages[0].data.data.playlistName
+  }, [getVideosFromPlaylistQuery.data])
+
+  const removeVideoFromPlaylistMutation = useMutation({
+    mutationKey: ['removeVideoFromPlaylist'],
+    mutationFn: playlistApis.removeVideoFromPlaylist,
+    onSuccess: () => {
+      toast.success(`Đã xóa khỏi ${playlistName || 'danh sách phát'}`)
+      queryClient.invalidateQueries({ queryKey: ['getVideosFromPlaylist', playlistId] })
     }
-  }, [getLikedVideosQuery.data, getBookmarkVideosQuery.data, getVideosFromPlaylistQuery.data])
+  })
 
   return (
     <div className='flex items-start space-x-6 p-6'>
@@ -136,16 +101,14 @@ const PlaylistDetail = ({ playlistId }: PlaylistDetailProps) => {
           </div>
         )}
         {!latestVideo && <Skeleton className='h-[180px] rounded-2xl' />}
-        <div>
-          <h1 className='text-[28px] font-semibold tracking-tight mb-5'>{playlistName}</h1>
-          {account && isClient && (
-            <Link href={PATH.CHANNEL} className='text-sm font-medium'>
-              {account.channelName}
-            </Link>
-          )}
-          {!(account && isClient) && <Skeleton className='w-[100px] h-3 rounded-sm mb-1.5' />}
-          <div className='text-xs text-muted-foreground'>{totalVideos} video</div>
-        </div>
+        <h1 className='text-[28px] font-semibold tracking-tight mb-5'>{playlistName}</h1>
+        {account && isClient && (
+          <Link href={PATH.CHANNEL} className='text-sm font-medium'>
+            {account.channelName}
+          </Link>
+        )}
+        {!(account && isClient) && <Skeleton className='w-[100px] h-3 rounded-sm mb-1.5' />}
+        <div className='text-xs text-muted-foreground'>{totalVideos} video</div>
         <div className='flex flex-auto items-center space-x-2'>
           {latestVideo && (
             <Button className='rounded-full basis-1/2' asChild>
@@ -181,13 +144,69 @@ const PlaylistDetail = ({ playlistId }: PlaylistDetailProps) => {
         </div>
       </div>
       <div className='flex-1'>
-        {/* Danh sách video */}
-        {!getLikedVideosQuery.isFetching &&
+        {/* Videos */}
+        {!getVideosFromPlaylistQuery.isFetching &&
           videos.map((video, index) => (
-            <PlaylistVideo key={video._id} index={index + 1} videoData={video} playlistId='liked' />
+            <div key={video._id} className='flex items-center p-2 hover:bg-muted cursor-pointer rounded-lg'>
+              <div className='w-[50px] text-center'>{index + 1}</div>
+              <div className='flex flex-1 space-x-2'>
+                <Link
+                  href={{
+                    pathname: PATH.WATCH(video.idName),
+                    query: { list: playlistId }
+                  }}
+                  className='flex-shrink-0'
+                >
+                  <Image
+                    width={160}
+                    height={90}
+                    src={video.thumbnail}
+                    className='w-[160px] h-[90px] rounded-lg object-cover'
+                    alt={video.title}
+                  />
+                </Link>
+                <div className='flex-1 space-y-1'>
+                  <Link
+                    href={{
+                      pathname: PATH.WATCH(video.idName),
+                      query: { list: playlistId }
+                    }}
+                    className='font-medium line-clamp-2'
+                  >
+                    {video.title}
+                  </Link>
+                  <div className='flex items-center space-x-2 text-xs text-muted-foreground'>
+                    <Link href={PATH.PROFILE(video.author.username)} className='flex items-center space-x-1'>
+                      <span>{video.author.channelName}</span>
+                      {video.author.tick && (
+                        <CheckCircle2 strokeWidth={1.5} className='w-4 h-4 fill-muted-foreground stroke-background' />
+                      )}
+                    </Link>
+                    <span className='w-1 h-1 rounded-full bg-muted-foreground' />
+                    <div>{formatViews(video.viewCount)} lượt xem</div>
+                    <span className='w-1 h-1 rounded-full bg-muted-foreground' />
+                    <div>{convertMomentToVietnamese(moment(video.createdAt).fromNow())}</div>
+                  </div>
+                </div>
+              </div>
+              <VideoActions
+                videoData={video}
+                extendedActions={
+                  <Button
+                    variant='ghost'
+                    className='flex w-full pr-10 justify-start rounded-none'
+                    onClick={() => removeVideoFromPlaylistMutation.mutate({ playlistId, videoId: video._id })}
+                  >
+                    <Trash2 size={18} strokeWidth={1.5} className='mr-3' />
+                    Xóa khỏi danh sách phát
+                  </Button>
+                }
+              />
+            </div>
           ))}
+
         {/* Skeleton */}
-        {getLikedVideosQuery.isFetching &&
+        {getVideosFromPlaylistQuery.isFetching &&
           Array(10)
             .fill(0)
             .map((_, index) => <PlaylistVideoSkeleton key={index} />)}

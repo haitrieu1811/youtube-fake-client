@@ -83,7 +83,7 @@ const HistoryClient = () => {
 
   return (
     <div className='w-5/6 mx-auto mb-10'>
-      <h1 className='font-black text-[36px] tracking-tight py-8'>Nhật ký xem</h1>
+      <h1 className='font-bold text-[36px] tracking-tight py-8'>Nhật ký xem</h1>
       <div className='flex items-start space-x-24'>
         <div className='space-y-5 flex-1'>
           {/* Fetching */}
@@ -108,6 +108,7 @@ const HistoryClient = () => {
           {!getWatchHistories.isFetching &&
             videos.map((video) => (
               <HorizontalVideo
+                key={video._id}
                 videoData={video}
                 classNameThumbnail='flex-shrink-0 w-[250px] h-[140px] object-cover rounded-xl'
                 videoActions={[
@@ -168,9 +169,10 @@ const HistoryClient = () => {
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Hủy</AlertDialogCancel>
+                  <AlertDialogCancel className='rounded-full'>Hủy</AlertDialogCancel>
                   <AlertDialogAction
                     disabled={deleteAllWatchHistoriesMutation.isPending}
+                    className='rounded-full'
                     onClick={handleDeleteAllWatchHistories}
                   >
                     {deleteAllWatchHistoriesMutation.isPending && <Loader2 className='w-4 h-4 mr-2 animate-spin' />}

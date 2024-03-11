@@ -51,7 +51,7 @@ const VerticalVideo = ({ videoData }: VerticalVideoProps) => {
                 )}
               </div>
             </div>
-            <VideoActions videoId={videoData._id} />
+            <VideoActions videoData={videoData} />
           </div>
           <div className='text-sm text-muted-foreground flex items-center space-x-2'>
             <div>{formatViews(videoData.viewCount)} lượt xem</div>

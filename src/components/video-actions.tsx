@@ -1,7 +1,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
+import { CheckedState } from '@radix-ui/react-checkbox'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { Flag, Globe2, History, ListPlus, Loader2, Lock, MoreVertical, Plus, Share2 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { ReactNode, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import InfiniteScroll from 'react-infinite-scroll-component'
@@ -16,23 +17,27 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { PlaylistAudience } from '@/constants/enum'
 import usePlaylists from '@/hooks/usePlaylists'
 import { CreatePlaylistSchema, createPlaylistSchema } from '@/rules/playlist.rules'
-import { CheckedState } from '@radix-ui/react-checkbox'
+import { PlaylistVideoItemType } from '@/types/playlist.types'
+import { SearchResultItem } from '@/types/search.types'
+import { VideoItemType } from '@/types/video.types'
+import { WatchHistoryItemType } from '@/types/watchHistory.types'
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 
 type VideoActionsProps = {
-  videoId: string
+  videoData: VideoItemType | SearchResultItem | WatchHistoryItemType | PlaylistVideoItemType
+  extendedActions?: ReactNode
 }
 
-const VideoActions = ({ videoId }: VideoActionsProps) => {
+const VideoActions = ({ videoData, extendedActions }: VideoActionsProps) => {
   const { playlists, getMyPlaylistsQuery } = usePlaylists({})
 
   const [isOpen, setIsOpen] = useState<boolean>(false)
   const [isCreatingPlaylist, setIsCreatingPlaylist] = useState<boolean>(false)
 
   const getPlaylistsContainingVideoQuery = useQuery({
-    queryKey: ['getPlaylistsContainingVideo', videoId],
-    queryFn: () => playlistApis.getPlaylistsContainingVideo(videoId),
+    queryKey: ['getPlaylistsContainingVideo', videoData._id],
+    queryFn: () => playlistApis.getPlaylistsContainingVideo(videoData._id),
     enabled: isOpen
   })
 
@@ -77,7 +82,7 @@ const VideoActions = ({ videoId }: VideoActionsProps) => {
   }) => {
     if (checked) {
       addVideoToPlaylistMutation.mutate(
-        { videoId, playlistId },
+        { videoId: videoData._id, playlistId },
         {
           onSuccess: (data) => {
             const { playlistId } = data.data.data.playlistVideo
@@ -89,7 +94,7 @@ const VideoActions = ({ videoId }: VideoActionsProps) => {
       )
     } else {
       removeVideoFromPlaylistMutation.mutate(
-        { videoId, playlistId },
+        { videoId: videoData._id, playlistId },
         {
           onSuccess: () => {
             const playlistName = playlists.find((playlist) => playlist._id === playlistId)?.name
@@ -118,7 +123,7 @@ const VideoActions = ({ videoId }: VideoActionsProps) => {
         onSuccess: (data) => {
           addVideoToPlaylistMutation.mutate(
             {
-              videoId,
+              videoId: videoData._id,
               playlistId: data.data.data.playlist._id
             },
             {
@@ -148,7 +153,7 @@ const VideoActions = ({ videoId }: VideoActionsProps) => {
         <Button
           variant='ghost'
           className='flex w-full pr-10 justify-start space-x-3 rounded-none'
-          onClick={() => bookmarkVideoMutation.mutate(videoId)}
+          onClick={() => bookmarkVideoMutation.mutate(videoData._id)}
         >
           <History size={18} strokeWidth={1.5} />
           <span>Lưu vào danh sách xem sau</span>
@@ -270,10 +275,20 @@ const VideoActions = ({ videoId }: VideoActionsProps) => {
             </div>
           </DialogContent>
         </Dialog>
-        <Button variant='ghost' className='flex w-full pr-10 justify-start space-x-3 rounded-none'>
-          <Share2 size={18} strokeWidth={1.5} />
-          <span>Chia sẻ</span>
-        </Button>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button variant='ghost' className='flex w-full pr-10 justify-start space-x-3 rounded-none'>
+              <Share2 size={18} strokeWidth={1.5} />
+              <span>Chia sẻ</span>
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Tạo bài đăng</DialogTitle>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
+        {extendedActions}
       </DropdownMenuContent>
     </DropdownMenu>
   )

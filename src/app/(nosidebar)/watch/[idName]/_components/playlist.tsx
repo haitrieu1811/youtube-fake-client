@@ -179,9 +179,7 @@ const Playlist = ({ playlistId, videos, totalVideo, currentIdName, currentVideoI
                       </div>
                     </div>
                   </div>
-                  <div className='opacity-0 group-hover:opacity-100'>
-                    <VideoActions />
-                  </div>
+                  {/* <VideoActions videoData='' /> */}
                 </div>
               )
             })}

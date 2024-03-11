@@ -112,7 +112,7 @@ const WatchClient = ({ idName }: WatchClientProps) => {
       return getLikedVideosQuery.data.data.data.pagination.totalRows
     }
     return 0
-  }, [getLikedVideosQuery.data?.data.data.pagination.totalRows])
+  }, [getLikedVideosQuery.data])
 
   // Current playlist video index
   const currentPlaylistVideoIndex = useMemo(
