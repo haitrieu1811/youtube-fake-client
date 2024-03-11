@@ -5,6 +5,7 @@ import { PaginationType, SuccessResponse } from './utils.types'
 export type OriginalPostType = {
   _id: string
   accountId: string
+  contentId: string
   content: string
   images: string[]
   audience: PostAudience
@@ -39,6 +40,7 @@ export type PostItemType = {
 // Request: Create a new post
 export type CreatePostReqBody = {
   content: string
+  contentId?: string
   audience: PostAudience
   images?: string[]
 }

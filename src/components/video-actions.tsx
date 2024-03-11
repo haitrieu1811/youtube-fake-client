@@ -9,6 +9,7 @@ import InfiniteScroll from 'react-infinite-scroll-component'
 
 import bookmarkApis from '@/apis/bookmark.apis'
 import playlistApis from '@/apis/playlist.apis'
+import ShareContent from '@/components/share-content'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
@@ -275,19 +276,12 @@ const VideoActions = ({ videoData, extendedActions }: VideoActionsProps) => {
             </div>
           </DialogContent>
         </Dialog>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant='ghost' className='flex w-full pr-10 justify-start space-x-3 rounded-none'>
-              <Share2 size={18} strokeWidth={1.5} />
-              <span>Chia sẻ</span>
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Tạo bài đăng</DialogTitle>
-            </DialogHeader>
-          </DialogContent>
-        </Dialog>
+        <ShareContent sharedContentData={videoData}>
+          <Button variant='ghost' className='flex w-full pr-10 justify-start space-x-3 rounded-none'>
+            <Share2 size={18} strokeWidth={1.5} />
+            <span>Chia sẻ</span>
+          </Button>
+        </ShareContent>
         {extendedActions}
       </DropdownMenuContent>
     </DropdownMenu>
